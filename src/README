@@ -1,0 +1,137 @@
+#################################################################################
+# TheHat - an interactive workflow system
+# Copyright (C) 2007,2008  David Parker
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#################################################################################
+
+
+TheHat is a library and a collection of frontends to that library that act as 
+an interactive workflow engine. Its user interface is command line-ish.  In 
+operation, a TheHat instance guides a "conversation" between workflow 
+particpants and itself, prompting workflow activities in whatever 
+communication medium(s) you happen to be using.  TheHat has a number of 
+rendering modules that give various views of the progress of a given workflow.  
+The output from these renderers is available from a web page that the engine 
+generates automatically.
+
+This distribution comes with two frontends:
+
+thehat-tty: This is just you and the engine - no clocks, no network, no nuthin. 
+It's useful for learning, authoring, debugging, etc.
+
+thehat-irc: This logs onto an IRC server and joins a channel.  It includes 
+automatic clock processing, etc and is an example of the way that group 
+coordination can be done.
+
+Comprehensive user documentation is in the www/TheHat.html file in this 
+distribution.  This README concerns itself with getting an instance running 
+only.
+
+Each frontend requires that you provide a configuration file for the workflow 
+engine.  The configuration file is of the .ini type.  Configure it thusly:
+
+1) Add a section [wfengine] - all items subtend this section
+
+2) datadir = the a directory where the engine can read and write files.  
+   Workflows and workflow states will live here.
+
+3) svnroot = the url to your svn repository (not required if you don't 
+   intend to version control your workflows)
+
+4) webdir = a directory in which the engine will write web-available files 
+   such as directed graph renderings, csv files etc.
+
+5) baseurl = an url that gets a browser to the webdir
+
+6) renderers = a comma delimited list of the types of workflow status 
+   renderings you'd like.  Currently these include:
+
+	WorkflowRenderer: Mostly for debugging - dumps the workflow as a bunch 
+                          of step instance inspections.
+
+	WorkflowDumpFile: A more human readable equivalent of what WorkflowRenderer does.
+
+	WorkflowDigraph: A graphic rendering of the workflow as a color coded 
+                         directed graph. Also renders .dot file.
+
+	WorkflowDigraphPostscript: Postscript equivalent of what  WorkflowDigraph does
+
+	WorkflowIcal: [not working] An ical file describing the state of the flow.
+
+
+After you've made the configuration file, copy (or link) all the stuff in the 
+www directory of this distribution to whatever you set webdir to, and make sure 
+that flow.cgi can in fact execute as a cgi program from from your web server.
+
+Assuming all the directories exist and are accessable by the user you wish to 
+run the workflow engine as, you can now start the frontend of your choice.
+
+Note that you can optionally pass the path of a workflow (subtending your data directory)
+to either of the example frontends.  If you do so, the specified workflow will
+be loaded for you when the engine is done initializing.
+
+
+Example configuration file:
+
+[wfengine]
+datadir=/home/dave/rworkflow/data
+webdir=/home/dave/public_html
+baseurl=http://localhost/~dave
+svnroot=file:///home/dave/svn
+renderers=WorkflowDigraph,WorkflowDotfile
+
+
+The underlying workflow library has a very simple API; if you're inclined to 
+develop software, you'll find that it's almost trivially easy to make new
+frontends for this system.  The following is a sketch of what
+it takes to write a frontend with an asynchronous clock for clock-owner processing:
+
+workflow = Workflow.new('/path/to/config.ini')
+mutex = Mutex.new
+connection = WhateverYou'reConnectingTo.new
+Thread.new { # Clock thread
+	while true
+		mutex.synchronize do
+				workflow.ticToc() 
+				connection.puts(workflow.messages)
+				workflow.clearMessages
+		end
+		sleep(1)
+	end
+}
+while not done 
+	mutex.synchronize do
+		workflow.processCommand(connection.readline)
+		connection.puts(workflow.messages)
+		workflow.clearMessages
+	end
+end
+
+
+In a nutshell, you'll need to use these methods:
+
+processCommand: parses a line of text, acts on it - output accrues in messages
+
+ticToc: does a pass through the workflow for clock-owner events and processes 
+        them as appropriate.
+
+messages: returns the aggregate of messages from program logic since the last 
+          time clearMessages was called 
+
+clearMessages: clears all the accrued messages
+
+If you're going to do a clock thread, use a mutex (else I suspect the
+outcome would be "bad").

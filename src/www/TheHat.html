@@ -1,0 +1,1396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>TheHat - Command Center</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.3  (Linux)">
+	<META NAME="CREATED" CONTENT="0;0">
+	<META NAME="CHANGED" CONTENT="20080504;14114100">
+	<META NAME="KEYWORDS" CONTENT="TheHat">
+	<!-- start content -->
+	<STYLE TYPE="text/css">
+	<!--
+		@page { size: 8.5in 11in }
+		P { color: #000000 }
+		TD P { color: #000000 }
+		PRE { color: #000000 }
+		H2 { color: #000000 }
+		H2.western { font-family: "Albany", sans-serif; font-size: 14pt; font-style: italic }
+		H2.cjk { font-family: "HG Mincho Light J"; font-size: 14pt; font-style: italic }
+		H2.ctl { font-family: "Arial Unicode MS"; font-size: 14pt; font-style: italic }
+		H3 { color: #000000 }
+		H3.western { font-family: "Albany", sans-serif }
+		H3.cjk { font-family: "HG Mincho Light J" }
+		H3.ctl { font-family: "Arial Unicode MS" }
+		H4 { color: #000000 }
+		H4.western { font-family: "Albany", sans-serif; font-size: 11pt; font-style: italic }
+		H4.cjk { font-family: "HG Mincho Light J"; font-size: 11pt; font-style: italic }
+		H4.ctl { font-family: "Arial Unicode MS"; font-size: 11pt; font-style: italic }
+		H5 { color: #000000 }
+		H5.western { font-family: "Albany", sans-serif; font-size: 11pt }
+		H5.cjk { font-family: "HG Mincho Light J"; font-size: 11pt }
+		H5.ctl { font-family: "Arial Unicode MS"; font-size: 11pt }
+		A:link { color: #552200 }
+		A:visited { color: #000000 }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" LINK="#552200" VLINK="#000000" BGCOLOR="#ffffff" DIR="LTR">
+<DIV ID="globalWrapper" DIR="LTR">
+	<DIV ID="column-content" DIR="LTR">
+		<DIV ID="content" DIR="LTR" STYLE="background: #ffffff">
+			<DIV ID="bodyContent" DIR="LTR">
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				is a library and a collection of frontends to that library that
+				act as an interactive workflow engine. Its user interface is
+				command line-ish.  In operation, a TheHat instance guides a
+				&quot;conversation&quot; between workflow particpants and itself,
+				guiding and prompting workflow activities in whatever
+				communication medium(s) you happen to be using for communication.
+				 TheHat has a number of rendering modules that give various views
+				of the progress of a given workflow.  The output from these
+				renderers is available from a web page that the engine generates
+				automatically.</FONT></FONT></P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				workflows are conceptually simple. They consist of a collection
+				of workflow steps, most of which are &quot;gated&quot; by one or
+				more other steps. Gates are steps that must be successfully
+				concluded before they can be said to have been cleared. Visually,
+				a workflow represented graphically (which is technically referred
+				to as a &quot;directed graph&quot;) looks like this: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#552200"><A HREF="https://ccwiki.rdu.redhat.com/wiki/index.php/Image:Toast.gif"><FONT COLOR="#552200"><IMG SRC="TheHat_files/Toast.gif" NAME="graphics1" ALT="image:toast.gif" ALIGN=BOTTOM WIDTH=652 HEIGHT=465 BORDER=1></FONT></A></FONT>
+								</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				above example shows a series of workflow steps that lead to the
+				making of a piece of toast. In order for the final outcome (the
+				toast) to come about, a number of steps must occur in a certain
+				order. The steps are workflow steps, and any step that requires
+				that one or more things have occurred before it before it can
+				itself proceed are gated by those previous steps. In the example
+				above you can see that the slice of toast is being inserted into
+				the toaster now, but that the amount of toasting must first be
+				adjusted before the toasting itself can begin. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				workflows are defined in a simple .ini style file such as: </FONT>
+				</P>
+				<PRE STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">[openbread]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Open bread bag</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[selectslice]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Remove slice of bread from bag</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=openbread</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[gettoaster]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Get toaster out of storage</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[preptoaster]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Plug toaster into wall socket</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=gettoaster</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[insertslice]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Place bread in toaster</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=gettoaster,selectslice</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[adjusttoasting]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Adjust toaster to desired toasting level</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=gettoaster</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[toastbread]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Activate toaster</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=insertslice,adjusttoasting,preptoaster</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[removetoast]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Remove toast from toaster</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=toastbread</FONT></PRE><P STYLE="border: none; padding: 0in">
+				<FONT SIZE=2 STYLE="font-size: 11pt">Using this simple format,
+				complex cross-site multi-party workflows can be described. Steps
+				can be defined that execute automatically, semi-automatically, or
+				manually, and can utilize a number of clock-based time gate
+				mechanisms as well (TheHat can do calendars). </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				workflows are a simple but extremely effective solution to the
+				problem of coordinating complex tasks involving geographically
+				disbursed (or not) participants. </FONT>
+				</P><A NAME="toc"></A>
+				<TABLE WIDTH=429 BORDER=0 CELLPADDING=2 CELLSPACING=0 BGCOLOR="#f9f9f9">
+					<COL WIDTH=425>
+					<TR>
+						<TD WIDTH=425>
+							<DIV ID="toctitle" DIR="LTR">
+								<H2 CLASS="western">Contents</H2>
+							</DIV>
+							<UL>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#The_Goofy_Name">1
+								The Goofy Name</A> 
+								</P>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Quick_Start">2
+								Quick Start</A> 
+								</P>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Graphics">3
+								Graphics</A> 
+								</P>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Commands">4
+								Commands</A> 
+								</P>
+								<UL>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Initialization">4.1
+									Initialization</A> 
+									</P>
+									<UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#checkout">4.1.1
+										checkout</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#catalog">4.1.2
+										catalog</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#load">4.1.3
+										load</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#reload">4.1.4
+										reload</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#restore">4.1.5
+										restore</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#unload">4.1.6
+										unload</A> 
+										</P>
+									</UL>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Workflow_Interaction">4.2
+									Workflow Interaction</A> 
+									</P>
+									<UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#Step_Ownership">4.2.1
+										Step Ownership</A> 
+										</P>
+										<UL>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#gimme">4.2.1.1
+											gimme</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#giveto">4.2.1.2
+											giveto</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#gimmegroup">4.2.1.3
+											gimmegroup</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#givegroupto">4.2.1.4
+											givegroupto</A> 
+											</P>
+										</UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#Forward_Operation">4.2.2
+										Forward Operation</A> 
+										</P>
+										<UL>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#start">4.2.2.1
+											start</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#finish">4.2.2.2
+											finish</A> 
+											</P>
+										</UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#Reverse_Operation">4.2.3
+										Reverse Operation</A> 
+										</P>
+										<UL>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#fail">4.2.3.1
+											fail</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#reverting">4.2.3.2
+											reverting</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#reverted">4.2.3.3
+											reverted</A> 
+											</P>
+										</UL>
+									</UL>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Flow_Editing">4.3
+									Flow Editing</A> 
+									</P>
+									<UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#newflow">4.3.1
+										newflow</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#save">4.3.2
+										save</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#addstep">4.3.3
+										addstep</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#delstep">4.3.4
+										delstep</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#setprop">4.3.5
+										setprop</A> 
+										</P>
+									</UL>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Utility">4.4
+									Utility</A> 
+									</P>
+									<UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#debug">4.4.1
+										debug</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#dump">4.4.2
+										dump</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#dryrun">4.4.3
+										dryrun</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#exec">4.4.4
+										exec</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#tictoc">4.4.5
+										tictoc</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#notifsEnabled">4.4.6
+										notifsEnabled</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#clockEnabled">4.4.7
+										clockEnabled</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#run">4.4.8 run</A>
+																				</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#stop">4.4.9
+										stop</A> 
+										</P>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#status">4.4.10
+										status</A> 
+										</P>
+									</UL>
+								</UL>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Workflow_Definition">5
+								Workflow Definition</A> 
+								</P>
+								<UL>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Format">5.1
+									Format</A> 
+									</P>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Parameters">5.2
+									Parameters</A> 
+									</P>
+									<UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#Common">5.2.1
+										Common</A> 
+										</P>
+										<UL>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#description">5.2.1.1
+											description</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#url">5.2.1.2
+											url</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#gates">5.2.1.3
+											gates</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#group">5.2.1.4
+											group</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#owner">5.2.1.5
+											owner</A> 
+											</P>
+										</UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#Email_Notification">5.2.2
+										Email Notification</A> 
+										</P>
+										<UL>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#notifyAtStart">5.2.2.1
+											notifyAtStart</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#notifyAtFinish">5.2.2.2
+											notifyAtFinish</A> 
+											</P>
+										</UL>
+										<LI><P STYLE="margin-bottom: 0in"><A HREF="#Command_Execution">5.2.3
+										Command Execution</A> 
+										</P>
+										<UL>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#startCommand">5.2.3.1
+											startCommand</A> 
+											</P>
+											<LI><P STYLE="margin-bottom: 0in"><A HREF="#finishCommand">5.2.3.2
+											finishCommand</A> 
+											</P>
+										</UL>
+									</UL>
+								</UL>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Examples">6
+								Examples</A> 
+								</P>
+								<UL>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Simple">6.1
+									Simple</A> 
+									</P>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Calendar">6.2
+									Calendar</A> 
+									</P>
+									<LI><P STYLE="margin-bottom: 0in"><A HREF="#Handoff">6.3
+									Handoff</A> 
+									</P>
+								</UL>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Installation">7
+								Installation</A> 
+								</P>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Future_Features">8
+								Future Features</A> 
+								</P>
+								<LI><P STYLE="margin-bottom: 0in"><A HREF="#Distant_Future_Features">9
+								Distant Future Features</A> 
+								</P>
+								<LI><P><A HREF="#Crazy_Ideas">10 Crazy Ideas</A> 
+								</P>
+							</UL>
+						</TD>
+					</TR>
+				</TABLE>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				Goofy Name</FONT></H2>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				gets its name from a convention that a team I was once in adopted
+				as its release procedure acquired increasing complexity. At one
+				point it was decided to designate an individual as the person who
+				will guide workflow. That person, clipboard in hand, circulated
+				amongst engineering and operations staff prompting release
+				activities (and gating others). To stress the importance of this
+				(and to lend a comic angle to the thing), that person was made to
+				wear a hat. It was a tall pointed purple wizard's hat with stars
+				moons and such on it. It was goofy but effective. TheHat was
+				written to accomplish those things that the release manager used
+				to accomplish minus the clipboard, the hat, and the frazzled
+				employee (and plus a really handy multi-site presence). It has
+				since evolved into a simple but versatile workflow engine. </FONT></FONT>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Quick
+				Start</FONT></H2>
+				<OL>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Once
+					the module is loaded, no bot authentication is required to
+					interact with the module. </FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Checkout
+					the repository containing the workflow: </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+					checkout trunk/build_system/Releases/4_4_0/TheHat</FONT></FONT></CODE><FONT COLOR="#000000">
+					</FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Load
+					the workflow into the module: </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+					load TheHat/myflow</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Users
+					claim their steps by issuing &quot;</FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+					gimme &lt;stepName&gt;</FONT></FONT></CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">&quot;
+					(or ownership can be pre-determined in the configuration file). </FONT></FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Each
+					step should be cleared with the following sequence by its owner:
+					</FONT>
+					</P>
+					<OL>
+						<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+						start &lt;stepName&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+						</FONT>
+						</P>
+						<LI><P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+						finish &lt;stepName&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+						</FONT>
+						</P>
+					</OL>
+				</OL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Following
+				this process, your workflow will proceed 'til the last of its
+				steps are performed - at the end of the workflow, the module will
+				announce workflow termination to the irc channel(s). </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Graphics</FONT></H2>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">When
+				a workflow is running, the engine periodically displays a
+				hyperlink in the chat session that brings up a page containing a
+				graphic representation of the current state of the workflow. The
+				graphic representation looks generally like this: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#552200"><A HREF="https://ccwiki.rdu.redhat.com/wiki/index.php/Image:Graphlegend.gif"><FONT COLOR="#552200"><IMG SRC="TheHat_files/Graphlegend.gif" NAME="graphics2" ALT="image:graphlegend.gif" ALIGN=BOTTOM WIDTH=1009 HEIGHT=273 BORDER=1></FONT></A></FONT>
+								</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				workflow diagram uses a simple color scheme to help you quickly
+				understand the overall state of things. Each box in the diagram
+				can have up to two colors associated with it: an edge color and a
+				fill color. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				edge color indicates whether or not the step has an owner. Green
+				== yes, Red == no. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				fill color indicates the state of the step. Green = successfully
+				completed, Yellow = Currently in progress, Red = needing
+				immediate attention/should be started right now, and Gray =
+				future task currently requiring no attention. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Commands</FONT></H2>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				commands can be grouped into roughly five catagories:
+				Initialization, Workflow Interaction, Reversion, Flow Editing,
+				and Utility. Of all of these the most commonly used are the ones
+				dealing with workflow interaction. The remainder are usually the
+				domain of the &quot;workflow administrator&quot;. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Once
+				TheHat is enabled in a channel there is from that time 'til the
+				module is unloaded a &quot;ghost&quot; user by the name of &quot;flow&quot;
+				through which all TheHat interaction occurs. Thus, all commands
+				take the general form </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				&lt;command&gt; &lt;command parameters&gt;</FONT></FONT></CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">.
+				</FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Initialization</FONT></H3>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Initialization
+				commands deal with loading workflow definitions and state into
+				the workflow engine. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">checkout</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				checkout &lt;svn path&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command checks a portion of the svn directory structure out
+				in such a way that the workflow engine can access and manipulate
+				its contents. Once an svn directory structure is in place, you
+				can load any .flow files that ended up being checked out. If you
+				make any modifications to a flow file that you've loaded, you can
+				save those changes back to svn and commit them permanently to the
+				repository. See &quot;Workflow Modification&quot; commands below.
+				</FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">catalog</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				catalog</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command lists the contents of the engine's current workflow
+				directory. You can load any .flow files you see in this listing. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">load</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				load &lt;local filename&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command presumes that a workflow file is sitting in the
+				workflow directory on the bot server from a previous load from
+				svn or from a previous save from the engine itself. When a flow
+				is loaded from disk, all existing state is wiped from memory and
+				replaced by whatever state is represented in the flow file. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">reload</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				reload</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				The reload command reloads from local (to the bot) disk the flow
+				that's currently running. In the process any current state is
+				wiped in memory and on disk as well. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">restore</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				restore &lt;local filename&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				The restore command allows you to continue where you left off in
+				case of an IRC outage or power outage on the bot server or
+				similar. For this to work you *must absolutely not* have issued
+				either the load or reload commands; if you do so you'll wipe the
+				saved state on disk. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">unload</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				unload</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				The unload command removes the current flow and its state from
+				memory. Think &quot;clear all&quot;. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Workflow
+				Interaction</FONT></H3>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				workflow interaction commands affect workflow progression, and
+				are the ones most commonly used by non workflow developers. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Workflow
+				interaction basically comes down to manipulating task ownership
+				and status. Once a workflow is started, the engine helps drive
+				the flow to completion: it takes care of clock-owned tasks
+				automatically, and prompts human owners appropriately as the
+				workflow progresses. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Step
+				Ownership</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Step
+				ownership commands provide a means by which humans can assign and
+				assume ownership of commands. There are two of them: </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">gimme</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				gimme &lt;taskname&gt; [&lt;taskname&gt; [...]]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command assigns ownership of the task(s) listed to the
+				person who issued the command. Anyone can claim any step at any
+				time. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">giveto</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				giveto &lt;entity&gt; [&lt;taskname&gt; [...]]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command allows the issuer to assign ownership of one or more
+				tasks to a person or clock entity. See the examples section below
+				for examples and an explanation. Again - no permissions are
+				required - anyone can give any task to any other person (or
+				thing). </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">gimmegroup</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				gimmegroup &lt;groupname1&gt;[,&lt;groupname2&gt;[,&lt;groupnameN&gt;]]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command assigns ownership of all the tasks tagged as
+				belonging to all the groups listed to the person who issued the
+				command. Anyone can claim any group at any time. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">givegroupto</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				givegroupto &lt;groupname1&gt;[,&lt;groupname2&gt;[,&lt;groupnameN]]
+				&lt;entity&gt;</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command allows the user to assign ownership of one or more
+				groups of tasks to a person or clock entity. See examples below
+				for clock usage. No permissions are required, etc. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Forward
+				Operation</FONT></H4>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">start</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				start &lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				By issuing this command you indicate to the workflow engine (and
+				your co-workers) that you have begun work on the named step. You
+				can only issue this command for a step if two things are true: </FONT></FONT>
+				</P>
+				<OL>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">You
+					must be the current owner of the step </FONT>
+					</P>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+					step must be un-gated by any steps that preceed it in the
+					workflow. </FONT>
+					</P>
+				</OL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">If
+				one or the other of the above conditions is not true, you'll
+				receive a warning from the workflow engine as your command is
+				rejected. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Note
+				that it is possible to skip this command and proceed immediately
+				to the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">finish</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command.
+				This flexibility exists for those cases where you're running
+				through a worlflow yourself, you trust yourself, and timing
+				metrics aren't important to anyone. BUT: if you do choose to
+				forgo the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">start</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command,
+				be aware that it is somewhat at your peril: </FONT></FONT>
+				</P>
+				<UL>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Without
+					issuing the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">start</FONT></FONT></CODE><FONT COLOR="#000000">
+					</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command,
+					you risk missing the fact that you really *should not* be
+					starting your step yet! </FONT></FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">You'll
+					be depriving your co-workers of some sense of what's going on,
+					which is usually pretty important when you're working with
+					people that aren't sitting right next to you. </FONT>
+					</P>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">You'll
+					bypass the collection of workflow timing metrics which are very
+					useful for planning purposes. </FONT>
+					</P>
+				</UL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">In
+				other words: it's more or less *always* a good idea to issue the
+				start command before you begin work on a step. Please do it. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">finish</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				finish &lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				This command is the means by which you indicate to the workflow
+				engine (and your co-workers) that you've completed work on your
+				step. You *must* issue this command for the workflow to proceed!
+				You can only issue this command if you are the owner of the step
+				and the step is not gated by other steps. Note that if you
+				actually *do* finish work on a step that hasn't actually been
+				ungated yet, you might find yourself in really big trouble w/
+				your co-workers. Use the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">start</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command!.
+				</FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Reverse
+				Operation</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Reverse
+				operation (or &quot;reversion mode&quot;) is a *very highly
+				problematic* mode that the engine supports only because adding
+				the code to support it was so painful that the author doesn't
+				have the heart to remove it. Reversion mode basically provides a
+				mechanism by which the workflow can be directly reversed from a
+				point of failure. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">In
+				a nutshell: if, while performing a workflow, a step fails in such
+				a way that the workflow cannot continue, you can inform the
+				workflow engine about the failure, and it'll immediately notify
+				everyone of the failure, and then *reverse execute* the workflow
+				from its current state. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				reason this is problematic is that in the real world it is nearly
+				never the case that simply going backwards and un-doing things
+				will actually cause a successful reversion of a sequence of
+				tasks. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Again,
+				however, the mechanism is there, and it may prove useful to some,
+				so... </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">fail</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">fail
+				&lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				You can issue this command if you are the owner of the step in
+				question, and if the step is not gated by any previous steps.
+				When you issue it, alarms will sound, and everyone who's
+				currently working on a step will immediately be told to stop (in
+				IRC). Once this command is issued, your world changes. You no
+				longer &quot;start&quot; and &quot;finish&quot; commands;
+				henceforth you're &quot;reverting&quot; steps 'til they're
+				&quot;reverted&quot;...: </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">reverting</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">reverting
+				&lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				You can issue this command when the following things are true: </FONT></FONT>
+				</P>
+				<OL>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">The
+					workflow has been placed into reversion mode by someone's having
+					issued the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">fail</FONT></FONT></CODE><FONT COLOR="#000000">
+					</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command
+					for some step. </FONT></FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">You
+					are the owner of the step in question </FONT>
+					</P>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+					step is not gated from being reverted. </FONT>
+					</P>
+				</OL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				notion of gate direction is flipped on its head when reversion
+				mode kicks in, so the things you'll be gated on while reverting
+				will be those things that were gating on *your step* when the
+				flow was moving forward. Confusing? You betcha. Hope you never
+				have to go there. If you do, though, the engine will guide you so
+				don't worry - just do what it says. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">reverted</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">reverted
+				&lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				Issue this command when you finish reverting a step. The same
+				conditions apply as to when you can issue this command as do
+				those for the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">reverting</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command.
+				Again - hope you never have to use it. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Flow
+				Editing</FONT></H3>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">newflow</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				newflow &lt;flowname&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				The newflow command clears from memory whatever flow might
+				currently be loaded, and starts a new blank one who's name is
+				&lt;flowname&gt;. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">save</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				save</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				The save command saves the current state of the workflow to the
+				file specified when the workflow as loaded or created. </FONT></FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">There
+				is a very major caveat with this command you *must* bear in mind
+				however: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">There
+				is only *one* representation of the state of the flow in the
+				workflow engine's memory at any given time, and it is that state
+				which gets saved. That means these things: </FONT>
+				</P>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">If,
+					as a function of flow execution, any ownership has changed from
+					that which was in place before the workflow commenced, it is the
+					*new* ownership that will be written to the file. This may very
+					well NOT be what want to happen: if you've changed a running
+					flow to add a step you've discovered you need and you save the
+					workflow to disk after you've made the change, you'll find that
+					any e.g. clock-handoff steps you had in the original workflow
+					that have since fired off will no longer be owned by
+					clock-handoff! </FONT>
+					</P>
+				</UL>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">As
+					the workflow progresses, the internal representation of the gate
+					structure gets &quot;shuffled about&quot;. Meaning: when a gate
+					is cleared for a given step, the gate is *removed* from the
+					gates list of the step that originally was gated, and is *moved
+					to* the reverse gates list of the step that was originally doing
+					the gating. If you save the workflow after gates have been
+					cleared, you'll note in the saved representation of the flow
+					that some of your gates have 'gone away'. </FONT>
+					</P>
+				</UL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">In
+				other words, the engine does not attempt to maintain both a
+				representation of the running flow *and* a representation of what
+				the pristine state of the flow should be. Save means &quot;Save
+				what the flow looks like *now*. </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">So,
+				here's some sound advice as to the use of workflow modification
+				commands and the save command: </FONT>
+				</P>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">If
+					you have to change a running flow, go ahead and do it. </FONT>
+					</P>
+				</UL>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">If
+					the change you've made to a running flow needs to be permanent,
+					make the change elsewhere. You can edit the .flow definition
+					file directly, or within another instance of the workflow bot.
+					You're fine as long as the flow has not been modified as a
+					function of flow execution. Once the flow starts running,
+					whatever you might save will reflect the state of the flow and
+					(from your perspective) will probably be &quot;corrupt&quot;. </FONT>
+					</P>
+				</UL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Caveat
+				emptor. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">addstep</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				addstep &lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				This command adds a new step to the workflow. The new node will
+				be otherwise entirely devoid of properties. It is very likely
+				you'll need to use the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">setprop</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">(below)
+				to make the new step useful in the context of the greater flow. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">delstep</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				delstep &lt;stepname&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				This command deletes a step from the flow. Note that when you do
+				this, you may well need to use the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">setprop</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command
+				to re-wire your workflow; </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">delstep</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">makes
+				no attempt to do so. If the deletion of a step results in a
+				&quot;dangling gate&quot;, you'll see it easily in the flow
+				graphic as a white-filled step with no properties. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">setprop</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				setprop &lt;stepname&gt; &lt;propname&gt; &lt;propvalue&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				This command allows you to alter any property of a workflow step.
+				</FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">&lt;propname&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">can
+				be any property that you can set for a step in the flow
+				definition file. There are two additional pseudo-properties that
+				make it easier to manipulate step gates: </FONT></FONT>
+				</P>
+				<UL>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">addgate</FONT></FONT></CODE><FONT COLOR="#000000">
+					</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+					this property adds whatever gate(s) you've listed (comma
+					separated - just as in the flow definition file) to the list of
+					gates a step already has. </FONT></FONT>
+					</P>
+					<LI><P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">delgate</FONT></FONT></CODE><FONT COLOR="#000000">
+					</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+					this property removes whatever gate(s) you've listed (comma
+					separated - just as in the flow definition file) from the list
+					of gates a step already has. </FONT></FONT>
+					</P>
+				</UL>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Utility</FONT></H3>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				utility commands deal with esoterica related to workflow engine
+				operation. It's likely you'll only really use the run, stop,
+				status, notifsEnabled, clockEnabled, and dump commands in
+				anything like a regular fashion. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">debug</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				debug</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command dumps a textual representation of internal workflow
+				state to the irc channel(s) it's operating in. It's very cryptic
+				and basically useless for anything other than module development.
+				</FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">dump</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				dump</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command dumps a representation of workflow state to the irc
+				channel(s) it's operating in. It's particularly useful for
+				gathering timing metrics *after* workflow execution has
+				concluded. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">dryrun</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				dryrun &lt;failstep&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command causes the bot to iterate through the workflow in
+				directed-graph order until either the end of the workflow is
+				reached or &lt;failstep&gt; is encountered. If &lt;failstep&gt;
+				is specified, the flow will then automatically go into reversion
+				mode and revert (in reverse order (see above)) 'til the flow
+				returns to its starting state. The flow state graph is not
+				updated during this operation. [ This is coincidentally a really
+				good way to get a sense of why workflow reversion mode is highly
+				problematic ] </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">exec</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				exec &lt;command&gt;</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command executes a command on the server the bot is running
+				on as the bot's user. It is the same mechanism that the
+				startCommand and stopCommand logic uses. There's no security
+				behind this. Basically: don't use this unless you know what
+				you're doing. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">tictoc</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				tictoc</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command forces the workflow engine to immediately perform
+				one clock processing pass on the workflow given current state.
+				It's occasionally handy to test the behavior of workflows with
+				clock based owners. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">notifsEnabled</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				notifsEnabled [&lt;0|1&gt;]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command allows you to examine and modify the way the bot
+				will behave in a workflow when a notification event occurs. To
+				examine the state, issue the command with no parameters. To
+				enable notifications, use 1 as a parameter; to disable, use 0.
+				Notifications are DISABLED by default as the bot is capable in
+				some circumstances (particularly during workflow development) of
+				sending a great deal of unwanted (and potentially confusing)
+				email to actual workflow participants (including sometimes
+				mailing lists). If you're planning on running a workflow with
+				notifications, you should issue </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				notifsEnabled 1</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">after
+				loading the workflow. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">clockEnabled</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				clockEnabled [&lt;0|1&gt;]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command allows you to examine and modify the bot's clock
+				based flow execution mode. To examine the state, issue the
+				command with no parameters. To enable clock based flow execution,
+				use 1 as a parameter; to disable, use 0. Clock based operation is
+				DISABLED by default as the bot will otherwise immediately start
+				evaluating and acting on clock-* owned events (see below). This
+				can be annoying during workflow development, and *extremely*
+				annoying if notifications happen to be enabled at the same time.
+				If you wish to run a workflow with clock owned tasks, you should
+				issue </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				clockEnabled 1</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">after
+				loading the workflow. Further - if the workflow contains
+				notifications, you should enable notifications *first* (see
+				above) before enabling clock operation (else notifications will
+				be dropped as execution proceeds). </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">run</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				run</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command activates both notifs and clocks in one command. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">stop</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				stop</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command deactivates both notifs and clocks in one command. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">status</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">flow
+				status</FONT></FONT></CODE><FONT COLOR="#000000"> </FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">-
+				this command reports flow status in terms of whether one or the
+				other or both of notifs and clocks are enabled. </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Workflow
+				Definition</FONT></H2>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Format</FONT></H3>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat
+				workflows are defined in .ini style files. These take the general
+				form: </FONT>
+				</P>
+				<PRE STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">[section_name1]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameter1=value1</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameter2=value2</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">...</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameterN=valueN</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[section_name2]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameter1=value1</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameter2=value2</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">...</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameterN=valueN</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[section_nameN]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameter1=value1</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameter2=value2</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">...</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">parameterN=valueN</FONT></PRE><P STYLE="border: none; padding: 0in">
+				<FONT SIZE=2 STYLE="font-size: 11pt">Each section in the file
+				represents a workflow step, and the section names are the names
+				of those steps. Step names are the tags users use to refer to
+				steps they are working on. Step names are not optional, and must
+				be unique within the workflow definition: you can't have more
+				than one workflow step with the same name. Step names should not
+				contain any spaces or special characters other than underlines or
+				dashes ( _ or - ) </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				various parameters (all of which are optional) are described
+				below. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Parameters</FONT></H3>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Common</FONT></H4>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">description</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">A
+				workflow's description is just a very brief summary of what the
+				step is about. You'll want to keep this brief - just enough to
+				convey the essence of the task. If you need to provide more
+				detail, use the url parameter (below) </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">url</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">By
+				defining the URL parameter, you make it possible for users to
+				click on the rectangle representing the task in the workflow
+				status chart and have their browser take them to the url you've
+				specified. You can use this to provide in-depth documentation of
+				the step. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">gates</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				gates parameter is the means by which you describe those tasks
+				which the current task requires to have been completed before the
+				current task can begin. The gates parameter takes this form: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">gates=&lt;stepname1&gt;[,&lt;stepname2&gt;[,&lt;stepnameN]]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">See
+				the &quot;making toast&quot; workflow at the top of this page for
+				an example of how to the gates parameter is used. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">group</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				group parameter allows you to assign assign tags to steps such
+				that they form a logical group. With logical groupings you can
+				use the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">gimmegroup</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">and
+				</FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">givegroupto</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">commands
+				to do mass task assignments. These are extremely convenient. </FONT></FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">group=&lt;group1&gt;[,&lt;group2&gt;[,&lt;groupN&gt;]]</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">owner</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				owner parameter allows you to pre-assign ownership of a task at
+				workflow load time. If you do not specify an owner for a step,
+				the engine will prompt for one in IRC when the appropriate time
+				comes. If you do wish to pre-assign, you can choose to assign the
+				step to one of two types of entities: </FONT>
+				</P>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Human
+					(one of your co-workers) - in this case the value you should put
+					in the field should be whatever that person's usual IRC nickname
+					is. </FONT>
+					</P>
+				</UL>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Bot-clock
+					- Bot clock owners are special entities that let you do several
+					time-dependent type operations in the workflow. These options
+					are most useful when combined with the email notification and
+					command execution parameters listed below. With bot clock owners
+					you can implement complex schedules and calendars that take an
+					active role in ensuring business processes get attention when
+					they need it. </FONT>
+					</P>
+				</UL>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Bot
+				clock owners have a special form: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">clock-&lt;type&gt;:&lt;monthnum&gt;/&lt;datenum&gt;/&lt;yearnum&gt;@&lt;hours24&gt;:&lt;minutes&gt;:&lt;seconds&gt;</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">for
+				example: </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-alarm:10/01/2007@10:00:00</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">There
+				are four types of clock owners. each has it's own special
+				behavior: </FONT>
+				</P>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">alarm
+					- when an alarm clock's date and time are reached, the owner
+					will immediately start and finish the step. An alarm clock is
+					useful with email notification (for announcements etc) and with
+					command execution (for automated tasks - much like what cron
+					does). </FONT>
+					</P>
+				</UL>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">handoff
+					- when a handoff clock's date and time are reached, the owner
+					will start the task and then immediately disassociate itself
+					from the task. A handoff clock is particularly useful with email
+					notifications. </FONT>
+					</P>
+				</UL>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">wait
+					- when a wait clock's date and time are reached, the owner will
+					start the task and then wait 'til the earliest date/time of any
+					clock based step that is blocked by the current step is reached.
+					Wait clocks are particularly useful with email notification for
+					e.g. announcing the beginning and ending of calendar periods. </FONT>
+					</P>
+				</UL>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">stopwatch
+					- A stopwatch clock does not wait for a date/time to be reached;
+					it assumes it is to start executing the moment it is ungated. It
+					will however not *finish* the task until the number of hours,
+					minutes, and seconds specified to the right of the @ sign in the
+					time specification have passed. Note that stopwatch clocks are
+					*not* included in a wait clock's decision as to when it should
+					finish. </FONT>
+					</P>
+				</UL>
+				<P STYLE="border: none; padding: 0in"><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">Note
+				that you can use the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">giveto</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command
+				to give ownership to a clock type owner while a flow is running.
+				Likewise you can </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">gimme</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">ownership
+				away from clock owners. (You can also use the </FONT></FONT><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">propset</FONT></FONT></CODE><FONT COLOR="#000000">
+				</FONT><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">command
+				to accomplish this, but it's more &quot;wordy&quot;). </FONT></FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Email
+				Notification</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">TheHat's
+				email notification capabilities let you endow workflows with the
+				ability to remind people and groups of workflow activities.
+				They're very useful for announcing planned events and &quot;mode
+				changes&quot; in team operation. Both parameters will accept a
+				comma-delimited list of email addresses, so you can construct
+				&quot;mailing lists&quot; for any particular workflow event. Both
+				parameters take the form: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><CODE><FONT COLOR="#000000"><FONT SIZE=2 STYLE="font-size: 11pt">notifyAtX=&lt;email1&gt;[,&lt;email2&gt;[,&lt;emailN&gt;]]
+				</FONT></FONT></CODE>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				emails that TheHat generates make an effort to describe the
+				situation surrounding the sending of the message. If the event
+				that's sending the message is owned by a clock event, the message
+				will contain some explanation of the nature of the event and its
+				likely implication for the recipient(s). The email will at
+				minimum state whether the step has started or finished, and will
+				provide the contents of the description field and url parameters
+				(if they're defined). </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">notifyAtStart</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">This
+				parameter sends a message to the listed recipients when the step
+				in question starts. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">notifyAtFinish</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">This
+				parameter sends a message to the listed recipients when the step
+				in question finishes. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H4 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Command
+				Execution</FONT></H4>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">You
+				can associate unix commands with workflow steps. The commands
+				will execute in a shell (bash) context (you can use shell
+				commands), and will execute as the bot user. There's obviously
+				precious little you cannot do with this mechanism, but!: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Be
+				aware that the workflow engine does not attempt to fork a child
+				and poll for its conclusion; commands will *block* bot execution
+				'til they finish. That means that if you instruct the bot to
+				execute a command that hangs up on you, you'll cause the entire
+				workflow to grind to a screeching halt. Caveat emptor! </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">The
+				command execution parameters take the form: </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">&lt;code&gt;xxxCommand=&lt;unix
+				command&gt; </FONT>
+				</P>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Note
+				that you can attach commands to steps that are owned by bots or
+				humans - it doesn't matter. The commands will fire off when step
+				state changes regardless of what mechanism caused the change. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">startCommand</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">This
+				command will be executed when the step starts. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H5 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">finishCommand</FONT></H5>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">This
+				command will be executed when the step finishes. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Examples</FONT></H2>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Simple</FONT></H3>
+				<P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">(See
+				the toast making example at the beginning of this page) </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Calendar</FONT></H3>
+				<PRE STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">[event_one]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=I am in progress 'til event three starts</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-wait:10/1/2007@00:00:00</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">notifyAtStart=thewholeteam@redhat.com</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[event_two]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=I am in progress 'til event three starts</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-wait:10/15/2007@00:00:00</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">notifyAtStart=asmallerteam@redhat.com</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[event_three]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=I am in progress 'til event four starts</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-wait:10/30/2007@13:00:00</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=event_one,event_two</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">notifyAtStart=anothercompletelydifferentteam@redhat.com</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[event_four]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Everyone is waiting for me</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-alarm:11/15/2007@0:0:0</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">notifyAtStart=thewholeteam@redhat.com,anothercompletelydifferentteam@redhat.com</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=event_three</FONT></PRE><P STYLE="border: none; padding: 0in">
+				<FONT SIZE=2 STYLE="font-size: 11pt">This workflow describes a
+				schedule-like calendar. On 10/1/2007 the first event begins. On
+				10/15/2007 the second event begins and runs concurrently with
+				event one. On 10/30/2007 at 1:00pm both events end and an third
+				one starts. The third event runs 'til 11/15/2007 at midnight, at
+				which time the final event begins and ends. All four events
+				notify various parties as to what's going on. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H3 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Handoff</FONT></H3>
+				<PRE STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">[stuffhappens]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Stuff happens here</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-wait:10/1/2007@0:0:0</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[requiredmanualstep]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=Someone needs to do something manual here</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-handoff:10/29/2007@0:0:0</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">notifyAtStart=personOne@redhat.com,personTwo@redhat.com</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">notifyAtFinish=interestedParties@redhat.com</FONT>
+
+<FONT SIZE=2 STYLE="font-size: 11pt">[bigevent]</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">description=What everthing's driving for</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">gates=stuffhappens,requiredmanualstep</FONT>
+<FONT SIZE=2 STYLE="font-size: 11pt">owner=clock-alarm:10/30/2007@10:30:00</FONT></PRE><P STYLE="border: none; padding: 0in">
+				<FONT SIZE=2 STYLE="font-size: 11pt">This workflow describes a
+				situation where two things lead up to one probably big-ish thing.
+				The 'stuffhappens' step is presumably a whole buch of work
+				required for big event. 'requiredmanualstep' is some crucial prep
+				work that must happen one day before 'bigevent' can start.
+				'stuffhappens' continues right up to 'bigevent'.
+				'requiredmanualstep' makes an announcement to a couple of people
+				who presumably know what to do, and leaves the step started and
+				UNASSIGNED. If nobody (presumably personOne or personTwo)
+				completes 'requiredmanualstep', then 'bigevent' cannot begin. </FONT>
+				</P>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Installation</FONT></H2>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Future
+				Features</FONT></H2>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Making
+					it more like a product (template, support scripts) </FONT>
+					</P>
+				</UL>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Distant
+				Future Features</FONT></H2>
+				<UL>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Engine
+					as daemon </FONT>
+					</P>
+					<LI><P STYLE="margin-bottom: 0in; border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Interface
+					abstraction (IRC,YM,Jabber,Web,command line,email...) </FONT>
+					</P>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Desktop
+					tool for workflow design &amp; maintenance </FONT>
+					</P>
+				</UL>
+				<P STYLE="margin-left: 0.05in; border: none; padding: 0in"><BR><BR>
+				</P>
+				<H2 CLASS="western" STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Crazy
+				Ideas</FONT></H2>
+				<UL>
+					<LI><P STYLE="border: none; padding: 0in"><FONT SIZE=2 STYLE="font-size: 11pt">Semaphore-triggered
+					bot owners. Such owners might start/stop based on the
+					existence/absence of semaphore files in a specific directory.
+					These (in combination with command execution) might enable some
+					very powerful fully-automated workflows. Maybe. In any case it
+					somewhat solves the &quot;commands always block&quot; problem. </FONT>
+					</P>
+				</UL>
+			</DIV>
+		</DIV>
+	</DIV>
+</DIV>
+</BODY>
+</HTML>
