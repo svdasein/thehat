@@ -328,7 +328,7 @@ class Workflow
 			ungated.push(instance) if ( (not instance.isGated) and instance.needsProgress )
 		}
 		if (ungated.size == 0) and (not @midRevert)
-			self.addMessage("** Flow ended **")
+			self.addMessage("** Flow ended **\n")
 		end
 	end
 
@@ -910,7 +910,7 @@ class Workflow
 			when 'debug' then self.addMessage('Construction zone')
 			when 'help'
 				self.addMessage(File.new("help.txt",'r').read)
-				self.addMessage("Complete documentation is available at #{@baseurl}/TheHat.html")
+				self.addMessage("Complete documentation is available at https://fedorahosted.org/TheHat")
 			when 'hello','hi','howdee','ping' then self.addMessage("Hello #{user}!  I am a workflow engine. Please ask me for help if you have any questions.\nI accept commands of the form <command> [<param1>[...<paramN>]]")
 			else
 				if command
