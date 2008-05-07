@@ -570,7 +570,7 @@ class Workflow
 			end
 		}
 		depictions = "<center><table BORDER=1>#{depictions}</table></center>"
-		depictions += '<center>Visit <a href="TheHat.html">this page</a> for TheHat documentation.</center>'
+		depictions += '<center>Visit <a href="https://fedorahosted.org/TheHat">this site</a> for TheHat documentation.</center>'
 
 		file = File.new("#{@webdir}/index.html",  "w")
 		file.puts("<html><head><title>Workflow: '#{@name}'</title></head><body>#{depictions}</body></html>")
