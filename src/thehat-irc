@@ -22,6 +22,7 @@ require 'wfengine'
 require 'thread'
 require 'rubygems'
 require 'IRC'
+require 'IRCEvent-patch'
 
 iniFilename = ARGV[0]
 workflow = ARGV[1]
@@ -42,7 +43,6 @@ channel = "##{ini['thehat-irc']['channel']}"
 
 
 workflow = Workflow.new(iniFilename,workflow)
-#workflow.whatsGoingOn('STARTUP')
 
 puts "** #{Time.now.localtime.to_s} connecting to #{server} on port #{port} as #{nic}\n"
 
