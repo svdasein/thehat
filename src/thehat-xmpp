@@ -53,8 +53,8 @@ class XMPPFrontend < HatApp
 		logmessage(:app,"Connected: #{account}@#{host}/#{resource}")
 		
 		
-		logmessage(:app,"Starting listener thread")
 		my_muc = Jabber::MUC::SimpleMUCClient.new(client)
+		logmessage(:app,"Starting listener thread")
 		my_muc.on_message { |time,nic,text|
 			if not time # ones with time are historical and dizzyingly confusing to the bot
 				if nic != resource # if this is something *I* said, which do not want
@@ -84,8 +84,11 @@ class XMPPFrontend < HatApp
 				end
 			end
 		}
-		logmessage(:app,"Joining MUC group")
+		logmessage(:app,"Joining MUC group #{room}/#{resource}")
 		my_muc.join(Jabber::JID.new("#{room}/#{resource}"))
+		drainMessages(:cmd) { |line|
+			my_muc.say(line)
+		}
 		logmessage(:clock,"Starting clock loop")
 		while not done
 			@mutex.synchronize do
