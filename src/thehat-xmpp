@@ -33,11 +33,11 @@ end
 
 ini = IniFile.load(iniFilename)
 
-account = ini['thehat-jabber']['account']
-host = ini['thehat-jabber']['host']
-resource = ini['thehat-jabber']['resource']
-password = ini['thehat-jabber']['password']
-room = ini['thehat-jabber']['room']
+account = ini['thehat-xmpp']['account']
+host = ini['thehat-xmpp']['host']
+resource = ini['thehat-xmpp']['resource']
+password = ini['thehat-xmpp']['password']
+room = ini['thehat-xmpp']['room']
 
 
 workflow = Workflow.new(iniFilename,workflow)
