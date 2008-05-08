@@ -86,8 +86,9 @@ IRCEvent.add_callback('join') { |event|
 }
 
 IRCEvent.add_callback('privmsg') { |event|
-	puts "++ #{Time.now.localtime.to_s} #{event.from}: '#{event.message}'\n"
-	if event.channel =~ /#{nic}/
+	puts "++ #{Time.now.localtime.to_s} #{event.channel} #{event.from}: '#{event.message}'\n"
+	if event.channel =~ /^#{nic}/
+		puts "++ #{Time.now.localtime.to_s} /msg from #{event.from} - saying sorry\n"
 		ircSession.send_message(event.from,"Outside of a group I am useless - sorry.")
 	else
 		if event.message =~ /^#{nic}[: ,]+(.*)/ or event.message =~ /^#{nic}$/
