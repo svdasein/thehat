@@ -21,6 +21,9 @@ require 'wfengine'
 
 
 class HatApp
+
+	attr_accessor :drainPauseSeconds
+
 	def initialize
 		iniFilename = ARGV[0]
 		workflow = ARGV[1]
@@ -29,9 +32,7 @@ class HatApp
 			exit(1)
 		end
 		@stdout = IO.new(0,'w')
-		# This is duplicated effort - maybe better to pass the object into the workflow
-		# constructor...?  Though another perspective is "keep wf config separate from fe config"
-		# dunno - it's a small thing.
+		@drainPauseSeconds = 0.5 # pause between sending lines from the engine - you may need to tweak it if you get kicked for flooding.
 		@ini = IniFile.load(iniFilename)
 		@workflow = Workflow.new(iniFilename,workflow)
 		@msgtypes = { :app => '**',:com=>'XX', :clock=>'@@', :cmd=>'==',:user=>'++',:error=>'!!' }
@@ -62,7 +63,7 @@ class HatApp
 		@workflow.messages.split(/\n/).each { |line|
 			aBlock.call(line)
 			logmessage(context,line)
-			sleep(0.5)
+			sleep(@drainPauseSeconds)
 		}
 		@workflow.clearMessages
 	end
@@ -72,5 +73,6 @@ class HatApp
 	end
 
 	def run
+		logmessage(:app,"If I were an actual application, I'm sure really cool things would be happening now. Sadly, I'm just an abstract base class - I'm quite dull in the 'cool things' department. If you're seeing this and you think something cool should be happening, you need to consider overriding the 'run' method you inherited from me.")
 	end
 end
