@@ -75,7 +75,7 @@ class Workflow
 		stdout.puts("and you are welcome to redistribute it under certain conditions.\n")
 		stdout.puts("For details read the LICENSE file that came with the distribution.\n")
 		stdout.puts("-------------------------------------------------------------------\n")
-		self.addMessage("* Good greetings from TheHat.  OBEY! :)\n\n") # For KJA
+		self.addMessage("* Good greetings from TheHat.  OBEY! :)\n") # For KJA
 		if not FileTest.directory?(@datadir)
 			begin
 				Dir.mkdir(@datadir)
@@ -127,8 +127,7 @@ class Workflow
 	end
 
 	def reset
-		@name = nil
-		@basename = nil
+		setFlowName(nil)
 		@steps = Hash.new
 		@reverting = false
 		@midRevert = false
@@ -169,14 +168,21 @@ class Workflow
 		end
 	end
 
-	def loadFromIni(name)
-		self.reset
-		if name =~ /(.*\/)(.*)/
+	def setFlowName(name=nil)
+		@name = name
+		if name and name =~ /(.*\/)(.*)/
 			@basename = $2
 		else
 			@basename = name
 		end
-		@name = name
+		if name
+			updateRenderings
+		end
+	end
+
+	def loadFromIni(name)
+		self.reset
+		setFlowName(name)
 		filename = "#{@datadir}/#{name}.flow"
 		begin
 			ini = IniFile.load(filename)
@@ -191,7 +197,10 @@ class Workflow
 		self.whatsGoingOn("Loaded workflow '#{name}', read #{@steps.size} steps")
 	end
 
-	def saveToIni
+	def saveToIni(name)
+		if name # then we're changing the name of whatever's in memory
+			setFlowName(name)
+		end
 		filename = "#{@datadir}/#{@name}.flow"
 		ini = IniFile.new(filename)
 		newIni = Hash.new
@@ -274,29 +283,41 @@ class Workflow
 
 	def newFlow(name)
 		self.reset
-		@name = name
+		setFlowName(name)
 		self.checkpoint
 		self.whatsGoingOn("Created workflow '#{name}'")
 	end
 
 	def seemsQuiet
-		if @idlePromptMinutes > 0
-			return (Time.now.localtime - @lastActivity) >= (@idlePromptMinutes * 60)
+		if self.unfinishedSteps.size > 0
+			if @idlePromptMinutes > 0
+				return (Time.now.localtime - @lastActivity) >= (@idlePromptMinutes * 60)
+			else
+				return false # zero = shut up
+			end
 		else
-			return false # zero = shut up
+			return false
 		end
+	end
+
+	def unfinishedSteps
+		ungated = Array.new;
+		@steps.each {
+			|name,instance|
+			if (not instance.isGated)  and instance.needsProgress
+				ungated.push(instance)
+			end
+		}
+		return ungated
 	end
 
 	def whatsGoingOn(message)
 		@lastActivity = Time.now.localtime;
-		if (@name)
-			ungated = Array.new;
-			@steps.each {
-				|name,instance|
-				if (not instance.isGated)  and instance.needsProgress
-					ungated.push(instance)
-				end
-			}
+		if (@name or (@steps.size > 0))
+			ungated = self.unfinishedSteps
+			if not @name
+				self.addMessage(">>>>> NOTE: Un-named flow in memory with #{@steps.size} steps!\n")
+			end
 			self.addMessage("TheHat #{Time.now.localtime}: #{message}\n")
 			self.addMessage("Flow overviews + help at #{@baseurl}\n")
 			if ungated.size > 0
@@ -314,7 +335,7 @@ class Workflow
 				self.addMessage("All steps completed!\n")
 			end
 		else
-				self.addMessage("No flow loaded or defined\n")
+			self.addMessage("No flow loaded or defined\n")
 		end
 		@hadCheckpoint = false
 	end
@@ -504,14 +525,8 @@ class Workflow
 		done = false
 		iterations = 0
 		while not done
-			ungated = Array.new
+			ungated = self.unfinishedSteps
 			iterations = iterations + 1
-			@steps.each {
-				|name,instance|
-				if ( not instance.isGated )  and  instance.needsProgress
-					ungated.push(instance)
-				end
-			}
 			if ungated.size > 0
 				ungated.each {
 					|instance|
@@ -702,7 +717,7 @@ class Workflow
 					self.addMessage('load <flowname>')
 				end
 			when 'unload' then self.reset
-			when 'save' then self.saveToIni
+			when 'save' then self.saveToIni(params)
 			when 'reload' then self.reload
 			when 'restore' then
 				if params
