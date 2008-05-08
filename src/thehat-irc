@@ -90,7 +90,7 @@ IRCEvent.add_callback('privmsg') { |event|
 	if event.channel =~ /#{nic}/
 		ircSession.send_message(event.from,"Outside of a group I am useless - sorry.")
 	else
-		if event.message =~ /^#{nic} (.*)/ or event.message =~ /^#{nic}$/
+		if event.message =~ /^#{nic}[: ,]+(.*)/ or event.message =~ /^#{nic}$/
 			begin
 				mutex.synchronize do
 					if cmd = $1
