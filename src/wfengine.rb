@@ -85,23 +85,6 @@ class Workflow
 			end
 		end
 		@idlePromptMinutes = 5
-		@states = {
-			'reverted'=>-2,
-			'reverting'=>-1,
-			'failed'=>-3,
-			'pnd rvrt'=>0,
-			'done'=>0,
-			'in prog'=>1,
-			'pending'=>2
-		}
-		@statesNames = {
-			-2=>'reverted',
-			-1=>'reverting',
-			-3=>'failed',
-			0=>'finished',
-			1=>'in prog',
-			2=>'pending'
-		}
 		if workflow
 			self.addMessage("NOTE: Auto-loading workflow #{workflow}\n")
 			self.loadFromIni(workflow)
@@ -136,6 +119,27 @@ class Workflow
 		@lastActivity = Time.now.localtime
 		@clockEnabled = false
 		@notifsEnabled = false
+		# This, because in theory if the workflow goes into reverse, some of these
+		# might get altered.  The logic assumes that a workflow reset resets these
+		# during a load or unload or whatever. This is probably overkill - really, 
+		# the inly thing that changes is one element of statesNames, but - whatever.
+		@states = {
+			'reverted'=>-2,
+			'reverting'=>-1,
+			'failed'=>-3,
+			'pnd rvrt'=>0,
+			'done'=>0,
+			'in prog'=>1,
+			'pending'=>2
+		}
+		@statesNames = {
+			-2=>'reverted',
+			-1=>'reverting',
+			-3=>'failed',
+			0=>'finished',
+			1=>'in prog',
+			2=>'pending'
+		}
 		self.addMessage("All steps, states, and modes cleared.\n")
 	end
 
