@@ -18,101 +18,90 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #################################################################################
 
-require 'wfengine'
+require 'wfappframe'
 require 'rubygems'
 require "xmpp4r"
 require 'xmpp4r/muc'
 
-iniFilename = ARGV[0]
-workflow = ARGV[1]
-
-if not iniFilename
-	puts "You must specify a configuration file - ending run\n"
-	exit(1)
-end
-
-ini = IniFile.load(iniFilename)
-
-account = ini['thehat-xmpp']['account']
-host = ini['thehat-xmpp']['host']
-resource = ini['thehat-xmpp']['resource']
-password = ini['thehat-xmpp']['password']
-room = ini['thehat-xmpp']['room']
+class XMPPFrontend < HatApp
 
 
-workflow = Workflow.new(iniFilename,workflow)
-mutex = Mutex.new
+	def initialize
+		super
+		getConfig('thehat-xmpp',[:account,:host,:resource,:password,:room])
+	end	
+	
 
-Jabber.debug=(false)
-done = false
-
-begin
-	puts "** #{Time.now.localtime.to_s} Connecting: #{account}@#{host}/#{resource}  #{password}\n"
-	client = Jabber::Client.new("#{account}@#{host}/#{resource}",true)
-	client.connect
-	client.auth(password)
-rescue
-	puts "** #{Time.now.localtime.to_s} Error connecting: #{$!}\n"
-	exit
-end
-puts "** #{Time.now.localtime.to_s} Connected: #{account}@#{host}/#{resource}\n"
-
-
-puts "** #{Time.now.localtime.to_s} Starting listener thread\n"
-my_muc = Jabber::MUC::SimpleMUCClient.new(client)
-my_muc.on_message { |time,nic,text|
-	if not time # ones with time are historical and dizzyingly confusing to the bot
-		if nic != resource # this is something *I* said, which of course don't want
-			puts "++ #{Time.now.localtime.to_s} <#{nic}> #{text}\n"
-			if text =~ /^#{resource}[: ,]+(.*)/ or text =~ /^#{resource}$/
-				begin
-					#puts "entering listener mutex block\n"
-					mutex.synchronize do
-						if cmd = $1
-							if cmd == 'quit'
-								puts "== #{Time.now.localtime.to_s} Got quit, setting done to true"
-								#done = true
-							else
-								workflow.processCommand(nic,cmd)
+	def run
+		Jabber.debug=(false)
+		done = false
+		account = configValue(:account)
+		host = configValue(:host)
+		resource = configValue(:resource)
+		password = configValue(:password)
+		room = configValue(:room)
+		
+		begin
+			logmessage(:app,"Connecting: #{account}@#{host}/#{resource}  #{password}")
+			client = Jabber::Client.new("#{account}@#{host}/#{resource}",true)
+			client.connect
+			client.auth(password)
+		rescue
+			logmessage(:error,"Error connecting: #{$!}")
+			exit
+		end
+		logmessage(:app,"Connected: #{account}@#{host}/#{resource}")
+		
+		
+		logmessage(:app,"Starting listener thread")
+		my_muc = Jabber::MUC::SimpleMUCClient.new(client)
+		my_muc.on_message { |time,nic,text|
+			if not time # ones with time are historical and dizzyingly confusing to the bot
+				if nic != resource # if this is something *I* said, which do not want
+					logmessage(:user,"<#{nic}> #{text}")
+					if text =~ /^#{resource}[: ,]+(.*)/ or text =~ /^#{resource}$/
+						begin
+							@mutex.synchronize do
+								if cmd = $1
+									if cmd == 'quit'
+										logmessage(:cmd,"Got quit, setting done to true")
+										done = true
+									else
+										@workflow.processCommand(nic,cmd)
+									end
+								else
+									@workflow.processCommand(nic,'')
+								end
+								drainMessages(:cmd) { |line|
+									my_muc.say(line)
+								}
 							end
-						else
-							workflow.processCommand(nic,'')
+						rescue
+							logmessage(:error,$!)
+							my_muc.say($!)
 						end
-						workflow.messages.split(/\n/).each { |line|
-							my_muc.say(line)
-							puts "== #{Time.now.localtime.to_s} #{line}\n"
-							sleep(0.5)
-						}
-						workflow.clearMessages
 					end
-					#puts "leaving listener mutex block\n"
+				end
+			end
+		}
+		logmessage(:app,"Joining MUC group")
+		my_muc.join(Jabber::JID.new("#{room}/#{resource}"))
+		logmessage(:clock,"Starting clock loop")
+		while not done
+			@mutex.synchronize do
+				begin
+					@workflow.ticToc(false) # if true, it's quite noisy
+					drainMessages(:clock) { |line|
+						my_muc.say(line)
+					}
 				rescue
-					puts "!! #{Time.now.localtime.to_s} #{$!}\n"
+					logmessage(:error,$!)
 					my_muc.say($!)
 				end
 			end
+			sleep(5)
 		end
 	end
-}
-puts "** #{Time.now.localtime.to_s} Joining MUC group\n"
-my_muc.join(Jabber::JID.new("#{room}/#{resource}"))
-puts "@@ #{Time.now.localtime.to_s} Starting clock loop\n"
-while not done
-	mutex.synchronize do
-		#puts "in clock mutex block\n"
-		begin
-			workflow.ticToc(false) # if true, it's quite noisy
-			workflow.messages.split(/\n/).each { |line|
-				my_muc.say(line)
-				puts "@@ #{Time.now.localtime.to_s} #{line}\n"
-				sleep(0.5)
-			}
-			workflow.clearMessages
-		rescue
-			puts "!! #{Time.now.localtime.to_s} #{$!}\n"
-			my_muc.say($!)
-		end
-		#puts "leaving clock mutex block\n"
-	end
-	sleep(5)
 end
+
+XMPPFrontend.new.run

@@ -18,33 +18,30 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ###########################################################################
 
-require 'wfengine'
-iniFilename = ARGV[0]
-workflow = ARGV[1]
+require 'wfappframe'
 
-if not iniFilename
-	puts "You must specify a configuration file - ending run\n"
-	exit(1)
-end
-
-workflow = Workflow.new(iniFilename,workflow)
-
-print workflow.messages
-workflow.clearMessages
-stdin = IO.new(1,'r')
-done = false
-line=''
-while not done
-	print"\nworkflow(#{workflow.name.to_s})> "
-	line = stdin.gets.chomp
-	if line
-		case line
-			when 'quit'
-				done = true
-			else
-				workflow.processCommand(ENV['USER'],line)
-				print workflow.messages
-				workflow.clearMessages
+class TTYFrontend < HatApp
+	def run
+		print @workflow.messages
+		@workflow.clearMessages
+		stdin = IO.new(1,'r')
+		done = false
+		line=''
+		while not done
+			print"\nworkflow(#{@workflow.name.to_s})> "
+			line = stdin.gets.chomp
+			if line
+				case line
+					when 'quit'
+						done = true
+					else
+						@workflow.processCommand(ENV['USER'],line)
+						print @workflow.messages
+						@workflow.clearMessages
+				end
+			end
 		end
 	end
 end
+
+TTYFrontend.new.run

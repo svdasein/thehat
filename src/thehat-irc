@@ -18,104 +18,90 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ###########################################################################
 
-require 'wfengine'
+require 'wfappframe'
 require 'thread'
 require 'rubygems'
 require 'IRC'
 require 'IRCEvent-patch'
 
-iniFilename = ARGV[0]
-workflow = ARGV[1]
 
-if not iniFilename
-	puts "You must specify a configuration file - ending run\n"
-	exit(1)
+class IRCFrontend < HatApp
+
+	def initialize
+		super
+		getConfig('thehat-irc',[:nic,:server,:port,:name,:channel])
+		@config[:channel] = "##{@config[:channel]}"
+	end	
+	
+
+
+	def run	
+		logmessage(:com,"connecting to #{configValue(:server)} on port #{configValue(:port)} as #{configValue(:nic)}")
+		
+		ircSession = IRC.new(configValue(:nic), configValue(:server), configValue(:port), configValue(:name))
+		IRCEvent.add_callback('endofmotd') { |event| 
+			ircSession.add_channel(configValue(:channel))
+			logmessage(:com,"connected")
+		}
+			
+		
+		IRCEvent.add_callback('join') { |event|
+			logmessage(:app,"joined #{configValue(:channel)}, saying hello")
+			drainMessages(:app) { |line|
+				ircSession.send_message(event.channel, line)
+			}
+			logmessage(:app,"listening for commands")
+			Thread.new {
+				logmessage(:clock,"starting clock thread")
+				while true
+					@mutex.synchronize do
+						begin
+							@workflow.ticToc(false) # if true, it's quite noisy
+							drainMessages(:clock) { |line|
+								ircSession.send_message(event.channel, line)
+							}
+						rescue
+							logmessage(:error,$!)
+							ircSession.send_message(event.channel,$!)
+						end
+					end
+					sleep(5)
+				end
+			}
+		}
+		
+		IRCEvent.add_callback('privmsg') { |event|
+			logmessage(:user,"#{event.channel} #{event.from}: '#{event.message}'")
+			if event.channel =~ /^#{configValue(:nic)}/
+				logmessage(:heard,"/msg from #{event.from} - saying sorry")
+				ircSession.send_message(event.from,"Outside of a group I am useless - sorry.")
+			else
+				if event.message =~ /^#{configValue(:nic)}[: ,]+(.*)/ or event.message =~ /^#{configValue(:nic)}$/
+					begin
+						@mutex.synchronize do
+							if cmd = $1
+								if cmd =~ /^quit$|^shutdown$/
+									IRCConnection.quit
+								else
+									@workflow.processCommand(event.from,cmd)
+								end
+							else
+								@workflow.processCommand(event.from,'')
+							end
+							drainMessages(:cmd) { |line|
+								ircSession.send_message(event.channel, line)
+							}
+						end
+					rescue
+						logmessage(:error,$!)
+						ircSession.send_message(event.channel,$!)
+					end
+				end
+			end
+		}
+		ircSession.connect
+		logmessage(:app,"shutdown")
+	end
 end
 
-ini = IniFile.load(iniFilename)
-
-nic = ini['thehat-irc']['nic']
-server = ini['thehat-irc']['server']
-port = ini['thehat-irc']['port']
-name = ini['thehat-irc']['name']
-nic = ini['thehat-irc']['nic']
-channel = "##{ini['thehat-irc']['channel']}"
-
-
-workflow = Workflow.new(iniFilename,workflow)
-
-puts "** #{Time.now.localtime.to_s} connecting to #{server} on port #{port} as #{nic}\n"
-
-ircSession = IRC.new(nic, server, port, name)
-IRCEvent.add_callback('endofmotd') { |event| 
-	ircSession.add_channel(channel)
-	puts "** #{Time.now.localtime.to_s} connected\n"
-}
-
-
-mutex = Mutex.new # The engine isn't thread safe, so the clock thread and the irc thread sync through this
-
-
-IRCEvent.add_callback('join') { |event|
-	puts "** #{Time.now.localtime.to_s} joined #{channel}, saying hello\n"
-	workflow.messages.split(/\n/).each { |line|
-		ircSession.send_message(event.channel, line)
-	}
-	workflow.clearMessages
-	puts "** #{Time.now.localtime.to_s} listening for commands\n"
-	Thread.new {
-		puts "@@ #{Time.now.localtime.to_s} starting clock thread\n"
-		while true
-			mutex.synchronize do
-				begin
-					workflow.ticToc(false) # if true, it's quite noisy
-					workflow.messages.split(/\n/).each { |line|
-						ircSession.send_message(event.channel, line)
-						puts "@@ #{Time.now.localtime.to_s} #{line}\n"
-						sleep(0.5)
-					}
-					workflow.clearMessages
-				rescue
-					puts "!! #{Time.now.localtime.to_s} #{$!}\n"
-					ircSession.send_message(event.channel,$!)
-				end
-			end
-			sleep(5)
-		end
-	}
-}
-
-IRCEvent.add_callback('privmsg') { |event|
-	puts "++ #{Time.now.localtime.to_s} #{event.channel} #{event.from}: '#{event.message}'\n"
-	if event.channel =~ /^#{nic}/
-		puts "++ #{Time.now.localtime.to_s} /msg from #{event.from} - saying sorry\n"
-		ircSession.send_message(event.from,"Outside of a group I am useless - sorry.")
-	else
-		if event.message =~ /^#{nic}[: ,]+(.*)/ or event.message =~ /^#{nic}$/
-			begin
-				mutex.synchronize do
-					if cmd = $1
-						if cmd =~ /^quit$|^shutdown$/
-							IRCConnection.quit
-						else
-							workflow.processCommand(event.from,cmd)
-						end
-					else
-						workflow.processCommand(event.from,'')
-					end
-					workflow.messages.split(/\n/).each { |line|
-						ircSession.send_message(event.channel, line)
-						puts "== #{Time.now.localtime.to_s} #{line}\n"
-						sleep(0.5)
-					}
-					workflow.clearMessages
-				end
-			rescue
-				puts "!! #{Time.now.localtime.to_s} #{$!}\n"
-				ircSession.send_message(event.channel,$!)
-			end
-		end
-	end
-}
-ircSession.connect
-puts "** #{Time.now.localtime.to_s} shutdown\n"
+IRCFrontend.new.run
