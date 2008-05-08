@@ -736,8 +736,13 @@ class Workflow
 					if attachPoints
 						attachPoints.split(',').each {
 							|parent|
-							@steps[theSequence[0]].addGate(parent)
-							self.addMessage("Attached sequence head to gate #{parent}\n")
+							if stepNamed(parent)
+								@steps[theSequence[0]].addGate(parent)
+								self.addMessage("Attached sequence head to gate on #{parent}\n")
+							else
+								self.addMessage("Step #{parent} does not exist - can't gate on it\n")
+								self.addMessage("usage: addsequence <s1>[,<s2>[,sN]] [<g1>[,<g2>[,<gN]]]\n")
+							end
 						}
 					end
 					if lastName
