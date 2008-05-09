@@ -87,7 +87,7 @@ class WorkflowDigraph < WorkflowRenderer
 			2=>@dormantColor
 		}
 
-		@graph = SimpleGraphViz.new(@workflow.basename,"#{@workflow.webdir}/#{@workflow.basename}-digraph.dot")
+		@graph = SimpleGraphViz.new(@workflow.basename.gsub(/\W/,'_'),"#{@workflow.webdir}/#{@workflow.basename}-digraph.dot")
 
 		@workflow.steps.each {
 			|name,step|
