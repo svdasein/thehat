@@ -1,0 +1,118 @@
+#!/usr/bin/ruby
+#################################################################################
+# TheHat - an interactive workflow system
+# Copyright (C) 2007,2008  David Parker
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#################################################################################
+
+class THConfigurator
+	def initialize
+		@errors = false
+		@components = [
+						['graphviz', :package],
+						['ruby' , :package],
+						['rubygems' , :package],
+						['inifile' ,:gem],
+						['fastercsv' ,:gem],
+						['icalendar' , :gem],
+						['xmpp4r' ,:gem],
+						['Ruby-IRC', :gem]
+		]	
+	end
+
+	def configure
+		@components.each { |component|
+			doComponent(component[1],component[0])
+		}
+		if @errors
+			puts "\nInstallation completed with errors - you will have to address the errors above manually\n"
+		else
+			puts "\nInstallation completed with no errors - your TheHat installation is ready to use\n"
+			puts "You should now run 'thehat-addinstance <name>'\n"
+		end
+	end
+
+	def doComponent(type=nil,name='')
+		installed = self.method("#{type.to_s}Installed")
+		install = self.method("install#{type.to_s.capitalize}")
+		if installed.call(name)
+			puts "#{type.to_s.capitalize} #{name} is already installed - sweet."
+		else
+			puts "Installing #{type.to_s} #{name}"
+			if install.call(name)
+				puts "#{type.to_s.capitalize} #{name} has been installed - cool."
+			else
+				@errors = true
+				puts "#{type.to_s.capitalize} #{name} failed to install for some reason. You're going to have to do it yourself. Sorry."
+			end
+		end		
+	end
+	
+	def packageInstalled(name='')
+		return false
+	end
+
+	def installPackage(name='')
+		return false
+	end
+
+	def gemInstalled(name='')
+		return %x{gem query --local -n #{name} 2>&1 } =~ /#{name}/
+	end
+
+	def installGem(name='')
+		return (%x{gem install #{name} > /dev/null 2>&1 }.to_i == 0)
+	end
+
+end
+
+class THFedoraConfigurator < THConfigurator
+	def packageInstalled(name='')
+		return false
+	end
+
+	def installPackage(name='')
+		return false
+	end
+end
+
+class THUbuntuConfigurator < THConfigurator
+
+	def packageInstalled(name='')
+		return (%x{dpkg-query --status #{name} > /dev/null 2>&1 ; echo $?}.to_i == 0)
+	end
+
+	def installPackage(name='')
+		return (%x{apt-get install #{name} > /dev/null 2>&1 ; echo $?}.to_i == 0)
+	end
+end
+
+issue = File.open('/etc/issue','r').readline
+
+if issue =~ /Fedora/
+	puts "Configuring TheHat on a Fedora system"
+	installClass = THFedoraConfigurator
+end
+if issue =~ /Red Hat/
+	puts "Configuring TheHat on a Red Hat system"
+	installClass = THFedoraConfigurator
+end
+if issue =~ /buntu/
+	puts "Configuring TheHat on an /|Ku|Edu|Xu|U|/buntu system"
+	installClass = THUbuntuConfigurator
+end
+
+installClass.new.configure

@@ -57,7 +57,7 @@ class XMPPFrontend < HatApp
 		logmessage(:app,"Starting listener thread")
 		my_muc.on_message { |time,nic,text|
 			if not time # ones with time are historical and dizzyingly confusing to the bot
-				if nic != resource # if this is something *I* said, which do not want
+				if nic != resource # if this is something *I* said, which... do not want
 					logmessage(:user,"<#{nic}> #{text}")
 					if text =~ /^#{resource}[: ,]+(.*)/ or text =~ /^#{resource}$/
 						begin
