@@ -51,7 +51,7 @@ class THConfigurator
 	def doComponent(type=nil,name='')
 		if (type == :hack) and (name == 'gemcache')
 			puts "Updating gem source cache and system. This will take a few minutes - go get coffee or something."
-			%x{gem update >> install.log 2>&1 ; gem update --system >> install.log 2>&1}
+			%x{gem update >> install.log 2>&1}
 			return true
 		end
 		installed = self.method("#{type.to_s}Installed")
