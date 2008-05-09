@@ -21,6 +21,7 @@
 require 'date'
 require 'parsedate'
 require 'wfrenderers'
+require 'wfsourcecontrol'
 # Gem modules
 require 'rubygems'
 require 'inifile'
@@ -67,6 +68,7 @@ class Workflow
 			puts "Error loading config file: #{$!}\n";
 			return nil
 		end
+		@vcsInterface = VersionControlSystem.interface(self,ini)
 		stdout = IO.new(0,'w')
 
 		stdout.puts("-------------------------------------------------------------------\n")
@@ -155,20 +157,28 @@ class Workflow
 		return @steps[name]
 	end
 
-	def checkout(path)
-		if path
-			return self.addMessage(%x(cd #{@datadir};svn checkout #{@svnroot}/#{path}))
+	def checkout(path=nil,branch=nil)
+		if @vcsInterface
+			if path
+				@vcsInterface.checkout(path,branch)
+			else
+				self.addMessage("A path is required for this command\n")
+			end
 		else
-			return self.addMessage("A path is required for this command\n")
+			self.addMessage("No version control system interface available - check configuration")
 		end
 	end
 
 	def commit(params)
-		if params
-			path,comment = params.split(' ')
-			return self.addMessage(%x(cd #{@datadir}/#{path};svn commit -m "#{comment}"))
+		if @vcsInterface
+			if params
+				path,comment = params.split(' ')
+				@vcsInterface.commit(path,comment)
+			else
+				self.addMessage("Both a path and a comment are required for this command\n")
+			end
 		else
-			return self.addMessage("Both a path and a comment are required for this command\n")
+			self.addMessage("No version control system interface available - check configuration")
 		end
 	end
 
