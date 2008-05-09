@@ -23,7 +23,6 @@ class THConfigurator
 		@errors = false
 		@components = [
 						['graphviz', :package],
-						['ruby' , :package],
 						['rubygems' , :package],
 						['inifile' ,:gem],
 						['fastercsv' ,:gem],
