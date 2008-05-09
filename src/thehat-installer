@@ -75,7 +75,7 @@ class THConfigurator
 	end
 
 	def installGem(name='')
-		return (%x{gem install #{name} -y > /dev/null 2>&1 }.to_i == 0)
+		return (%x{gem install #{name} -y >> install.log 2>&1 }.to_i == 0)
 	end
 
 end
@@ -93,11 +93,11 @@ end
 class THUbuntuConfigurator < THConfigurator
 
 	def packageInstalled(name='')
-		return (%x{dpkg-query --status #{name} > /dev/null 2>&1 ; echo $?}.to_i == 0)
+		return (%x{dpkg-query --status #{name} >> install.log 2>&1 ; echo $?}.to_i == 0)
 	end
 
 	def installPackage(name='')
-		return (%x{apt-get install #{name} > /dev/null 2>&1 ; echo $?}.to_i == 0)
+		return (%x{apt-get install #{name} >> install.log 2>&1 ; echo $?}.to_i == 0)
 	end
 end
 
