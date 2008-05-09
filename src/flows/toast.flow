@@ -1,0 +1,30 @@
+[openbread]
+description=Open bread bag
+
+[selectslice]
+description=Remove slice of bread from bag
+gates=openbread
+
+[gettoaster]
+description=Get toaster out of storage
+
+[preptoaster]
+description=Plug toaster into wall socket
+gates=gettoaster
+
+[insertslice]
+description=Place bread in toaster
+gates=gettoaster,selectslice
+
+[adjusttoasting]
+description=Adjust toaster to desired toasting level
+gates=gettoaster
+
+[toastbread]
+description=Activate toaster
+gates=insertslice,adjusttoasting,preptoaster
+
+[removetoast]
+description=Remove toast from toaster
+gates=toastbread
+
