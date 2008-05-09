@@ -75,7 +75,7 @@ class THConfigurator
 	end
 
 	def installGem(name='')
-		return (%x{gem install #{name} > /dev/null 2>&1 }.to_i == 0)
+		return (%x{gem install #{name} -y > /dev/null 2>&1 }.to_i == 0)
 	end
 
 end
@@ -104,15 +104,15 @@ end
 issue = File.open('/etc/issue','r').readline
 
 if issue =~ /Fedora/
-	puts "Configuring TheHat on a Fedora system"
+	puts "Installing TheHat on a Fedora system"
 	installClass = THFedoraConfigurator
 end
 if issue =~ /Red Hat/
-	puts "Configuring TheHat on a Red Hat system"
+	puts "Installing TheHat on a Red Hat system"
 	installClass = THFedoraConfigurator
 end
 if issue =~ /buntu/
-	puts "Configuring TheHat on an /|Ku|Edu|Xu|U|/buntu system"
+	puts "Installing TheHat on an /|Ku|Edu|Xu|U|/buntu system"
 	installClass = THUbuntuConfigurator
 end
 
