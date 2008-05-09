@@ -103,7 +103,7 @@ class THUbuntuConfigurator < THConfigurator
 	end
 
 	def installPackage(name='')
-		return (%x{apt-get install #{name} >> install.log 2>&1 ; echo $?}.to_i == 0)
+		return (%x{apt-get install -y #{name} >> install.log 2>&1 ; echo $?}.to_i == 0)
 	end
 end
 
