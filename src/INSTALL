@@ -1,1 +1,11 @@
-Please go to http://fedorahosted.org/TheHat/configuration for installation instructions
+To get going quickly with the stand-alone version:
+
+1) install ruby
+	- On Fedora and RHEL: "yum install -y ruby"
+	- On *buntu: "apt-get install -y ruby"
+2) run ./thehat-installer
+3) run ./thehat-tty example.ini
+
+
+Please go to http://fedorahosted.org/TheHat/configuration for
+complete installation instructions.

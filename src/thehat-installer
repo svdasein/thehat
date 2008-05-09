@@ -26,7 +26,7 @@ class THConfigurator
 		@components = [
 						['graphviz', :package],
 						['rubygems' , :package],
-						['*HACK*',:gemcache],
+						['gemcache',:hack],
 						['inifile' ,:gem],
 						['fastercsv' ,:gem],
 						['icalendar' , :gem],
@@ -43,13 +43,14 @@ class THConfigurator
 			puts "\nInstallation completed with errors - you will have to address the errors above manually\n"
 		else
 			puts "\nInstallation completed with no errors - your TheHat installation is ready to use\n"
-			puts "You should now run 'thehat-addinstance <name>'\n"
+			puts "You can run the networkless version right now by entering './thehat-tty example.ini'\n"
+			puts "If you want to connect to an IRC or XMPP(Jabber) server, you'll need to edit the ini file\n"
 		end
 	end
 
 	def doComponent(type=nil,name='')
-		if type == :gemcache
-			puts "Updating gem source cache and system. This will probably take a few minutes."
+		if (type == :hack) and (name == 'gemcache')
+			puts "Updating gem source cache and system. This will take a few minutes - go get coffee or something."
 			%x{gem update >> install.log 2>&1 ; gem update --system >> install.log 2>&1}
 			return true
 		end
@@ -83,7 +84,6 @@ class THConfigurator
 	def installGem(name='')
 		return (%x{gem install #{name} -y >> install.log 2>&1 }.to_i == 0)
 	end
-
 end
 
 class THFedoraConfigurator < THConfigurator
