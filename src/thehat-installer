@@ -26,12 +26,13 @@ class THConfigurator
 		@components = [
 						['graphviz', :package],
 						['rubygems' , :package],
+						['*HACK*',:gemcache],
 						['inifile' ,:gem],
 						['fastercsv' ,:gem],
 						['icalendar' , :gem],
 						['xmpp4r' ,:gem],
 						['Ruby-IRC', :gem]
-		]	
+		]
 	end
 
 	def configure
@@ -47,6 +48,11 @@ class THConfigurator
 	end
 
 	def doComponent(type=nil,name='')
+		if type == :gemcache
+			puts "Updating gem source cache and system. This will probably take a few minutes."
+			%x{gem update >> install.log 2>&1 ; gem update --system >> install.log 2>&1}
+			return true
+		end
 		installed = self.method("#{type.to_s}Installed")
 		install = self.method("install#{type.to_s.capitalize}")
 		if installed.call(name)

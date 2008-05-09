@@ -180,7 +180,7 @@ class Workflow
 			if not name
 				@basename = ''
 			else
-				@basename = ''
+				@basename = name
 			end
 		end
 		if name
