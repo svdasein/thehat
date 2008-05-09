@@ -19,6 +19,8 @@
 #################################################################################
 
 class THConfigurator
+
+
 	def initialize
 		@errors = false
 		@components = [
@@ -80,11 +82,11 @@ end
 
 class THFedoraConfigurator < THConfigurator
 	def packageInstalled(name='')
-		return false
+			return (%x{rpm -V -s #{name} --quiet ;echo $?}.to_i == 0)
 	end
-
+	
 	def installPackage(name='')
-		return false
+			return (%x{yum install -y #{name}} =~ /Complete\!/)
 	end
 end
 
