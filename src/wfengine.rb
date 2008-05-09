@@ -177,7 +177,11 @@ class Workflow
 		if name and name =~ /(.*\/)(.*)/
 			@basename = $2
 		else
-			@basename = name
+			if not name
+				@basename = ''
+			else
+				@basename = ''
+			end
 		end
 		if name
 			updateRenderings
