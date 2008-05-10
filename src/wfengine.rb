@@ -57,6 +57,11 @@ class Workflow
 			@webdir = ini['wfengine']['webdir']
 			@baseurl = ini['wfengine']['baseurl']
 			@svnroot = ini['wfengine']['svnroot']
+			if (ini['wfengine']['allowExec'] == 'true')
+				@allowExec = true
+			else
+				@allowExec = false
+			end
 			#@debugLevel = ini['wfengine']['debuglevel'].to_i
 			@debugLevel = 1
 			@renderers = Array.new
@@ -167,6 +172,10 @@ class Workflow
 		else
 			self.addMessage("No version control system interface available - check configuration")
 		end
+	end
+
+	def executeShellCommand(command='')
+		self.addMessage(%x{(#{command} 2>&1) ; echo "Exited with $?"})
 	end
 
 	def commit(params)
@@ -942,7 +951,12 @@ class Workflow
 				end
 
 			when 'date','time' then self.addMessage("Workflow engine time is: "+Time.now.localtime.to_s.chomp)
-			when 'exec' then self.addMessage('Construction zone') #<command>
+			when 'exec' 
+					if @allowExec
+						self.executeShellCommand(params) #<command>
+					else
+						self.addMessage("Sorry - exec not allowed by configuration")
+					end
 			when 'dryrun' then self.dryRun(params) #[<batching>] [<failstep>]
 			when 'dump' then self.addMessage(WorkflowRenderer.new(self).render)
 			when 'debug' then self.addMessage('Construction zone')
