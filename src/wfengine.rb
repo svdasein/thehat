@@ -175,7 +175,7 @@ class Workflow
 	end
 
 	def executeShellCommand(command='')
-		self.addMessage(%x{(#{command} 2>&1) ; echo "Exited with $?"})
+		self.addMessage("Shell output:\n#{%x{(#{command} 2>&1) ; echo "Exited with $?"}}")
 	end
 
 	def commit(params)
