@@ -27,7 +27,7 @@ class IRCEvent
     # mess_parts[0] is server info
     # mess_parts[1] is the message that was sent
     @message = mess_parts[1]
-    @stats = mess_parts[0].scan(/[-`\^\{\}\[\]\w.=\#\@\+]+/)
+    @stats = mess_parts[0].scan(/[-`\^\{\}\/\[\]\w.=\#\@\+]+/)
     
     if @stats[0].match(/^PING/)
       @event_type = 'ping'
