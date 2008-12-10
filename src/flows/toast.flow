@@ -1,30 +1,96 @@
-[openbread]
-description=Open bread bag
-
-[selectslice]
-description=Remove slice of bread from bag
-gates=openbread
-
-[gettoaster]
-description=Get toaster out of storage
-
-[preptoaster]
-description=Plug toaster into wall socket
-gates=gettoaster
+[adjusttoasting]
+finishCommand = 
+url = 
+description = Adjust toaster to desired toasting level
+note = 
+gates = gettoaster
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
 
 [insertslice]
-description=Place bread in toaster
-gates=gettoaster,selectslice
+finishCommand = 
+url = 
+description = Place bread in toaster
+note = 
+gates = gettoaster,selectslice
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
 
-[adjusttoasting]
-description=Adjust toaster to desired toasting level
-gates=gettoaster
-
-[toastbread]
-description=Activate toaster
-gates=insertslice,adjusttoasting,preptoaster
+[selectslice]
+finishCommand = 
+url = 
+description = Remove slice of bread from bag
+note = 
+gates = openbread
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
 
 [removetoast]
-description=Remove toast from toaster
-gates=toastbread
+finishCommand = 
+url = 
+description = Remove toast from toaster
+note = 
+gates = toastbread
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
+
+[preptoaster]
+finishCommand = 
+url = 
+description = Plug toaster into wall socket
+note = 
+gates = gettoaster
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
+
+[openbread]
+finishCommand = 
+url = 
+description = Open bread bag
+note = 
+gates = 
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
+
+[gettoaster]
+finishCommand = 
+url = 
+description = Get toaster out of storage
+note = 
+gates = 
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
+
+[toastbread]
+finishCommand = 
+url = 
+description = Activate toaster
+note = 
+gates = insertslice,adjusttoasting,preptoaster
+notifyAtFinish = 
+owner = 
+group = ALL
+startCommand = 
+notifyAtStart = 
 

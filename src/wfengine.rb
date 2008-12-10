@@ -22,17 +22,25 @@ require 'date'
 require 'parsedate'
 require 'wfrenderers'
 require 'wfsourcecontrol'
+require 'timeout'
+
 # Gem modules
 require 'rubygems'
 require 'inifile'
 require 'fastercsv'
 
-$Version = '0.01'
+$Version = '0.01-alpha'
 $CopyrightYears = '2007,2008'
 $DumpHeaderForm="%-14s %-9s %-8s %-20s %-30s\n"
 $DumpForm=      "%-14s %-9s %-8d %-20s %-30s\n"
 $DumpHeader = ['OWNER','STATE','DUR(MIN)','NAME','DESCRIPTION']
 
+
+class String
+	def to_class
+		return Kernel.const_get(self)
+	end
+end
 
 class Workflow
 
@@ -351,12 +359,7 @@ class Workflow
 				self.addMessage(sprintf($DumpHeaderForm,*$DumpHeader))
 				ungated.each {
 					|instance|
-					if instance.isClock
-						owner = "CLOCK(#{instance.clockType})"
-					else
-						owner = instance.owner
-					end
-					self.addMessage(sprintf($DumpForm,(owner or 'UNASSIGNED'),@statesNames[instance.state],instance.duration,instance.name,instance.description))
+					self.addMessage(sprintf($DumpForm,(instance.owner.name or 'UNASSIGNED'),@statesNames[instance.state],instance.duration,instance.name,instance.description))
 				}
 			else
 				self.addMessage("All steps completed!\n")
@@ -624,15 +627,15 @@ class Workflow
 
 	def ticToc(forced=false)
 		thingsChanged = false
-		done = true
-		done = false if @clockEnabled or forced
+		iterate = false
+		iterate = true if @clockEnabled or forced
 		if forced
 			self.addMessage("(---tictoc---)\n")
 		end
 		ungated = Array.new
 		@batching = true # If we don't do this, we re-render a *lot* during the checkpoints - see end of loop
-		while not done
-			done = true
+		while iterate
+			iterate = false
 			@steps.each {
 				|name,step|
 				if (not step.isGated)  and step.needsProgress
@@ -642,67 +645,7 @@ class Workflow
 			if ungated.size > 0
 				ungated.each {
 					|step|
-					if step.isClock
-						if Time.now.localtime >= step.clockTime
-							# Just FYI: clock steps don't participate in revert logic. If
-							# for some insane reason you wanna actually use the revert logic,
-							# a human will need to claim clock steps and do 'em.
-							if step.state == @states['pending']
-								step.start(step.owner)
-								thingsChanged = true
-							end
-							if step.state == @states['in prog']
-								if step.clockType == 'wait'
-									# If any of those whom I gate are clock steps, only
-									# finish when the earliest of those clocks expires
-									otherClocks = Array.new
-									@steps.each {
-										|name,otherStep|
-										if otherStep.gatesOn(step.name)
-											if otherStep.isClock and otherStep.clockType != 'stopwatch'
-												if Time.now.localtime >= otherStep.clockTime
-													step.finish(step.owner)
-													thingsChanged = true
-													done = false
-												end
-											end
-										end
-									}
-								elsif step.clockType == 'event'
-									if Time.now.localtime >= (step.clockTime + step.eventClockMinutes)
-										step.finish(step.owner)
-										thingsChanged = true
-									end
-								elsif step.clockType == 'stopwatch'
-									# Stop watch time is treated differently - the 
-									# time specified is translated to mean "number of 
-									# seconds (derived from the @h:m:s part) from step
-									# start 'til the event finishes.
-									if step.owner =~ /^clock-(.*):(.*)@(.*):(.*):(.*)/
-										secondsToRun = ($3 * 3600) + ($4 * 60) + $5
-										if (Time.now.localtime - step.startTime) >= secondsToRun
-											step.finish(step.owner)
-											thingsChanged = true
-											done = false
-										end
-									end
-								elsif step.clockType == 'handoff'
-									step.owner = nil
-									self.addMessage("Handoff step '#{step.name}' owner cleared\n")
-									thingsChanged = true
-								else
-									# alarm
-									step.finish(step.owner)
-									thingsChanged = true
-								end
-								
-							end
-						end
-					end
-					# Note that it's possible to intermix clock: owned steps 
-					# and regularly owned steps, and further, that's it's possible
-					# via gimme and giveto to both take tasks *from* the clock and
-					# to give tasks *to* the clock. :)
+					thingsChanged,iterate = step.owner.ticToc(iterate)
 				}
 				if thingsChanged
 					self.checkpoint
@@ -960,6 +903,7 @@ class Workflow
 			when 'dryrun' then self.dryRun(params) #[<batching>] [<failstep>]
 			when 'dump' then self.addMessage(WorkflowRenderer.new(self).render)
 			when 'debug' then self.addMessage('Construction zone')
+			when 'version' then self.addMessage("TheHat version #{$Version}")
 			when 'help'
 				self.addMessage(File.new("help.txt",'r').read)
 				self.addMessage("Complete documentation is available at https://fedorahosted.org/TheHat")
@@ -983,19 +927,14 @@ end
 
 class Step
 
-	class << self
-	end
-
-
 	# Instance methods
-
 
 	# Accessors
 	attr_accessor :owner
 	attr_reader :name,:state,:description,:gates,:reverseGates,
 		:startTime,:startCommand,:notifyAtStart,
 		:finishTime,:finishCommand,:notifyAtFinish,
-		:group,:url,:note
+		:group,:url,:note,:workflow
 
 	def initialize(workflow,newName,values = {})
 		@workflow = workflow
@@ -1016,6 +955,7 @@ class Step
 				self.instance_variable_set(variable,nil)
 			end
 		}
+		@owner = Owner.create(@owner,self)
 		@notifyAtStart = @notifyAtStart.split(',') if @notifyAtStart
 		@notifyAtFinish = @notifyAtFinish.split(',') if @notifyAtFinish
 		@group = @group.split(',') if @group
@@ -1050,17 +990,11 @@ class Step
 	end
 
 	def inspect
+		# DAP
+		#print caller(0)
 		result = "Name: #{@name}\n"
 		result += "Description: #{@description}\n" if @description
-		if @owner 
-			if self.isClock
-				result += "Owner: Clock\n"
-				result += "\tType: #{self.clockType}\n"
-				result += "\tActivation: #{self.clockTime}\n"
-			else
-				result += "Owner: #{@owner}\n" if @owner
-			end
-		end
+		result += "Owner: #{@owner.inspect}\n" if @owner
 		result += "Start cmd: #{@startCommand}\n" if @startCommand
 		result += "Finish cmd: #{@finishCommand}\n" if @finishCommand
 		result += "Notif(start): #{(@notifyAtStart or []).join(', ')}\n" if @notifyAtStart.size > 0
@@ -1088,7 +1022,7 @@ class Step
 	end
 
 	def setOwner(owner)
-		@owner = owner
+		@owner = Owner.create(owner,self)
 		@workflow.addMessage("Owner of step #{@name} is now #{owner}\n")
 	end
 
@@ -1112,7 +1046,7 @@ class Step
 		# permit the use of proper method return values which would otherwise be kinda kludgy 
 		# if it's just "return an array where required"
 		stateVal = @workflow.states[state]
-		if self.isAssigned and (@owner == signature)
+		if self.isAssigned and @owner.named?(signature)
 			if not self.isGated
 				if @state > stateVal
 					@state = stateVal
@@ -1171,16 +1105,17 @@ class Step
 						if @note
 							message += "\n\nThis note is attached to the step: #{@note}"
 						end
-						if self.isClock
-							message += "\n\n"
-							message += case self.clockType
-								when 'handoff' then "NOTE: This is a 'handoff' step as of this moment it is UNASSIGNED.  Someone *must* claim the step and mark it finished in the workflow engine it before the workflow can continue"
-								when 'alarm' then  "NOTE: This is an 'alarm' step presumably it means you should do something now. The flow will continue as if you have, so you had better do it!"
-								when 'stopwatch' then "NOTE: This is a 'stopwatch' step - it will execute until a specific amount of time has passed and then workflow will continue"
-								when 'wait' then "NOTE: This step is scheduled to span a specified amount of time - it will expire at the moment it's earliest successor is scheduled to begin."
-								when 'event' then "NOTE: This step is an event that is scheduled to last #{self.clockTypeParameters} minutes."
-							end
-						end
+# DAP FIX ME
+#						if self.isClock
+#							message += "\n\n"
+#							message += case self.clockType
+#								when 'handoff' then "NOTE: This is a 'handoff' step as of this moment it is UNASSIGNED.  Someone *must* claim the step and mark it finished in the workflow engine it before the workflow can continue"
+#								when 'alarm' then  "NOTE: This is an 'alarm' step presumably it means you should do something now. The flow will continue as if you have, so you had better do it!"
+#								when 'stopwatch' then "NOTE: This is a 'stopwatch' step - it will execute until a specific amount of time has passed and then workflow will continue"
+#								when 'wait' then "NOTE: This step is scheduled to span a specified amount of time - it will expire at the moment it's earliest successor is scheduled to begin."
+#								when 'event' then "NOTE: This step is an event that is scheduled to last #{self.clockTypeParameters} minutes."
+#							end
+#						end
 						message += "\n\nFor workflow status see #{@workflow.baseurl}"
 						@workflow.executeShellCommand("echo -e '#{message}' | mail -s '#{topic}' #{to_list}")
 					else
@@ -1196,7 +1131,7 @@ class Step
 			return false
 		end
 	end
-	
+
 	def finish(signature)
 		if @workflow.reverting
 			@workflow.addMessage("Damn! #{@workflow.reverting} failed, so you need to revert this step and follow the reversion flow\n")
@@ -1227,7 +1162,7 @@ class Step
 			end
 		end
 	end
-	
+
 	def reverting(signature)
 		if @workflow.reverting
 			return self.setState('reverting',signature)
@@ -1235,7 +1170,7 @@ class Step
 			@workflow.addMessage("Umm, why? We aren't reverting this flow. (gratiously refusing)")
 		end
 	end
-	
+
 	def reverted(signature)	
 		if @workflow.reverting
 			return self.setState('reverted',signature)
@@ -1245,12 +1180,10 @@ class Step
 	end
 	
 	def isAssigned
-		return @owner.size > 0 if @owner
+		return @owner.assigned?
 	end
 
 
-
-	
 	def addGate(gate)
 		@gates.push(gate)
 		@workflow.addMessage("Added gate '#{gate}' to step #{@name}\n",5)
@@ -1283,108 +1216,7 @@ class Step
 		return @gates.size > 0
 	end
 
-	def isClock
-		return @owner =~ /^clock-.*/ if @owner
-	end
 
-	def clockType
-		if @owner =~ /^clock-(.*):(.*)@(.*)/
-			type = $1
-			if type =~ /(.*)-(.*)/
-				type = $1
-			end
-			return type
-		else
-			return nil
-		end
-	end
-
-	def clockTypeParameters
-		if @owner =~ /^clock-(.*)-(.*):(.*)@(.*)/
-			return $2
-		else
-			return nil
-		end
-	end
-
-	def eventClockMinutes
-		# getting perilously close to a clock class hierarchy
-		return self.clockTypeParameters.to_i * 60
-	end
-
-	def nearestDate(aSense)
-		times = Array.new
-		case aSense
-			when :before
-				[@gates,@reverseGates].each {
-					|gateList|
-					gateList.each {
-						|stepName|
-						if step = @workflow.stepNamed(stepName)
-							if step.isClock and (step.clockType != 'stopwatch')
-								if time = step.clockTime  # RECURSIVE
-									times.push(time)
-								end
-							end
-						end
-					}
-				}
-				timeObject = times.sort.pop
-			when :after
-				@workflow.steps.each {
-					|name,step|
-					if step.gatesOn(@name) and step.isClock and (step.clockType != 'stopwatch')
-						if time = step.clockTime  # RECURSIVE
-							times.push(time)
-						end
-					end
-				}
-				timeObject = times.sort.shift
-			end
-		if not timeObject # Make something up
-			timeObject = case aSense
-				when :before then Time.at(0).localtime # Long ago
-				when :after then Time.now.localtime # Right now
-			end
-		end
-		return timeObject
-	end
-
-
-	def clockTime
-		if @owner =~ /^clock-(.*):(.*)@(.*)/
-			mode,dateTime = $1,"#{$2} #{$3}"
-			if mode == 'stopwatch'
-				return Time.now.localtime; # Stopwatches always start "now".
-			else
-				begin
-					timeObject = Time.local(*ParseDate.parsedate(dateTime)[0..4])
-				rescue ArgumentError
-					# Assume "immediately" was meant
-					# Which is to say - assume the user
-					# specified the start time as all zeros
-					# and assume it means "as soon as
-					# it's no longer gated". So:
-					# to give this something like a
-					# real date/time, one must crawl
-					# back through the digraph 'til one
-					# finds the first step or steps that
-					# have an actual date/time and take
-					# the latest of those to be the date
-					# meant. This ignores e.g. handoff steps
-					# etc that would delay the flow for an
-					# indeterminate amount of time. Tricky.
-					# But if icals are to render properly,
-					# it must be done.
-					timeObject = self.nearestDate(:before) # RECURSIVE TO THIS METHOD
-				end
-				return timeObject
-				
-			end
-		else
-			return nil
-		end
-	end
 
 	###### NOTE: Running in a particular direction is entirely a function of the
 	###### methods below.  DO NOT put the sense of direction elsewhere - it is
@@ -1501,3 +1333,373 @@ class Step
 	end
 end
 
+
+#####################################################################################
+# Task owner types
+#####################################################################################
+
+class Owner
+	###############################
+	# Base class - this is some second party that 
+	# communicates to the engine asynchronously via 
+	# a com channel of some sort.  Could be human or 
+	# a bot.  Consider that a bot could be another
+	# workflow - the mind boggles!
+    ###############################
+	def Owner.create(name,step)
+		if name =~ /^clock-(.*):(.*)@(.*)/
+			type = "#{$1.capitalize}".to_class
+			params = "#{$2}@#{$3}" # date@time
+		elsif name =~ /^clock-event-(.*):(.*)@(.*)/
+			type = Event # Note special name syntax = clock-event class-<duration minutes>:starting at....
+			params = "#{$1}@#{$2}@#{$3}" # duration@date@time
+		elsif name=~ /^program:(.*)/
+			type = Program
+			params = "#{$1}" # Command line
+		else
+			type = self
+			params = name
+		end
+		return type.new(name,step,params)
+	end
+	
+	attr_reader :name,:step,:params
+
+	def initialize(name,step,params)
+		@step = step
+		@name = name
+		@params = params
+	end
+
+	def to_s
+		return "#{@name}"
+	end
+
+	def inspect
+		return to_s
+	end
+
+	def assigned?
+		if @name
+			return @name.size > 0
+		else
+			return false
+		end
+	end
+
+	def named?(aSignature)
+		return @name == "#{aSignature}" # Evaluate to string becuase it might be an owner subclass or a string
+	end
+
+	def ticToc(reiterate)
+
+	    # Note that this should only be called if the owner's step is ungated - it's 
+		# meant to be called only by the workflow's ticToc method really.  It's a very
+		# specific context.  We could actually have check logic here just to be safe, but
+		# it'd be redundant given the specific call context. In other words: don't call
+		# this directly - let the workflow do it.
+
+		# First value indicates whether the result of the ticToc caused a state change
+
+		# Second value indicates whether additional evaluation of workflow state is required because
+		# of the state change. In this case we just pass back what we're given - in some cases
+		# we might alter it.
+
+		return false,reiterate
+	end
+
+
+end
+
+class Clock < Owner
+	##########################################
+	# Abstract base for clock types
+	##########################################
+	def initialize(name,step,params)
+		super(name,step,params)
+		if @params =~ /(.*)@(.*)/
+			dateTime = "#{$1} #{$2}"
+			begin
+				@time = Time.local(*ParseDate.parsedate(dateTime)[0..4])
+			rescue ArgumentError
+				# Assume "immediately" was meant
+				# Which is to say - assume the user
+				# specified the start time as all zeros
+				# and assume it means "as soon as
+				# it's no longer gated". So:
+				# to give this something like a
+				# real date/time, one must crawl
+				# back through the digraph 'til one
+				# finds the first step or steps that
+				# have an actual date/time and take
+				# the latest of those to be the date
+				# meant. This ignores e.g. handoff steps
+				# etc that would delay the flow for an
+				# indeterminate amount of time. Tricky.
+				# But if icals are to render properly,
+				# it must be done.
+				@time = self.nearestDate(:before) # RECURSIVE TO THIS METHOD
+			end
+		else
+			@time = nil
+		end
+	end
+
+	def nearestDate(aSense)
+		times = Array.new
+		case aSense
+			when :before
+				[@step.gates,@step.reverseGates].each {
+					|gateList|
+					gateList.each {
+						|stepName|
+						if step = @step.workflow.stepNamed(stepName)
+							if step.owner.kind_of? Clock and (not step.owner.kind_of? Stopwatch)
+								if time = step.owner.clockTime  # RECURSIVE
+									times.push(time)
+								end
+							end
+						end
+					}
+				}
+				timeObject = times.sort.pop
+			when :after
+				@step.workflow.steps.each {
+					|name,step|
+					if step.gatesOn(@name) and step.owner.kind_of? Clock and (not step.owner.kind_of? Stopwatch)
+						if time = step.owner.clockTime  # RECURSIVE
+							times.push(time)
+						end
+					end
+				}
+				timeObject = times.sort.shift
+			end
+		if not timeObject # Make something up
+			timeObject = case aSense
+				when :before then Time.at(0).localtime # Long ago
+				when :after then Time.now.localtime # Right now
+			end
+		end
+		return timeObject
+	end
+
+	def clockTime
+		if @params =~ /(.*)@(.*)/
+			dateTime = "#{$1} #{$2}"
+			begin
+				timeObject = Time.local(*ParseDate.parsedate(dateTime)[0..4])
+			rescue ArgumentError
+				# Assume "immediately" was meant
+				# Which is to say - assume the user
+				# specified the start time as all zeros
+				# and assume it means "as soon as
+				# it's no longer gated". So:
+				# to give this something like a
+				# real date/time, one must crawl
+				# back through the digraph 'til one
+				# finds the first step or steps that
+				# have an actual date/time and take
+				# the latest of those to be the date
+				# meant. This ignores e.g. handoff steps
+				# etc that would delay the flow for an
+				# indeterminate amount of time. Tricky.
+				# But if icals are to render properly,
+				# it must be done.
+				timeObject = self.nearestDate(:before) # RECURSIVE TO THIS METHOD
+			end
+			return timeObject
+		else
+			return nil
+		end
+	end
+
+	def ticToc(reiterate)
+		thingsChanged = false
+		if Time.now.localtime >= clockTime
+			if @step.state == @step.workflow.states['pending']
+				@step.start(self)
+				thingsChanged = true
+			end
+		end
+		return thingsChanged,reiterate
+	end
+
+end
+
+class Alarm < Clock
+	def ticToc(reiterate)
+		thingsChanged = super(reiterate)
+		if @step.state == @step.workflow.states['in prog']
+			@step.finish(self)
+			thingsChanged = true
+		end
+		return thingsChanged,reiterate
+	end
+end
+
+class Event < Clock
+	def duration
+		return @durationMinutes
+	end
+	def ticToc(reiterate)
+		thingsChanged = super(reiterate)
+		if @step.state == @step.workflow.states['in prog']
+			if Time.now.localtime >= (clockTime + (@durationMinutes * 60))
+				@step.finish(self)
+				thingsChanged = true
+			end
+		end
+		return thingsChanged,reiterate
+	end
+end
+
+class Handoff < Clock
+	def ticToc(reiterate)
+		thingsChanged = super(reiterate)
+		if @step.state == @step.workflow.states['in prog']
+			@step.owner = nil
+			self.addMessage("Handoff step '#{@step.name}' owner cleared\n")
+			thingsChanged = true
+		end
+		return thingsChanged,reiterate
+	end
+end
+
+class Wait < Clock
+	def ticToc(reiterate)
+		thingsChanged = super(reiterate)
+		# If any of those whom I gate are clock steps, only
+		# finish when the earliest of those clocks expires
+		if @step.state == @step.workflow.states['in prog']
+			otherClocks = Array.new
+			@step.workflow.steps.each {
+				|name,otherStep|
+				if otherStep.gatesOn(@step.name)
+					if otherStep.owner.kind_of? Clock and not otherStep.owner.kind_of? Stopwatch
+						if Time.now.localtime >= otherStep.owner.clockTime
+							@step.finish(self)
+							thingsChanged = true
+							reiterate = true
+						end
+					end
+				end
+			}
+		end
+		return thingsChanged,reiterate
+	end
+end
+
+class Stopwatch < Clock
+
+	def clockTime
+		return Time.now.localtime; # Stopwatches always start "now".
+	end
+
+	def ticToc(reiterate)
+		thingsChanged = super(reiterate)
+		if @step.state == @step.workflow.states['in prog']
+			# Stop watch time is treated differently - the 
+			# time specified is translated to mean "number of 
+			# seconds (derived from the @h:m:s part) from step
+			# start 'til the event finishes.
+			if @params =~ /^(.*)@(.*):(.*):(.*)/
+				secondsToRun = ($2 * 3600) + ($3 * 60) + $4
+				if (Time.now.localtime - @step.startTime) >= secondsToRun
+					@step.finish(self)
+					thingsChanged = true
+					reiterate = true
+				end
+			end
+		end
+		return thingsChanged,reiterate
+	end
+
+end
+
+class Program < Owner
+	##########################################################
+	# Spawns a process, culls the process on a tictoc, relaying
+	# stdout, stderr and exit level - exit level == step success/fail
+	##########################################################
+end
+
+
+##############################################################
+# Class to deal with non-blocking processes
+##############################################################
+class AsyncProcess
+
+	include Timeout
+
+	attr_reader :startTime,:endTime
+
+	def initialize(command=nil,timeout_secs=nil)
+		@pipe = nil
+		@pid = nil
+		@exit = nil
+		@output = nil
+		@timeout_status = nil
+		@startTime = Time.now
+		@endTime = nil
+		@thread = Thread.fork {
+			if not timeout_secs.nil?
+				@timeout_status = timeout(timeout_secs) {
+					doIt(command)
+				}
+			else
+				doIt(command)
+			end
+			if not @timeout_status.nil?
+				begin
+					Process.kill('SIGHUP',@timeout_status.pid)
+					sleep(5)
+					Process.kill('SIGKILL',@timeout_status.pid)
+				rescue
+					nil
+				end
+			end
+			(@pid,@exit) = Process.waitpid2( @pipe.pid)
+			@output = @pipe.readlines
+			@endTime = Time.now
+		}
+	end
+
+	def doIt(command=nil)
+		if command
+			command = "#{command} 2>&1"
+			@pipe = IO.popen(command, "r")
+		end
+	end
+
+	def running?
+		return @endTime.nil?
+	end
+
+	def timedOut?
+		return (not @timeout_status.nil?)
+	end
+
+	def runTime
+		if not running?
+			return @endTime - @startTime
+		else
+			return nil
+		end
+	end
+
+	def exitLevel
+		if not running?
+			if timedOut?
+				return -1
+			else
+				return @exit
+			end
+		else
+			return nil	
+		end
+	end
+
+	def output
+		return @output if not @output.nil?
+	end
+end

@@ -149,18 +149,7 @@ class WorkflowDigraph < WorkflowRenderer
 	def labelForStep(step)
 		result = "Name: #{step.name}\n"
 		result += "Description: #{step.description}\n" if step.description
-		if step.owner 
-			if step.isClock
-				result += "Owner: Clock\n"
-				result += "\tType: #{step.clockType}\n"
-				if step.clockType == 'event'
-					result += "\tDuration: #{step.eventClockMinutes}"
-				end
-				result += "\tActivation: #{step.clockTime}\n"
-			else
-				result += "Owner: #{step.owner}\n" if step.owner
-			end
-		end
+		result += step.owner.inspect
 		result += "Start cmd: #{step.startCommand}\n" if step.startCommand
 		result += "Finish cmd: #{step.finishCommand}\n" if step.finishCommand
 		result += "Notif(start): #{(step.notifyAtStart or []).join(', ')}\n" if step.notifyAtStart.size > 0
@@ -206,22 +195,23 @@ class WorkflowIcal < WorkflowRenderer
 		cal = Calendar.new
 		@workflow.steps.each {
 			|name,step|
-			if step.isClock
-				event = cal.event do
-					dtstart       step.clockTime.to_datetime
-					summary       step.description
-				end
-				event.description = self.descriptionForStep(step)
-				case step.clockType
-				when 'wait'
-					event.dtend = step.nearestDate(:after).to_datetime
-				when 'event'
-					event.dtend = (step.clockTime + (step.clockTypeParameters.to_i * 60)).to_datetime
-				when 'alarm','handoff'
-					event.dtend = (step.clockTime + 1800).to_datetime # Show a nominal 1/2 hr - has no basis in reality
-					event.alarm
-				end
-			end
+# DAP FIX ME
+#			if step.isClock
+#				event = cal.event do
+#					dtstart       step.clockTime.to_datetime
+#					summary       step.description
+#				end
+#				event.description = self.descriptionForStep(step)
+#				case step.clockType
+#				when 'wait'
+#					event.dtend = step.nearestDate(:after).to_datetime
+#				when 'event'
+#					event.dtend = (step.clockTime + (step.clockTypeParameters.to_i * 60)).to_datetime
+#				when 'alarm','handoff'
+#					event.dtend = (step.clockTime + 1800).to_datetime # Show a nominal 1/2 hr - has no basis in reality
+#					event.alarm
+#				end
+#			end
 		}
 		file = File.new("#{@workflow.webdir}/#{@workflow.basename}.ics",  "w")
 		file.puts(cal.to_ical)
@@ -231,18 +221,7 @@ class WorkflowIcal < WorkflowRenderer
 
 	def descriptionForStep(step)
 		result = "Name: #{step.name} Description: #{step.description}\n"
-		if step.owner 
-			if step.isClock
-				result += "Owner: Clock\n"
-				result += "\tType: #{step.clockType}\n"
-				if step.clockType == 'event'
-					result += "\tDuration: #{step.clockTypeParameters.to_i * 60}"
-				end
-				result += "\tActivation: #{step.clockTime}\n"
-			else
-				result += "Owner: #{step.owner}\n" if step.owner
-			end
-		end
+		result += step.owner.inspect
 		result += "Start cmd: #{step.startCommand}\n" if step.startCommand
 		result += "Finish cmd: #{step.finishCommand}\n" if step.finishCommand
 		result += "Notif(start): #{(step.notifyAtStart or []).join(', ')}\n" if step.notifyAtStart.size > 0
