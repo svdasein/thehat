@@ -40,3 +40,4 @@ thehat-xmpp: This logs onto an xmpp (jabber server) and connects to a MUC (multi
 user chat).  It includes automatic clock processing.
 
 Comprehensive documentation is at http://fedorahosted.org/TheHat.
+
