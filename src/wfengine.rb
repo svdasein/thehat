@@ -28,6 +28,7 @@ require 'timeout'
 require 'rubygems'
 require 'inifile'
 require 'fastercsv'
+require 'pp'
 
 $Version = '0.01-alpha'
 $CopyrightYears = '2007,2008'
@@ -226,6 +227,7 @@ class Workflow
 		end
 		ini.each_section{
 			|sectionName|			
+			#print "section: #{sectionName} value: #{ini[sectionName]}\n"
 			@steps[sectionName] = Step.new(self,sectionName,ini[sectionName])
 		}
 		self.checkpoint
@@ -484,7 +486,7 @@ class Workflow
 			|name|
 			if @steps[name]
 				step = @steps[name]
-				if step.instance_variables.include?("@#{propertyName}") or (propertyName =~ /addgate|delgate|addgroup|delgroup|gate|groups/)
+				if step.instance_variable_defined?("@#{propertyName}") or (propertyName =~ /addgate|delgate|addgroup|delgroup|gate|groups/)
 					case propertyName
 					when 'gates','gate'
 						# set to exactly the given list
@@ -948,13 +950,12 @@ class Step
 				self.instance_variable_set("@#{key}",value)
 			end
 		}
-
 		%w(@name @owner @description
 		@startTime @startCommand
 		@finishTime @finishCommand
 		@url @note).each {
 			|variable|
-			if not self.instance_variables.include?(variable)
+			if not self.instance_variable_defined?(variable)
 				self.instance_variable_set(variable,nil)
 			end
 		}
@@ -965,7 +966,7 @@ class Step
 		@gates = @gates.split(',') if @gates
 		%w(@notifyAtStart @notifyAtFinish @group @gates).each {
 			|variable|
-			if not self.instance_variables.include?(variable)
+			if not self.instance_variable_defined?(variable)
 				self.instance_variable_set(variable,Array.new)
 			end
 		}
@@ -993,8 +994,6 @@ class Step
 	end
 
 	def inspect
-		# DAP
-		#print caller(0)
 		result = "Name: #{@name}\n"
 		result += "Description: #{@description}\n" if @description
 		result += "Owner: #{@owner.inspect}\n" if @owner
