@@ -19,9 +19,9 @@
 
 # Stock modules
 require 'date'
-require 'parsedate'
-require 'wfrenderers'
-require 'wfsourcecontrol'
+require 'date'
+require_relative 'wfrenderers'
+require_relative 'wfsourcecontrol'
 require 'timeout'
 
 # Gem modules
@@ -671,7 +671,9 @@ class Workflow
 			# Data dir management
 			when 'checkout' then checkout(params)
 			when 'commit' then commit(params)
-			when 'ls' then self.addMessage(%x(cd #{@datadir};find -type f -not -path '*/state*' -and -not -path '*.svn*' -printf '%-55p %6s %15a\n').gsub("./",'').gsub(".flow",'').sort.to_s)
+			when 'ls' 
+				x = %x(cd #{@datadir};find -type f -not -path '*/state*' -and -not -path '*.svn*' -printf '%-55p %6s %15a\n').gsub("./",'').gsub(".flow",'').split("\n")
+				self.addMessage(x.sort.join("\n"))
 			# Workflow memory
 			when 'new'
 				if params
@@ -876,6 +878,7 @@ class Workflow
 				lines = Array.new
 				@steps.each {
 					|name,step|
+					print "NAME: #{name} STEP: #{step}\n"
 					lines.push("#{name}\t#{step.group}\t#{step.owner}\t#{step.description}")
 				}
 				self.addMessage(lines.sort.join("\n"))
@@ -1420,7 +1423,7 @@ class Clock < Owner
 		if @params =~ /(.*)@(.*)/
 			dateTime = "#{$1} #{$2}"
 			begin
-				@time = Time.local(*ParseDate.parsedate(dateTime)[0..4])
+				@time = Time.local(*Date.parsedate(dateTime)[0..4])
 			rescue ArgumentError
 				# Assume "immediately" was meant
 				# Which is to say - assume the user
@@ -1487,7 +1490,7 @@ class Clock < Owner
 		if @params =~ /(.*)@(.*)/
 			dateTime = "#{$1} #{$2}"
 			begin
-				timeObject = Time.local(*ParseDate.parsedate(dateTime)[0..4])
+				timeObject = Time.local(*Date.parsedate(dateTime)[0..4])
 			rescue ArgumentError
 				# Assume "immediately" was meant
 				# Which is to say - assume the user

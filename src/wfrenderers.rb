@@ -23,7 +23,7 @@
 # "Drivers" for various representations of the workflow...
 ###################################################################
 ###################################################################
-require 'simple-graphviz'
+require_relative 'simple-graphviz'
 require 'rubygems'
 require 'icalendar'
 
