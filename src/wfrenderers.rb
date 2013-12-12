@@ -109,7 +109,7 @@ class WorkflowDigraph < WorkflowRenderer
 					nodeProperties[:tooltip] = "Click for details"
 				end
 				
-				if step.owner
+				if step.owner.name
 					nodeProperties[:color] = @allgoodColor
 				else
 					nodeProperties[:color] = @attentionColor
@@ -149,7 +149,7 @@ class WorkflowDigraph < WorkflowRenderer
 	def labelForStep(step)
 		result = "Name: #{step.name}\n"
 		result += "Description: #{step.description}\n" if step.description
-		result += step.owner.inspect
+		result += "Owner: #{step.owner.name}\n" if step.owner.name
 		result += "Start cmd: #{step.startCommand}\n" if step.startCommand
 		result += "Finish cmd: #{step.finishCommand}\n" if step.finishCommand
 		result += "Notif(start): #{(step.notifyAtStart or []).join(', ')}\n" if step.notifyAtStart.size > 0
