@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 ################################################################################
 # This file is part of TheHat - an interactive workflow system
-# Copyrigt (C) 2007,2008  Dave Parker
+# Copyrigt (C) 2007,2008,2009,2010,2011,2012,2013  Dave Parker
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
