@@ -31,7 +31,7 @@ class THConfigurator
 						['fastercsv' ,:gem],
 						['icalendar' , :gem],
 						['xmpp4r' ,:gem],
-						['Ruby-IRC', :gem]
+						['cinch', :gem]
 		]
 	end
 
