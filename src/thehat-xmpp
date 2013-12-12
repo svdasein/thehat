@@ -43,7 +43,8 @@ class XMPPFrontend < HatApp
 		
 		begin
 			logmessage(:app,"Connecting: #{account}@#{host}/#{resource}  #{password}")
-			client = Jabber::Client.new("#{account}@#{host}/#{resource}",true)
+			client = Jabber::Client.new("#{account}@#{host}/#{resource}")
+			client.allow_tls = false
 			client.connect
 			client.auth(password)
 		rescue

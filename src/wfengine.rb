@@ -1,6 +1,6 @@
 ############################################################################
 # This file is part of TheHat - an interactive workflow system
-# Copyright (C) 2007,2008  David Parker
+# Copyright (C) 2007,2008,2009,2010,2011,2012,2013  David Parker
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -227,7 +227,6 @@ class Workflow
 		end
 		ini.each_section{
 			|sectionName|			
-			#print "section: #{sectionName} value: #{ini[sectionName]}\n"
 			@steps[sectionName] = Step.new(self,sectionName,ini[sectionName])
 		}
 		self.checkpoint
@@ -562,7 +561,7 @@ class Workflow
 			if ungated.size > 0
 				ungated.each {
 					|instance|
-					instance.owner = 'dryrun'
+					instance.setOwner('dryrun')
 					if instance.name == failname
 						instance.fail('dryrun')
 					else
@@ -880,7 +879,6 @@ class Workflow
 				lines = Array.new
 				@steps.each {
 					|name,step|
-					print "NAME: #{name} STEP: #{step}\n"
 					lines.push("#{name}\t#{step.group}\t#{step.owner}\t#{step.description}")
 				}
 				self.addMessage(lines.sort.join("\n"))
