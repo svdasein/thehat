@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 ###########################################################################
-# This file is part of TheHat - an interactive workflow system
+# This file is part of TheHat - an interactive appFrame system
 # Copyright (C) 2008  David Parker
 #
 # This program is free software; you can redistribute it and/or
@@ -21,9 +21,7 @@
 require_relative 'wfappframe'
 require 'thread'
 require 'rubygems'
-require 'IRC'
-#require_relative 'IRCEvent-patch'
-
+require 'cinch'
 
 class IRCFrontend < HatApp
 
@@ -33,74 +31,70 @@ class IRCFrontend < HatApp
 		@config[:channel] = "##{@config[:channel]}"
 	end	
 	
-
-
 	def run	
-		logmessage(:com,"connecting to #{configValue(:server)} on port #{configValue(:port)} as #{configValue(:nic)}")
-		
-		ircSession = IRC.new(configValue(:nic), configValue(:server), configValue(:port), configValue(:name))
-		IRCEvent.add_callback('endofmotd') { |event| 
-			ircSession.add_channel(configValue(:channel))
-			logmessage(:com,"connected")
-		}
-			
-		
-		IRCEvent.add_callback('join') { |event|
-			logmessage(:app,"joined #{configValue(:channel)}, saying hello")
-			drainMessages(:app) { |line|
-				ircSession.send_message(event.channel, line)
-			}
-			logmessage(:app,"listening for commands")
-			Thread.new {
-				logmessage(:clock,"starting clock thread")
-				while true
-					@mutex.synchronize do
-						begin
-							@workflow.ticToc(false) # if true, it's quite noisy
-							drainMessages(:clock) { |line|
-								ircSession.send_message(event.channel, line)
-							}
-						rescue
-							logmessage(:error,$!)
-							ircSession.send_message(event.channel,$!)
-						end
-					end
-					sleep(5)
-				end
-			}
-		}
-		
-		IRCEvent.add_callback('privmsg') { |event|
-			logmessage(:user,"#{event.channel} #{event.from}: '#{event.message}'")
-			if event.channel =~ /^#{configValue(:nic)}/
-				logmessage(:heard,"/msg from #{event.from} - saying sorry")
-				ircSession.send_message(event.from,"Outside of a group I am useless - sorry.")
-			else
-				if event.message =~ /^#{configValue(:nic)}[: ,]+(.*)/ or event.message =~ /^#{configValue(:nic)}$/
-					begin
-						@mutex.synchronize do
-							if cmd = $1
-								if cmd =~ /^quit$|^shutdown$/
-									IRCConnection.quit
-								else
-									@workflow.processCommand(event.from,cmd)
-								end
-							else
-								@workflow.processCommand(event.from,'')
+		appFrame = self
+		channelName = appFrame.configValue(:channel)
+		ircSession = Cinch::Bot.new do
+			configure do |c|
+				c.server = appFrame.configValue(:server)
+				c.nick = appFrame.configValue(:nic)
+				c.port = appFrame.configValue(:port)
+				c.name = appFrame.configValue(:name)
+				c.channels = [channelName]
+			end
+			on :connect do |m|
+				appFrame.logmessage(:com,"connected")
+				appFrame.logmessage(:app,"joined #{channelName}, saying hello")
+				appFrame.drainMessages(:app) { |line|
+					Channel(channelName).send(line)
+				}
+
+				appFrame.logmessage(:app,"listening for commands")
+				Thread.new {
+					appFrame.logmessage(:clock,"starting clock thread")
+					while true
+						appFrame.mutex.synchronize do
+							begin
+								appFrame.workflow.ticToc(false) # if true, it's quite noisy
+								appFrame.drainMessages(:clock) { |line|
+									Channel(channelName).send(line)
+								}
+							rescue
+								appFrame.logmessage(:error,$!)
+								Channel(channelName).send($!)
 							end
-							drainMessages(:cmd) { |line|
-								ircSession.send_message(event.channel, line)
-							}
 						end
-					rescue
-						logmessage(:error,$!)
-						ircSession.send_message(event.channel,$!)
+						sleep(5)
 					end
+				}
+			end
+		
+			on :privmsg,  /#{appFrame.configValue(:nic)}[: ,]+(.*)/ do |event, query|
+				pp event.channel.name
+				appFrame.logmessage(:user,"#{event.channel.name} #{event.user.nick}: '#{query}'")
+				begin
+					appFrame.mutex.synchronize do
+						if cmd = query
+							if cmd =~ /^quit$|^shutdown$/
+								#IRCConnection.quit
+							else
+								appFrame.workflow.processCommand(event.user.nick,cmd)
+							end
+						else
+							appFrame.workflow.processCommand(event.user.nick,'')
+						end
+						appFrame.drainMessages(:cmd) { |line|
+							Channel(channelName).send(line)
+						}
+					end
+				rescue
+					appFrame.logmessage(:error,$!)
+					Channel(channelName).send($!)
 				end
 			end
-		}
-		ircSession.connect
-		logmessage(:app,"shutdown")
+		end
+		ircSession.start
+		appFrame.logmessage(:app,"shutdown")
 	end
 end
 

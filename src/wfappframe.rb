@@ -22,7 +22,7 @@ require_relative 'wfengine'
 
 class HatApp
 
-	attr_accessor :drainPauseSeconds
+	attr_accessor :drainPauseSeconds,:mutex,:workflow
 
 	def initialize
 		iniFilename = ARGV[0]
