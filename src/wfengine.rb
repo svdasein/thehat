@@ -20,18 +20,20 @@
 # Stock modules
 require 'date'
 require 'date'
-require_relative 'wfrenderers'
-require_relative 'wfsourcecontrol'
 require 'timeout'
 
 # Gem modules
 require 'rubygems'
 require 'inifile'
 require 'fastercsv'
-require 'pp'
+require 'ap'
 
-$Version = '0.01-alpha'
-$CopyrightYears = '2007,2008'
+# TheHat modules
+require_relative 'wfrenderers'
+require_relative 'wfsourcecontrol'
+
+$Version = '0.2'
+$CopyrightYears = '2007,2008,2009,2010,2011,2012,2013'
 $DumpHeaderForm="%-14s %-9s %-8s %-20s %-30s\n"
 $DumpForm=      "%-14s %-9s %-8d %-20s %-30s\n"
 $DumpHeader = ['OWNER','STATE','DUR(MIN)','NAME','DESCRIPTION']
@@ -86,7 +88,8 @@ class Workflow
 		stdout = IO.new(0,'w')
 
 		stdout.puts("-------------------------------------------------------------------\n")
-		stdout.puts("TheHat version #{$Version}, Copyright (C) #{$CopyrightYears} David Parker\n")
+		stdout.puts("TheHat group workflow system version #{$Version}\n")
+		stdout.puts("Copyright (C) #{$CopyrightYears} David Parker\n")
 		stdout.puts("TheHat comes with ABSOLUTELY NO WARRANTY.  This is free software,\n")
 		stdout.puts("and you are welcome to redistribute it under certain conditions.\n")
 		stdout.puts("For details read the LICENSE file that came with the distribution.\n")
@@ -282,6 +285,9 @@ class Workflow
 			# I had trouble doing this w/ sending the io instance in
 			# and having marshal handle it. Not sure why. This here appears
 			# to work though.
+			#
+			# NOTE: This is completely busted right now - something happened
+			# between ruby 1.8 and 1.9.  Probably a big fix require too
 			dump = Marshal.dump(self)
 			stateFile.puts(dump)
 			stateFile.close
@@ -583,10 +589,10 @@ class Workflow
 
 
 	def checkpoint
-		#DAP print caller(0)
 		if not @batching
 			self.updateRenderings
 			if @name
+				#self.whatsGoingOn(self.saveState)
 				self.saveState
 			end
 		end
