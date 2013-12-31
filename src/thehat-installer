@@ -28,7 +28,6 @@ class THConfigurator
 						['rubygems' , :package],
 						['gemcache',:hack],
 						['inifile' ,:gem],
-						['fastercsv' ,:gem],
 						['icalendar' , :gem],
 						['xmpp4r' ,:gem],
 						['cinch', :gem]

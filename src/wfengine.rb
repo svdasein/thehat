@@ -25,7 +25,6 @@ require 'timeout'
 # Gem modules
 require 'rubygems'
 require 'inifile'
-require 'fastercsv'
 require 'ap'
 
 # TheHat modules
