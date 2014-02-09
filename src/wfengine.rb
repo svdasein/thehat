@@ -1,6 +1,6 @@
 ############################################################################
 # This file is part of TheHat - an interactive workflow system
-# Copyright (C) 2007,2008,2009,2010,2011,2012,2013  David Parker
+# Copyright (C) 2007-2014 by David Parker. All rights reserved
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,18 +21,18 @@
 require 'date'
 require 'date'
 require 'timeout'
+require 'yaml'
 
 # Gem modules
 require 'rubygems'
-require 'inifile'
-require 'ap'
+require 'pp'
 
 # TheHat modules
 require_relative 'wfrenderers'
 require_relative 'wfsourcecontrol'
 
 $Version = '0.2'
-$CopyrightYears = '2007,2008,2009,2010,2011,2012,2013'
+$CopyrightYears = '2007-2014'
 $DumpHeaderForm="%-14s %-9s %-8s %-20s %-30s\n"
 $DumpForm=      "%-14s %-9s %-8d %-20s %-30s\n"
 $DumpHeader = ['OWNER','STATE','DUR(MIN)','NAME','DESCRIPTION']
@@ -62,20 +62,21 @@ class Workflow
 	def initialize(configFile='',workflow='')
 		@messageText = String.new
 		begin
-			ini = IniFile.load(configFile)
-			@datadir = ini['wfengine']['datadir']
-			@webdir = ini['wfengine']['webdir']
-			@baseurl = ini['wfengine']['baseurl']
-			@svnroot = ini['wfengine']['svnroot']
-			if (ini['wfengine']['allowExec'] == 'true')
+			config = YAML::load_file(configFile)
+			#pp config
+			@datadir = config['wfengine']['datadir']
+			@webdir = config['wfengine']['webdir']
+			@baseurl = config['wfengine']['baseurl']
+			@svnroot = config['wfengine']['svnroot']
+			if (config['wfengine']['allowExec'] == 'true')
 				@allowExec = true
 			else
 				@allowExec = false
 			end
-			#@debugLevel = ini['wfengine']['debuglevel'].to_i
+			#@debugLevel = config['wfengine']['debuglevel'].to_i
 			@debugLevel = 1
 			@renderers = Array.new
-			renderers = ini['wfengine']['renderers'].split(',')
+			renderers = config['wfengine']['renderers'].split(',')
 			renderers.each { |rendererClassname|
 				self.addRenderer(eval(rendererClassname))
 			}
@@ -83,12 +84,12 @@ class Workflow
 			puts "Error loading config file: #{$!}\n";
 			return nil
 		end
-		@vcsInterface = VersionControlSystem.interface(self,ini)
+		@vcsInterface = VersionControlSystem.interface(self,config)
 		stdout = IO.new(0,'w')
 
 		stdout.puts("-------------------------------------------------------------------\n")
 		stdout.puts("TheHat group workflow system version #{$Version}\n")
-		stdout.puts("Copyright (C) #{$CopyrightYears} David Parker\n")
+		stdout.puts("Copyright (C) #{$CopyrightYears} by David Parker. All rights reserved \n")
 		stdout.puts("TheHat comes with ABSOLUTELY NO WARRANTY.  This is free software,\n")
 		stdout.puts("and you are welcome to redistribute it under certain conditions.\n")
 		stdout.puts("For details read the LICENSE file that came with the distribution.\n")
@@ -105,7 +106,7 @@ class Workflow
 		@idlePromptMinutes = 5
 		if workflow
 			self.addMessage("NOTE: Auto-loading workflow #{workflow}\n")
-			self.loadFromIni(workflow)
+			self.loadFromFile(workflow)
 		else
 			self.reset
 			self.whatsGoingOn('RESET')
@@ -140,7 +141,7 @@ class Workflow
 		# This, because in theory if the workflow goes into reverse, some of these
 		# might get altered.  The logic assumes that a workflow reset resets these
 		# during a load or unload or whatever. This is probably overkill - really, 
-		# the inly thing that changes is one element of statesNames, but - whatever.
+		# the only thing that changes is one element of statesNames, but - whatever.
 		@states = {
 			'reverted'=>-2,
 			'reverting'=>-1,
@@ -218,41 +219,36 @@ class Workflow
 		end
 	end
 
-	def loadFromIni(name)
+	def loadFromFile(name)
 		self.reset
 		setFlowName(name)
 		filename = "#{@datadir}/#{name}.flow"
 		begin
-			ini = IniFile.load(filename)
+			config = YAML::load_file(filename)
 		rescue
-			return self.addMessage("Error loading #{@name} - #{$!}\n")
+			return self.addMessage("Error loading workflow file #{@name} - #{$!}\n")
 		end
-		ini.each_section{
-			|sectionName|			
-			@steps[sectionName] = Step.new(self,sectionName,ini[sectionName])
+		config.each {
+			|item|
+			#pp item
+			@steps[item['step']] = Step.new( self, item['step'], item)
 		}
 		self.checkpoint
 		self.whatsGoingOn("Loaded workflow '#{name}', read #{@steps.size} steps")
 	end
 
-	def saveToIni(name)
+	def saveToFile(name)
 		if name # then we're changing the name of whatever's in memory
 			setFlowName(name)
 		end
 		filename = "#{@datadir}/#{@name}.flow"
-		ini = IniFile.new(filename)
-		newIni = Hash.new
+		newFlow = Array.new
 		@steps.each {
 			|stepName,step|
-			newIni[stepName] = step.configValues
+			newFlow.push(step.configValues)
 		}
-		# Honestly - I probably just dont know the language
-		# well enough, but the class docs suggest all over the
-		# place that inis are easily modifyable - I saw zero
-		# examples of that and this is all I can think of.
-		ini.instance_variable_set('@ini',newIni)
 		begin
-			ini.write(filename)
+			File.open(filename,'w').write(newFlow.to_yaml)
 			return self.addMessage("Saved workflow '#{@name}' to #{filename}\n")
 		rescue
 			return self.addMessage("Error writing workflow '#{@name}' to #{filename} - #{$!}\n")
@@ -260,7 +256,7 @@ class Workflow
 	end
 
 	def reload
-		return self.loadFromIni(@name)
+		return self.loadFromFile(@name)
 	end
 
 	def saveState
@@ -281,14 +277,7 @@ class Workflow
 		}
 		begin
 			stateFile =  File.new("#{aggregatePath}/#{@basename}.state",  "w")
-			# I had trouble doing this w/ sending the io instance in
-			# and having marshal handle it. Not sure why. This here appears
-			# to work though.
-			#
-			# NOTE: This is completely busted right now - something happened
-			# between ruby 1.8 and 1.9.  Probably a big fix require too
-			dump = Marshal.dump(self)
-			stateFile.puts(dump)
+			stateFile.puts(self.to_yaml)
 			stateFile.close
 			return self.addMessage("Saved state of flow #{@name}\n",2)
 		rescue
@@ -303,7 +292,7 @@ class Workflow
 		begin
 			stateDir = "#{@datadir}/state"
 			stateFile =  File.new("#{stateDir}/#{flowName}.state","r")
-			spectre = Marshal.load(stateFile)
+			spectre = YAML::load_file(stateFile)
 		rescue
 			return self.addMessage("Error restoring state for flow '#{flowName}' - #{$!}\n#{spectre.inspect}\n")
 		end
@@ -450,7 +439,7 @@ class Workflow
 			@steps.each {
 				|name,step|
 				if step.group.size > 0
-					if group =~ /#{step.group}/
+					if step.group.include?(group)
 						step.setOwner(newOwner)
 					end
 				end
@@ -690,12 +679,12 @@ class Workflow
 				end
 			when 'load'
 				if params
-					self.loadFromIni(params)
+					self.loadFromFile(params)
 				else
 					self.addMessage('load <flowname>')
 				end
 			when 'unload' then self.reset
-			when 'save' then self.saveToIni(params)
+			when 'save' then self.saveToFile(params)
 			when 'reload' then self.reload
 			when 'restore' then
 				if params
@@ -965,8 +954,9 @@ class Step
 		@owner = Owner.create(@owner,self)
 		@notifyAtStart = @notifyAtStart.split(',') if @notifyAtStart
 		@notifyAtFinish = @notifyAtFinish.split(',') if @notifyAtFinish
-		@group = @group.split(',') if @group
-		@gates = @gates.split(',') if @gates
+		# YAML eliminates the need to do the next two:
+		#@group = @group.split(',') if @group
+		#@gates = @gates.split(',') if @gates
 		%w(@notifyAtStart @notifyAtFinish @group @gates).each {
 			|variable|
 			if not self.instance_variable_defined?(variable)
@@ -980,15 +970,15 @@ class Step
 	def configValues
 		result = Hash.new
 		result['description'] = @description
-		result['owner'] = @owner
+		result['owner'] = @owner.name
 		result['startCommand'] = @startCommand
-		result['notifyAtStart'] = @notifyAtStart.join(',')
+		result['notifyAtStart'] = @notifyAtStart
 		result['finishCommand'] = @finishCommand
-		result['notifyAtFinish'] = @notifyAtFinish.join(',')
+		result['notifyAtFinish'] = @notifyAtFinish
 		result['url'] = @url
 		result['note'] = @note
-		result['group'] = @group.join(',')
-		result['gates'] = @gates.join(',')
+		result['group'] = @group
+		result['gates'] = @gates
 		return result
 	end
 

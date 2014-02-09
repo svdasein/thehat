@@ -1,96 +1,56 @@
-[adjusttoasting]
-finishCommand = 
-url = 
-description = Adjust toaster to desired toasting level
-note = 
-gates = gettoaster
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[insertslice]
-finishCommand = 
-url = 
-description = Place bread in toaster
-note = 
-gates = gettoaster,selectslice
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[selectslice]
-finishCommand = 
-url = 
-description = Remove slice of bread from bag
-note = 
-gates = openbread
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[removetoast]
-finishCommand = 
-url = 
-description = Remove toast from toaster
-note = 
-gates = toastbread
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[preptoaster]
-finishCommand = 
-url = 
-description = Plug toaster into wall socket
-note = 
-gates = gettoaster
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[openbread]
-finishCommand = 
-url = 
-description = Open bread bag
-note = 
-gates = 
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[gettoaster]
-finishCommand = 
-url = 
-description = Get toaster out of storage
-note = 
-gates = 
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
-[toastbread]
-finishCommand = 
-url = 
-description = Activate toaster
-note = 
-gates = insertslice,adjusttoasting,preptoaster
-notifyAtFinish = 
-owner = 
-group = ALL
-startCommand = 
-notifyAtStart = 
-
+-
+ step: adjusttoasting
+ description: 'Adjust toaster to desired toasting level'
+ group:
+  - hardware
+ gates:
+  - gettoaster
+-
+ step: insertslice
+ description: 'Place bread in toaster'
+ group: 
+  - food
+ gates:
+  - gettoaster
+  - selectslice
+-
+ step: selectslice
+ description: 'Remove slice of bread from bag'
+ group: 
+  - food
+ gates:
+  - openbread
+-
+ step: removetoast
+ description: 'Remove toast from toaster'
+ group: 
+  - food
+ gates:
+  - toastbread
+-
+ step: preptoaster
+ description: 'Plug toaster into wall socket'
+ group:
+  - hardware
+ gates:
+  - gettoaster
+-
+ step: openbread
+ description: 'Open bread bag'
+ group: 
+  - food
+-
+ step: gettoaster
+ description: 'Get toaster out of storage'
+ group:
+  - hardware
+-
+ step: toastbread
+ description: 'Activate toaster'
+ group: 
+  - food
+  - hardware
+ gates:
+  - insertslice
+  - adjusttoasting
+  - preptoaster

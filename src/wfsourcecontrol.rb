@@ -1,6 +1,6 @@
 #################################################################################
 # TheHat - an interactive workflow system
-# Copyright (C) 2007,2008,2009,2010,2011,2012,2013  David Parker
+# Copyright (C) 2007-2014 by David Parker. All rights reserved
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,16 +21,18 @@
 class VersionControlSystem
 	# Class methods
 	
-	# Ini needs a section called [VersionControlSystem] with a type=SubclassName entry
-	# Then for whatever subclass is specified, there needs to be [SubclassName] and appropriate entries after that.
-	def VersionControlSystem.interface(workflow,inifile)
+	def VersionControlSystem.interface(workflow,config)
 		begin
-			vcsclass = inifile['VCS']['type']
+			vcsclass = config['wfengine']['vcs']['class']
 			if vcsclass
-				workflow.addMessage("Using a #{vcsclass} version control interface\n")
-				return Kernel.const_get(vcsclass).new(workflow,inifile)
+				workflow.addMessage("Using the '#{vcsclass}' version control interface\n")
+				vcsInstance = Kernel.const_get(vcsclass).new(workflow,config)
+				#print "=================\n"
+				#pp vcsInstance
+				#print "=================\n"
+				return vcsInstance
 			else
-				workflow.addMessage("No [VCS]type specified in config file - no version control system available\n")
+				workflow.addMessage("No vcs class specified in configuration - no version control system available\n")
 				return nil
 			end
 		rescue
@@ -40,27 +42,16 @@ class VersionControlSystem
 	end
 
 	# Instance methods
-	def initialize(workflow,inifile)
-		@workflow=workflow
-		@ini = inifile
-		@config = {}
-	end
-
-	def getConfig(valueNames=[])
-		sectionName = self.class.to_s
-		valueNames.each { |valueName|
-			begin
-				@config[valueName] = @ini[sectionName][valueName.to_s]
-			rescue
-				puts("Failed to get [#{sectionName}]->#{valueName} from config file: #{$!}")
-			end
-		}
+	def initialize(workflow,config = {})
+		@workflow = workflow
+		@config = config
 	end
 
 	def configValue(valueName='')
 		begin
-			return @config[valueName]
+			return @config['vcs'][valueName]
 		rescue
+			@workflow.addMessage("No value '#{valueName}' for vcs #{@config['vcs']['class']}")
 			return nil
 		end
 	end
@@ -81,16 +72,15 @@ class Cvs < VersionControlSystem
 end
 
 class Subversion < VersionControlSystem
-	def initialize(workflow,iniFilename='')
+	def initialize(workflow,config)
 		super
-		getConfig([:root])
-		@workflow.addMessage("Subversion interface configured with svn root = #{configValue(:root)}\n")
+		@workflow.addMessage("Subversion interface configured with svn root = #{config['wfengine']['vcs']['root']}\n")
 	end
 
 	def checkout(path=nil,branch=nil)
 		# SVN doesn't use the branch part
 		if path
-			@workflow.addMessage(%x(cd #{@workflow.datadir} && svn checkout #{configValue(:root)}/#{path}))
+			@workflow.addMessage(%x(cd #{@workflow.datadir} && svn checkout #{configValue('root')}/#{path}))
 		else
 			@workflow.addMessage("You must specify a path for me to check out\n")
 		end

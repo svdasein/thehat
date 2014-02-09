@@ -1,6 +1,6 @@
 #################################################################################
 # TheHat - an interactive workflow system
-# Copyright (C) 2007,2008,2009,2010,2011,2012,2013  David Parker
+# Copyright (C) 2007-2014 by David Parker. All rights reserved
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,16 +25,16 @@ class HatApp
 	attr_accessor :drainPauseSeconds,:mutex,:workflow
 
 	def initialize
-		iniFilename = ARGV[0]
+		configFilename = ARGV[0]
 		workflow = ARGV[1]
-		if not iniFilename
+		if not configFilename
 			puts "You must specify a configuration file - ending run\n"
 			exit(1)
 		end
 		@stdout = IO.new(0,'w')
 		@drainPauseSeconds = 0.5 # pause between sending lines from the engine - you may need to tweak it if you get kicked for flooding.
-		@ini = IniFile.load(iniFilename)
-		@workflow = Workflow.new(iniFilename,workflow)
+		#@ini = IniFile.load(configFilename)
+		@workflow = Workflow.new(configFilename,workflow)
 		@msgtypes = { :app => '**',:com=>'XX', :clock=>'@@', :cmd=>'==',:user=>'++',:error=>'!!' }
 		@config = {}
 		@mutex = Mutex.new # Not all need this, but it's cheap, and many do

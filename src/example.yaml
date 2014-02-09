@@ -1,0 +1,33 @@
+wfengine: {
+ datadir: flows,
+ webdir: www,
+ baseurl: "http://localhost/~me",
+ svnroot: "file:///home/me/svn",
+ debuglevel: 1,
+ renderers: WorkflowDigraph,
+ allowExec: false
+}
+
+VCS: {
+ type: Subversion
+}
+
+Subversion: {
+ root: "file:///home/me/svn"
+}
+
+thehat-irc: {
+ nic: flow,
+ name: TheHat,
+ channel: thehat,
+ server: some.irc.server.com,
+ port: 6667
+}
+
+thehat-xmpp: {
+ account: thehat,
+ host: some.xmpp.server.com,
+ resource: flow,
+ password: password,
+ room: flow@conference.some.xmpp.server.com
+}
