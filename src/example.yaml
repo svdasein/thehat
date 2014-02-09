@@ -1,33 +1,29 @@
 wfengine: {
  datadir: flows,
  webdir: www,
- baseurl: "http://localhost/~me",
- svnroot: "file:///home/me/svn",
+ baseurl: "http://localhost/~someuser",
+ svnroot: "file:///home/someuser/svn",
  debuglevel: 1,
  renderers: WorkflowDigraph,
- allowExec: false
-}
-
-VCS: {
- type: Subversion
-}
-
-Subversion: {
- root: "file:///home/me/svn"
+ allowExec: false,
+ vcs: {
+   class: 'Subversion',
+   root: 'file:///home/someuser/svn'
+ }
 }
 
 thehat-irc: {
- nic: flow,
- name: TheHat,
- channel: thehat,
- server: some.irc.server.com,
+ nic: mybot,
+ name: MyBot,
+ channel: mychannel,
+ server: irc.freenode.net,
  port: 6667
 }
 
 thehat-xmpp: {
- account: thehat,
- host: some.xmpp.server.com,
- resource: flow,
+ host: myserver.com,
+ account: flow,
  password: password,
- room: flow@conference.some.xmpp.server.com
+ resource: TheHat,
+ room: test@conference.myserver.com
 }
