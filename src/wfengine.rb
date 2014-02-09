@@ -63,7 +63,7 @@ class Workflow
 		@messageText = String.new
 		begin
 			config = YAML::load_file(configFile)
-			#pp config
+			pp config
 			@datadir = config['wfengine']['datadir']
 			@webdir = config['wfengine']['webdir']
 			@baseurl = config['wfengine']['baseurl']
@@ -76,7 +76,7 @@ class Workflow
 			#@debugLevel = config['wfengine']['debuglevel'].to_i
 			@debugLevel = 1
 			@renderers = Array.new
-			renderers = config['wfengine']['renderers'].split(',')
+			renderers = config['wfengine']['renderers']
 			renderers.each { |rendererClassname|
 				self.addRenderer(eval(rendererClassname))
 			}

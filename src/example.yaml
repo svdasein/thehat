@@ -4,7 +4,9 @@ wfengine: {
  baseurl: "http://localhost/~someuser",
  svnroot: "file:///home/someuser/svn",
  debuglevel: 1,
- renderers: WorkflowDigraph,
+ renderers: [
+  WorkflowDigraph
+ ],
  allowExec: false,
  vcs: {
    class: 'Subversion',
