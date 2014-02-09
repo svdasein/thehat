@@ -31,7 +31,7 @@ require 'pp'
 require_relative 'wfrenderers'
 require_relative 'wfsourcecontrol'
 
-$Version = '0.2'
+$Version = '0.3'
 $CopyrightYears = '2007-2014'
 $DumpHeaderForm="%-14s %-9s %-8s %-20s %-30s\n"
 $DumpForm=      "%-14s %-9s %-8d %-20s %-30s\n"
