@@ -59,7 +59,7 @@ class Workflow
 
 	# Instance methods
 
-	def initialize(configFile='',workflow='')
+	def initialize(configFile=nil,workflow=nil)
 		@messageText = String.new
 		begin
 			config = YAML::load_file(configFile)
