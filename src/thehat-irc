@@ -28,7 +28,7 @@ class IRCFrontend < HatApp
 	def initialize
 		super
 		getConfig('thehat-irc',[:nic,:server,:port,:name,:channel])
-		@config[:channel] = "##{@config[:channel]}"
+		@config['channel'] = "##{@config['channel']}"
 	end	
 	
 	def run	

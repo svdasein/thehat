@@ -53,7 +53,7 @@ class Workflow
 	end
 
 	# Accessors
-	attr_accessor :statesNames,:reverting,:midRevert
+	attr_accessor :statesNames,:reverting,:midRevert,:config
 	attr_reader :name,:steps,:states,:baseurl,:webdir,:datadir,
 			:notifsEnabled,:renderers,:basename
 
@@ -63,7 +63,7 @@ class Workflow
 		@messageText = String.new
 		begin
 			config = YAML::load_file(configFile)
-			pp config
+			@config = config
 			@datadir = config['wfengine']['datadir']
 			@webdir = config['wfengine']['webdir']
 			@baseurl = config['wfengine']['baseurl']

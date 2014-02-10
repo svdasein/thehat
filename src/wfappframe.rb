@@ -33,7 +33,6 @@ class HatApp
 		end
 		@stdout = IO.new(0,'w')
 		@drainPauseSeconds = 0.5 # pause between sending lines from the engine - you may need to tweak it if you get kicked for flooding.
-		#@ini = IniFile.load(configFilename)
 		@workflow = Workflow.new(configFilename,workflow)
 		@msgtypes = { :app => '**',:com=>'XX', :clock=>'@@', :cmd=>'==',:user=>'++',:error=>'!!' }
 		@config = {}
@@ -41,19 +40,20 @@ class HatApp
 	end
 
 	def getConfig(sectionName='',valueNames=[])
+		# This method used to do much more before the yaml conversion - it's mostly just for diagnostic output now
+		@config = @workflow.config[sectionName]
 		valueNames.each { |valueName|
 			begin
-				logmessage(:app,"value name as string is #{valueName.to_s}")
-				@config[valueName] = @ini[sectionName][valueName.to_s]
+				logmessage(:app,"#{sectionName}->#{valueName.to_s} = #{@config[valueName.to_s]}")
 			rescue
-				logmessage(:error,"Failed to get [#{sectionName}]->#{valueName} from config file: #{$!}")
+				logmessage(:error,"Failed to get [#{sectionName}]->#{valueName.to_s} from config file: #{$!}")
 			end
 		}
 	end
 
 	def configValue(valueName='')
 		begin
-			return @config[valueName]
+			return @config[valueName.to_s]
 		rescue
 			return nil
 		end
