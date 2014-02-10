@@ -1,56 +1,108 @@
--
- step: adjusttoasting
- description: 'Adjust toaster to desired toasting level'
- group:
+---
+- step: adjusttoasting
+  description: Adjust toaster to desired toasting level
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - hardware
- gates:
+  gates:
   - gettoaster
--
- step: insertslice
- description: 'Place bread in toaster'
- group: 
+- step: insertslice
+  description: Place bread in toaster
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - food
- gates:
+  gates:
   - gettoaster
   - selectslice
--
- step: selectslice
- description: 'Remove slice of bread from bag'
- group: 
+- step: selectslice
+  description: Remove slice of bread from bag
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - food
- gates:
+  gates:
   - openbread
--
- step: removetoast
- description: 'Remove toast from toaster'
- group: 
+- step: removetoast
+  description: Remove toast from toaster
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - food
- gates:
+  gates:
   - toastbread
--
- step: preptoaster
- description: 'Plug toaster into wall socket'
- group:
+- step: preptoaster
+  description: Plug toaster into wall socket
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - hardware
- gates:
+  gates:
   - gettoaster
--
- step: openbread
- description: 'Open bread bag'
- group: 
+- step: openbread
+  description: Open bread bag
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - food
--
- step: gettoaster
- description: 'Get toaster out of storage'
- group:
+  gates: []
+- step: gettoaster
+  description: Get toaster out of storage
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - hardware
--
- step: toastbread
- description: 'Activate toaster'
- group: 
+  gates: []
+- step: toastbread
+  description: Activate toaster
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
   - food
   - hardware
- gates:
+  gates:
   - insertslice
   - adjusttoasting
   - preptoaster
+

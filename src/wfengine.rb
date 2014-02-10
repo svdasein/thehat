@@ -225,12 +225,11 @@ class Workflow
 		filename = "#{@datadir}/#{name}.flow"
 		begin
 			config = YAML::load_file(filename)
-		rescue
-			return self.addMessage("Error loading workflow file #{@name} - #{$!}\n")
+		#rescue
+		#	return self.addMessage("Error loading workflow file #{@name} - #{$!}\n")
 		end
 		config.each {
 			|item|
-			#pp item
 			@steps[item['step']] = Step.new( self, item['step'], item)
 		}
 		self.checkpoint
@@ -248,7 +247,11 @@ class Workflow
 			newFlow.push(step.configValues)
 		}
 		begin
-			File.open(filename,'w').write(newFlow.to_yaml)
+			File.open(filename,'w') {
+				|file|
+				file.write("#{YAML::dump(newFlow)}\n")
+				file.close
+			}
 			return self.addMessage("Saved workflow '#{@name}' to #{filename}\n")
 		rescue
 			return self.addMessage("Error writing workflow '#{@name}' to #{filename} - #{$!}\n")
@@ -938,7 +941,7 @@ class Step
 		@name = newName
 		values.each {
 			|key,value|
-			if value.size > 0
+			if (not value.nil?) and value.size > 0
 				self.instance_variable_set("@#{key}",value)
 			end
 		}
@@ -969,6 +972,7 @@ class Step
 
 	def configValues
 		result = Hash.new
+		result['step'] = @name
 		result['description'] = @description
 		result['owner'] = @owner.name
 		result['startCommand'] = @startCommand
@@ -1340,7 +1344,7 @@ class Owner
 	# a com channel of some sort.  Could be human or 
 	# a bot.  Consider that a bot could be another
 	# workflow - the mind boggles!
-    ###############################
+        ###############################
 	def Owner.create(name,step)
 		if name =~ /^clock-(.*):(.*)@(.*)/
 			type = "#{$1.capitalize}".to_class
