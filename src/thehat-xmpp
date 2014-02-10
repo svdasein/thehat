@@ -28,7 +28,7 @@ class XMPPFrontend < HatApp
 
 	def initialize
 		super
-		getConfig('thehat-xmpp',[:account,:host,:resource,:password,:room])
+		getConfig('thehat-xmpp',[:account,:host,:resource,:password,:room,:respondTo])
 	end	
 	
 
@@ -38,6 +38,7 @@ class XMPPFrontend < HatApp
 		account = configValue(:account)
 		host = configValue(:host)
 		resource = configValue(:resource)
+		respondTo = configValue(:respondTo) || resource
 		password = configValue(:password)
 		room = configValue(:room)
 		
@@ -52,15 +53,17 @@ class XMPPFrontend < HatApp
 			exit
 		end
 		logmessage(:app,"Connected: #{account}@#{host}/#{resource}")
+		logmessage(:app,"Address me as '#{respondTo}'")
 		
 		
 		my_muc = Jabber::MUC::SimpleMUCClient.new(client)
 		logmessage(:app,"Starting listener thread")
 		my_muc.on_message { |time,nic,text|
 			if not time # ones with time are historical and dizzyingly confusing to the bot
+				logmessage(:user,"#{nic} #{text}")
 				if nic != resource # if this is something *I* said, which... do not want
 					logmessage(:user,"<#{nic}> #{text}")
-					if text =~ /^#{resource}[: ,]+(.*)/ or text =~ /^#{resource}$/
+					if text =~ /^#{respondTo}[: ,]+(.*)/ or text =~ /^#{respondTo}$/
 						begin
 							@mutex.synchronize do
 								if cmd = $1
@@ -82,6 +85,8 @@ class XMPPFrontend < HatApp
 							my_muc.say($!)
 						end
 					end
+				#else
+				#	logmessage(:app,"Ignoring message from self")
 				end
 			end
 		}
