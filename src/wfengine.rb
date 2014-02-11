@@ -906,7 +906,7 @@ class Workflow
 			when 'version' then self.addMessage("TheHat version #{$Version}")
 			when 'help'
 				self.addMessage(File.new("help.txt",'r').read)
-				self.addMessage("Complete documentation is available at https://github.com/svdasein/thehat/wiki/Configuration")
+				self.addMessage("Complete documentation is available at https://github.com/svdasein/thehat/wiki")
 			when 'hello','hi','howdee','ping' then self.addMessage("Hello #{user}!  I am a workflow engine. Please ask me for help if you have any questions.\nI accept commands of the form <command> [<param1>[...<paramN>]]")
 			else
 				if command
