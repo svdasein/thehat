@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,7 +14,7 @@
    height="146.61887"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.4 r9939"
    version="1.0"
    sodipodi:docname="thehat.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
@@ -69,16 +70,17 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="91.5"
+     inkscape:zoom="3.3449909"
+     inkscape:cx="110.76263"
      inkscape:cy="47.5"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1600"
-     inkscape:window-height="1128"
+     inkscape:window-height="983"
      inkscape:window-x="0"
-     inkscape:window-y="25" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -122,18 +124,6 @@
          y="1118.431"
          x="749.87762"
          sodipodi:role="line">Hat</tspan></text>
-    <text
-       sodipodi:linespacing="80.000001%"
-       id="text4094"
-       y="1138.1747"
-       x="720.95123"
-       style="font-size:33.41418076px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:80.00000119%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:URW Grotesk T;-inkscape-font-specification:URW Grotesk T"
-       xml:space="preserve"><tspan
-         style="font-size:22.12389946px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:80.00000119%;letter-spacing:-1.34758961;writing-mode:lr-tb;text-anchor:middle;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Italic"
-         y="1138.1747"
-         x="720.95123"
-         sodipodi:role="line"
-         id="tspan4102">Coordinate  your  world.</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:62.14650726px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:80.00000119%;writing-mode:lr-tb;text-anchor:start;fill:none;fill-opacity:1;stroke:#4e376b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4254);font-family:URW Grotesk T;-inkscape-font-specification:URW Grotesk T"
