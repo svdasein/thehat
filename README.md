@@ -8,13 +8,13 @@ to make a bunch of things happen in a particular order.
 
 Documentation is in the wiki:
 
-[Introduction](wiki/Home)
-[Sample Session]
-[Graph Legend]
-[Quickstart]
-[Configuration]
-[Workflows]
-[Commands]
-[Engine API]
-[History]
+* [Introduction](https://github.com/svdasein/thehat/wiki/Home)
+* [Sample Session]
+* [Graph Legend]
+* [Quickstart]
+* [Configuration]
+* [Workflows]
+* [Commands]
+* [Engine API]
+* [History]
 
