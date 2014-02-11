@@ -9,12 +9,12 @@ to make a bunch of things happen in a particular order.
 Documentation is in the wiki:
 
 * [Introduction](https://github.com/svdasein/thehat/wiki/Home)
-* [Sample Session]
-* [Graph Legend]
-* [Quickstart]
-* [Configuration]
-* [Workflows]
-* [Commands]
-* [Engine API]
-* [History]
+* [Sample Session](https://github.com/svdasein/thehat/wiki/Sample-Session)
+* [Graph Legend](https://github.com/svdasein/thehat/wiki/Graph-Legend)
+* [Quickstart](https://github.com/svdasein/thehat/wiki/Quickstart)
+* [Configuration](https://github.com/svdasein/thehat/wiki/Configuration)
+* [Workflows](https://github.com/svdasein/thehat/wiki/Workflows)
+* [Commands](https://github.com/svdasein/thehat/wiki/Commands)
+* [Engine API](https://github.com/svdasein/thehat/wiki/Engine-API)
+* [History](https://github.com/svdasein/thehat/wiki/History
 
