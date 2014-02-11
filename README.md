@@ -16,5 +16,5 @@ Documentation is in the wiki:
 * [Workflows](https://github.com/svdasein/thehat/wiki/Workflows)
 * [Commands](https://github.com/svdasein/thehat/wiki/Commands)
 * [Engine API](https://github.com/svdasein/thehat/wiki/Engine-API)
-* [History](https://github.com/svdasein/thehat/wiki/History
+* [History](https://github.com/svdasein/thehat/wiki/History)
 
