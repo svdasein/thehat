@@ -1,0 +1,270 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+= Example IRC Session =
+
+Here's an example of what an IRC session looks like from end-to-end:
+
+console:
+{{{
+dave@professor:~/fedorahosted/TheHat/trunk/src$ ./thehat-irc example.yaml
+-------------------------------------------------------------------
+TheHat version 0.01, Copyright (C) 2007,2008 David Parker
+TheHat comes with ABSOLUTELY NO WARRANTY.  This is free software,
+and you are welcome to redistribute it under certain conditions.
+For details read the LICENSE file that came with the distribution.
+-------------------------------------------------------------------
+** Tue May 06 23:30:49 -0700 2008 connecting to irc.freenode.net on port 6667 as flow
+** Tue May 06 23:30:57 -0700 2008 connected
+** Tue May 06 23:30:59 -0700 2008 joined #thehat, saying hello
+** Tue May 06 23:30:59 -0700 2008 listening for commands
+@@ Tue May 06 23:30:59 -0700 2008 starting clock thread
+}}}
+
+irc:
+{{{
+(05/06/2008 11:30:59 PM) flow [n=flow@111.222.333.444] entered the room.
+(05/06/2008 11:30:59 PM) flow: * Good greetings from TheHat.  OBEY! :)
+(05/06/2008 11:31:00 PM) flow: All steps, states, and modes cleared.
+(05/06/2008 11:31:00 PM) flow: No flow loaded or defined
+}}}
+
+At this point !TheHat is just waiting for commands.
+
+irc:
+{{{
+(05/06/2008 11:41:25 PM) dparker: flow ls
+(05/06/2008 11:41:26 PM) flow: data/toast                                          566 Tue May  6 19:09:42 2008
+(05/06/2008 11:41:27 PM) flow: data/workflows/calendar                            8744 Tue May  6 00:47:39 2008
+(05/06/2008 11:41:29 PM) flow: data/workflows/clocktest                              7 Tue May  6 00:46:59 2008
+(05/06/2008 11:41:31 PM) flow: data/workflows/test                                1327 Tue May  6 00:46:59 2008
+}}}
+
+I want to load the toast workflow.
+
+irc:
+{{{
+(05/06/2008 11:43:33 PM) dparker: flow load data/toast
+(05/06/2008 11:43:34 PM) flow: All steps, states, and modes cleared.
+(05/06/2008 11:43:35 PM) flow: TheHat Tue May 06 23:43:34 -0700 2008: Loaded workflow 'data/toast', read 8 steps
+(05/06/2008 11:43:35 PM) flow: Flow overviews + help at http://localhost/~dave
+(05/06/2008 11:43:36 PM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/06/2008 11:43:36 PM) flow: UNASSIGNED     pending   0        openbread            Open bread bag                
+(05/06/2008 11:43:37 PM) flow: UNASSIGNED     pending   0        gettoaster           Get toaster out of storage
+}}}
+
+Note that I specified the full path to the file; !TheHat considers the path to be a part of the name of the workflow, and uses that when storing flow state to differentiate between flows with the same basename.
+
+This flow definition doesn't have any pre-declared ownership, so all of the steps are unowned.  Here's what the graph looks like at this point:
+
+[[Image(toast-digraph-example-1.png)]]
+
+I will claim all the steps in the workflow for myself, as I'm pretty sure I'm capable of making toast.
+
+irc:
+{{{
+(05/06/2008 11:48:43 PM) dparker: flow gimmeall
+(05/06/2008 11:48:44 PM) flow: Owner of step insertslice is now dparker
+(05/06/2008 11:48:45 PM) flow: Owner of step adjusttoasting is now dparker
+(05/06/2008 11:48:45 PM) flow: Owner of step selectslice is now dparker
+(05/06/2008 11:48:46 PM) flow: Owner of step openbread is now dparker
+(05/06/2008 11:48:46 PM) flow: Owner of step preptoaster is now dparker
+(05/06/2008 11:48:48 PM) flow: Owner of step removetoast is now dparker
+(05/06/2008 11:48:50 PM) flow: Owner of step gettoaster is now dparker
+(05/06/2008 11:48:52 PM) flow: Owner of step toastbread is now dparker
+(05/06/2008 11:48:54 PM) flow: TheHat Tue May 06 23:48:44 -0700 2008: (status)
+(05/06/2008 11:48:56 PM) flow: Flow overviews + help at http://localhost/~dave
+(05/06/2008 11:48:58 PM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/06/2008 11:49:00 PM) flow: dparker        pending   0        openbread            Open bread bag                
+(05/06/2008 11:49:02 PM) flow: dparker        pending   0        gettoaster           Get toaster out of storage
+}}}
+
+And you can see that the graph reflects this:
+
+[[Image(toast-digraph-example-2.png)]]
+
+Incidentally, you will notice that everything that's happening in the IRC channel is showing up in the terminal session in which you started the bot:
+
+console:
+{{{
+@@ Tue May 06 23:48:37 -0700 2008 TheHat Tue May 06 23:48:37 -0700 2008: IDLE
+@@ Tue May 06 23:48:38 -0700 2008 Flow overviews + help at http://localhost/~dave
+@@ Tue May 06 23:48:38 -0700 2008 OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION
+@@ Tue May 06 23:48:39 -0700 2008 UNASSIGNED     pending   0        openbread            Open bread bag
+@@ Tue May 06 23:48:39 -0700 2008 UNASSIGNED     pending   0        gettoaster           Get toaster out of storage
+++ Tue May 06 23:48:43 -0700 2008 dparker: 'flow gimmeall'
+== Tue May 06 23:48:44 -0700 2008 Owner of step insertslice is now dparker
+== Tue May 06 23:48:44 -0700 2008 Owner of step adjusttoasting is now dparker
+== Tue May 06 23:48:45 -0700 2008 Owner of step selectslice is now dparker
+== Tue May 06 23:48:45 -0700 2008 Owner of step openbread is now dparker
+== Tue May 06 23:48:46 -0700 2008 Owner of step preptoaster is now dparker
+== Tue May 06 23:48:46 -0700 2008 Owner of step removetoast is now dparker
+== Tue May 06 23:48:47 -0700 2008 Owner of step gettoaster is now dparker
+== Tue May 06 23:48:47 -0700 2008 Owner of step toastbread is now dparker
+== Tue May 06 23:48:48 -0700 2008 TheHat Tue May 06 23:48:44 -0700 2008: (status)
+== Tue May 06 23:48:48 -0700 2008 Flow overviews + help at http://localhost/~dave
+== Tue May 06 23:48:49 -0700 2008 OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION
+== Tue May 06 23:48:49 -0700 2008 dparker        pending   0        openbread            Open bread bag
+== Tue May 06 23:48:50 -0700 2008 dparker        pending   0        gettoaster           Get toaster out of storage
+}}}
+
+In the console session, @@ = from the clock thread, ++ = user input, and == = from the main thread.
+
+I'll now perform a few steps...
+
+irc:
+{{{
+(05/06/2008 11:56:57 PM) dparker: flow start openbread
+(05/06/2008 11:56:58 PM) flow: >>> dparker changed state of step openbread to in prog
+(05/06/2008 11:56:58 PM) flow: TheHat Tue May 06 23:56:58 -0700 2008: (status)
+(05/06/2008 11:56:59 PM) flow: Flow overviews + help at http://localhost/~dave
+(05/06/2008 11:56:59 PM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/06/2008 11:57:00 PM) flow: dparker        in prog   0        openbread            Open bread bag                
+(05/06/2008 11:57:00 PM) flow: dparker        pending   0        gettoaster           Get toaster out of storage    
+(05/06/2008 11:57:02 PM) dparker: flow finish openbread
+(05/06/2008 11:57:03 PM) flow: >>> dparker changed state of step openbread to done
+(05/06/2008 11:57:03 PM) flow: TheHat Tue May 06 23:57:03 -0700 2008: (status)
+(05/06/2008 11:57:04 PM) flow: Flow overviews + help at http://localhost/~dave
+(05/06/2008 11:57:06 PM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/06/2008 11:57:08 PM) flow: dparker        pending   0        selectslice          Remove slice of bread from bag
+(05/06/2008 11:57:10 PM) flow: dparker        pending   0        gettoaster           Get toaster out of storage    
+(05/06/2008 11:57:10 PM) dparker: flow start gettoaster
+(05/06/2008 11:57:12 PM) flow: >>> dparker changed state of step gettoaster to in prog
+(05/06/2008 11:57:14 PM) dparker: flow finish gettoaster
+(05/06/2008 11:57:14 PM) flow: TheHat Tue May 06 23:57:12 -0700 2008: (status)
+(05/06/2008 11:57:16 PM) flow: Flow overviews + help at http://localhost/~dave
+(05/06/2008 11:57:18 PM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/06/2008 11:57:20 PM) flow: dparker        pending   0        selectslice          Remove slice of bread from bag
+(05/06/2008 11:57:22 PM) flow: dparker        in prog   0        gettoaster           Get toaster out of storage    
+(05/06/2008 11:57:24 PM) flow: >>> dparker changed state of step gettoaster to done
+(05/06/2008 11:57:26 PM) flow: TheHat Tue May 06 23:57:15 -0700 2008: (status)
+(05/06/2008 11:57:28 PM) flow: Flow overviews + help at http://localhost/~dave
+(05/06/2008 11:57:30 PM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/06/2008 11:57:32 PM) flow: dparker        pending   0        adjusttoasting       Adjust toaster to desired toasting level
+(05/06/2008 11:57:34 PM) flow: dparker        pending   0        selectslice          Remove slice of bread from bag
+(05/06/2008 11:57:36 PM) flow: dparker        pending   0        preptoaster          Plug toaster into wall socket 
+}}}
+
+and of course the graph reflects this:
+
+[[Image(toast-digraph-example-3.png)]]
+
+Now I'm going to try to get ahead of myself and try to toast the bread now.
+
+irc:
+{{{
+(05/07/2008 12:01:07 AM) dparker: flow start toastbread
+(05/07/2008 12:01:08 AM) flow: Step toastbread is gated!  If you've finished this step you've done a bad thing!!
+(05/07/2008 12:01:08 AM) flow: TheHat Wed May 07 00:01:08 -0700 2008: (status)
+(05/07/2008 12:01:09 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:01:09 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:01:10 AM) flow: dparker        pending   0        adjusttoasting       Adjust toaster to desired toasting level
+(05/07/2008 12:01:10 AM) flow: dparker        pending   0        selectslice          Remove slice of bread from bag
+(05/07/2008 12:01:11 AM) flow: dparker        pending   0        preptoaster          Plug toaster into wall socket
+}}}
+
+(For the record, you'll get a similar response if you try to do someone else's step for them without first properly changing step ownership).
+
+Ok - so - I'm lazy and I don't want to do the next several steps by myself.  I think I'll give a few of these to a clock owner that'll just fire them off right away.
+
+irc:
+{{{
+(05/07/2008 12:04:34 AM) dparker: flow giveto clock-alarm:0/0/0@0:0:0 selectslice adjusttoasting preptoaster insertslice
+(05/07/2008 12:04:35 AM) flow: Owner of step selectslice is now clock-alarm:0/0/0@0:0:0
+(05/07/2008 12:04:36 AM) flow: Owner of step adjusttoasting is now clock-alarm:0/0/0@0:0:0
+(05/07/2008 12:04:36 AM) flow: Owner of step preptoaster is now clock-alarm:0/0/0@0:0:0
+(05/07/2008 12:04:37 AM) flow: Owner of step insertslice is now clock-alarm:0/0/0@0:0:0
+(05/07/2008 12:04:37 AM) flow: TheHat Wed May 07 00:04:35 -0700 2008: (status)
+(05/07/2008 12:04:38 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:04:38 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:04:40 AM) flow: CLOCK(alarm)   pending   0        adjusttoasting       Adjust toaster to desired toasting level
+(05/07/2008 12:04:42 AM) flow: CLOCK(alarm)   pending   0        selectslice          Remove slice of bread from bag
+(05/07/2008 12:04:44 AM) flow: CLOCK(alarm)   pending   0        preptoaster          Plug toaster into wall socket
+}}}
+
+Fun, but if I sit there now and wait, I'll notice that nothing is happening - what gives?
+
+irc:
+{{{
+(05/07/2008 12:05:47 AM) dparker: flow clockProcessing
+(05/07/2008 12:05:47 AM) flow: Clock processing is currently false
+(05/07/2008 12:05:48 AM) flow: To change, mode must be one of true,on,false, or off'
+}}}
+
+Both clock and notification processing are always deactivated when you load or restore  a flow.  This is to avoid embarassing spamming incidents.
+
+irc:
+{{{
+(05/07/2008 12:07:14 AM) dparker: flow clockProcessing on
+(05/07/2008 12:07:14 AM) flow: Clock processing enabled
+(05/07/2008 12:07:16 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step adjusttoasting to in prog
+(05/07/2008 12:07:17 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step adjusttoasting to done
+(05/07/2008 12:07:17 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step selectslice to in prog
+(05/07/2008 12:07:18 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step selectslice to done
+(05/07/2008 12:07:18 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step preptoaster to in prog
+(05/07/2008 12:07:19 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step preptoaster to done
+(05/07/2008 12:07:19 AM) flow: TheHat Wed May 07 00:07:15 -0700 2008: CLOCK ADVANCE
+(05/07/2008 12:07:20 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:07:22 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:07:24 AM) flow: CLOCK(alarm)   pending   0        insertslice          Place bread in toaster        
+(05/07/2008 12:07:27 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step insertslice to in prog
+(05/07/2008 12:07:28 AM) flow: >>> clock-alarm:0/0/0@0:0:0 changed state of step insertslice to done
+(05/07/2008 12:07:30 AM) flow: TheHat Wed May 07 00:07:26 -0700 2008: CLOCK ADVANCE
+(05/07/2008 12:07:32 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:07:34 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:07:36 AM) flow: dparker        pending   0        toastbread           Activate toaster
+}}}
+
+Weeeee doggies that was fun. I'll start toasting so you can see what a task in-progress looks like in the graph.
+
+irc:
+{{{
+(05/07/2008 12:09:09 AM) dparker: flow start toastbread
+(05/07/2008 12:09:10 AM) flow: >>> dparker changed state of step toastbread to in prog
+(05/07/2008 12:09:11 AM) flow: TheHat Wed May 07 00:09:10 -0700 2008: (status)
+(05/07/2008 12:09:11 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:09:12 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:09:12 AM) flow: dparker        in prog   0        toastbread           Activate toaster
+}}}
+
+[[Image(toast-digraph-example-4.png)]]
+
+Ok - I'm going to just finish this workflow now so you can see what the end looks like.
+
+irc:
+{{{
+(05/07/2008 12:11:04 AM) dparker: flow finish toastbread
+(05/07/2008 12:11:06 AM) flow: >>> dparker changed state of step toastbread to done
+(05/07/2008 12:11:06 AM) flow: TheHat Wed May 07 00:11:05 -0700 2008: (status)
+(05/07/2008 12:11:07 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:11:07 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:11:08 AM) flow: dparker        pending   0        removetoast          Remove toast from toaster     
+(05/07/2008 12:11:14 AM) dparker: flow start removetoast
+(05/07/2008 12:11:15 AM) flow: >>> dparker changed state of step removetoast to in prog
+(05/07/2008 12:11:16 AM) flow: TheHat Wed May 07 00:11:15 -0700 2008: (status)
+(05/07/2008 12:11:17 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:11:17 AM) flow: OWNER          STATE     DUR(MIN) NAME                 DESCRIPTION                   
+(05/07/2008 12:11:17 AM) flow: dparker        in prog   0        removetoast          Remove toast from toaster     
+(05/07/2008 12:11:22 AM) dparker: flow finish removetoast
+(05/07/2008 12:11:24 AM) flow: >>> dparker changed state of step removetoast to done
+(05/07/2008 12:11:24 AM) flow: ** Flow ended **TheHat Wed May 07 00:11:24 -0700 2008: (status)
+(05/07/2008 12:11:25 AM) flow: Flow overviews + help at http://localhost/~dave
+(05/07/2008 12:11:25 AM) flow: All steps completed!
+(05/07/2008 12:13:16 AM) dparker: flow quit
+(05/07/2008 12:13:16 AM) flow left the room (quit: Remote closed the connection).
+}}}
+
+And the graph is all green:
+
+[[Image(toast-digraph-example-5.png)]]
+
+console:
+{{{
+++ Wed May 07 00:11:22 -0700 2008 dparker: 'flow finish removetoast'
+== Wed May 07 00:11:24 -0700 2008 >>> dparker changed state of step removetoast to done
+== Wed May 07 00:11:24 -0700 2008 ** Flow ended **TheHat Wed May 07 00:11:24 -0700 2008: (status)
+== Wed May 07 00:11:25 -0700 2008 Flow overviews + help at http://localhost/~dave
+== Wed May 07 00:11:25 -0700 2008 All steps completed!
+++ Wed May 07 00:13:16 -0700 2008 dparker: 'flow quit'
+** Wed May 07 00:13:16 -0700 2008 shutdown
+dave@professor:~/fedorahosted/TheHat/trunk/src$
+}}}
+

@@ -1,0 +1,185 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+= Commands reference =
+
+!TheHat commands can be grouped into roughly five categories: Initialization, Workflow Interaction, Reversion, Flow Editing, and Utility.  Of all of these the most commonly used are the ones dealing with workflow interaction. The remainder are usually the domain of the "workflow administrator".
+
+Once !TheHat is enabled in a channel, a user by a name of your choosing will act as the agent through which all !TheHat interaction occurs.  Thus, all commands take the general form {{{botnic <command> <command parameters>}}}.
+== Initialization ==
+Initialization commands deal with loading workflow definitions and state into the workflow engine.  
+=== ls ===
+{{{botnic ls}}} - this command lists the contents of the engine's current workflow directory. You can load any .flow files you see in this listing.
+
+=== load ===
+{{{botnic load <flow name>}}} - this command presumes that a workflow file is sitting in the workflow directory on the bot server from a previous load from svn or from a previous save from the engine itself. When a flow is loaded from disk, all existing state is wiped from memory and replaced by whatever state is represented in the flow file.  Note that you need to specify the path to the file as well, and you should omit the .flow extension.
+
+=== reload ===
+{{{botnic reload}}} - The reload command reloads from local (to the bot) disk the flow that's currently running. In the process any current state is wiped in memory and on disk as well.  
+=== restore ===
+{{{botnic restore <flowname>}}} - The restore command allows you to continue where you left off in case of an IRC outage or power outage on the bot server or similar.  For this to work you *must absolutely not* have issued either the load or reload commands; if you do so you'll wipe the saved state on disk.
+=== unload ===
+{{{botnic unload}}} - The unload command removes the current flow and its state from memory.  Think "clear all".
+
+== Workflow Interaction ==
+The workflow interaction commands affect workflow progression, and are the ones most commonly used by non workflow developers.
+
+Workflow interaction basically comes down to manipulating task ownership and status.  Once a workflow is started, the engine helps drive the flow to completion: it takes care of clock-owned tasks automatically, and prompts human owners appropriately as the workflow progresses.
+
+=== Step Ownership ===
+Step ownership commands provide a means by which humans can assign and assume ownership of commands.  There are two of them:
+==== gimme ====
+{{{botnic gimme <taskname> [<taskname> [...]]}}} - this command assigns ownership of the task(s) listed to the person who issued the command.  Anyone can claim any step at any time.
+==== giveto ====
+{{{botnic giveto <entity> [<taskname> [...]]}}} - this command allows the issuer to assign ownership of one or more tasks to a person or clock entity.  See the examples section below for examples and an explanation. Again - no permissions are required - anyone can give any task to any other person (or thing).
+==== gimmegroup ====
+{{{botnic gimmegroup <groupname1>[,<groupname2>[,<groupnameN>]]}}} - this command assigns ownership of all the tasks tagged as belonging to all the groups listed to the person who issued the command. Anyone can claim any group at any time.
+==== givegroupto ====
+{{{botnic givegroupto <groupname1>[,<groupname2>[,<groupnameN]] <entity>}}} - this command allows the user to assign ownership of one or more groups of tasks to a person or clock entity. See examples below for clock usage. No permissions are required, etc.
+
+=== Forward Operation ===
+==== start ====
+{{{botnic start <stepname> [<stepname>...]}}} - By issuing this command you indicate to the workflow engine (and your co-workers) that you have begun work on the named step.  You can only issue this command for a step if two things are true:
+
+ * You must be the current owner of the step
+ * The step must be un-gated by any steps that preceed it in the workflow.
+
+If one or the other of the above conditions is not true, you'll receive a warning from the workflow engine as your command is rejected.
+
+Note that it is possible to skip this command and proceed immediately to the {{{finish}}} command. This flexibility exists for those cases where you're running through a worlflow yourself, you trust yourself, and timing metrics aren't important to anyone. BUT: if you do choose to forgo the {{{start}}} command, be aware that it is somewhat at your peril:
+
+ * Without issuing the {{{start}}} command, you risk missing the fact that you really *should not* be starting your step yet!
+ * You'll be depriving your co-workers of some sense of what's going on, which is usually pretty important when you're working with people that aren't sitting right next to you.
+ * You'll bypass the collection of workflow timing metrics which are very useful for planning purposes.
+
+In other words: it's more or less *always* a good idea to issue the start command before you begin work on a step. Please do it.
+
+==== finish ====
+{{{botnic finish <stepname>  [<stepname>...]}}} - This command is the means by which you indicate to the workflow engine (and your co-workers) that you've completed work on your step.  You *must* issue this command for the workflow to proceed!  You can only issue this command if you are the owner of the step and the step is not gated by other steps.  Note that if you actually *do* finish work on a step that hasn't actually been ungated yet, you might find yourself in really big trouble w/ your co-workers. Use the {{{start}}} command!.
+
+=== Reverse Operation ===
+Reverse operation (or "reversion mode") is a *very highly problematic* mode that the engine supports only because adding the code to support it was so painful that the author doesn't have the heart to remove it.  Reversion mode provides a mechanism by which the workflow can be directly reversed from a point of failure.
+
+In a nutshell: if, while performing a workflow, a step fails in such a way that the workflow cannot continue, you can inform the workflow engine about the failure, and it'll immediately notify everyone of the failure, and then *reverse execute* the workflow from its current state.
+
+The reason this is problematic is that in the real world it is nearly never the case that simply going backwards and un-doing things will actually cause a successful reversion of a sequence of tasks.  If you want to attempt to rely on this logic, please take some time to practice failure scenarios with the engine first.  You'll probably find that direct reversion doesn't really work.  And really - the best approach is to have such great QA that you never have a chance of failing anyway :)
+
+Again, however, the mechanism is there, and it may prove useful to some, so...
+
+==== fail ====
+{{{fail <stepname>}}} - You can issue this command if you are the owner of the step in question, and if the step is not gated by any previous steps. When you issue it, alarms will sound, and everyone who's currently working on a step will immediately be told to stop.  Once this command is issued, your world changes.  You no longer "start" and "finish" commands; henceforth you're "reverting" steps 'til they're "reverted"...:
+
+==== reverting ====
+{{{reverting <stepname>}}} - You can issue this command when the following things are true:
+
+ # The workflow has been placed into reversion mode by someone's having issued the {{{fail}}} command for some step.
+ # You are the owner of the step in question
+ # The step is not gated from being reverted.
+
+The notion of gate direction is flipped on its head when reversion mode kicks in, so the things you'll be gated on while reverting will be those things that were gating on *your step* when the flow was moving forward. Confusing? You betcha.  Hope you never have to go there.  If you do, though, the engine will guide you so don't worry - just do what it says.
+
+==== reverted ====
+{{{reverted <stepname>}}} - Issue this command when you finish reverting a step. The same conditions apply as to when you can issue this command as do those for the {{{reverting}}} command. Again - hope you never have to use it.
+
+== Flow Editing ==
+=== new ===
+{{{botnic new <flowname>}}} - The newflow command clears from memory whatever flow might currently be loaded, and starts a new blank one who's name is <flowname>.
+
+=== save ===
+{{{botnic save [<name>]}}} - The save command saves the current state of the workflow to the file specified when the workflow as loaded or created.  If you specify a name, the flow will be re-named internally to the name you provide, and then saved to that name.  You can use this feature to "play around" with flows, e.g.
+{{{
+botnic load original
+botnic save test1
+botnic save test2
+botnic load test1
+}}}
+The above loads a flow called "orignal", and saves it in its pristine state to two files - test1 and test2, and finally it loads test1 back in.  If you just do {{{botnic save}}} at this point, you'll overwrite test1.
+
+There is a very major caveat with this command you *must* bear in mind however:
+
+There is only *one* representation of the state of the flow in the workflow engine's memory at any given time, and it is that state which gets saved.  That means these things:
+
+ * If, as a function of flow execution, any ownership has changed from that which was in place before the workflow commenced, it is the *new* ownership that will be written to the file. This may very well NOT be what want to happen: if you've changed a running flow to add a step you've discovered you need and you save the workflow to disk after you've made the change, you'll find that any e.g. clock-handoff steps you had in the original workflow that have since fired off will no longer be owned by clock-handoff!
+
+ * As the workflow progresses, the internal representation of the gate structure gets "shuffled about".  Meaning: when a gate is cleared for a given step, the gate is *removed* from the gates list of the step that originally was gated, and is *moved to* the reverse gates list of the step that was originally doing the gating. If you save the workflow after gates have been cleared, you'll note in the saved representation of the flow that some of your gates have 'gone away'.
+
+In other words, '''the engine does not attempt to maintain a representation of what the pristine state of the flow should be'''. Save means "Save what the flow looks like *now*.
+
+So, here's some sound advice as to the use of workflow modification commands and the save command:
+
+ * If you have to change a running flow, go ahead and do it.
+
+ * If the change you've made to a running flow needs to be permanent, '''make the change elsewhere'''. You can edit the .flow definition file directly, or within another instance of the workflow bot.  You're fine as long as the flow has not been modified as a function of flow execution. Once the flow starts running, whatever you might save will reflect the state of the flow and (from your perspective) will probably be "corrupt".
+
+Caveat emptor.
+
+=== checkout ===
+{{{botnic checkout <path> [<branch>]}}} - if you have configured version control support for your engine instance, you can use this command to check out structures from your vcs into the datadir you specified in the engine's main configuration.  Path is always required.  Branch *might* be required (or optional) depending on which version control system you are using.
+
+=== commit ===
+{{{botnic commit <path> <comment>}}} - as with commit, if you've configured support for it, you can commit work into your vcs.  Both the path and comment are always required.  The commit command '''automatically adds''' any files that you may have added to the path in question before committing.
+
+Note that version control support (and really the entire engine) does not attempt to support deletion capabilities of any sort.  If you need to delete things, do it via some other mechanism.
+
+=== addstep ===
+{{{botnic addstep <stepname>}}} - This command adds a new step to the workflow. The new node will be otherwise entirely devoid of properties. It is very likely you'll need to use the {{{setprop}}} (below) to make the new step useful in the context of the greater flow.
+
+=== delstep ===
+{{{botnic delstep <stepname>}}} - This command deletes a step from the flow. Note that when you do this, you may well need to use the {{{setprop}}} command to re-wire your workflow; {{{delstep}}} makes no attempt to do so. If the deletion of a step results in a "dangling gate", you'll see it easily in the flow graphic as a white-filled step with no properties.
+
+=== set ===
+{{{botnic set <stepname(s)> <propname> <propvalue>}}} - This command allows you to alter any property of one or more workflow steps. {{{<stepname(s)}}} is is one or more step names separated by commas (*no spaces*).  {{{<propname>}}} can be any property that you can set for a step in the flow definition file.  If {{{<propvalue>}}} is a list of items, they must be separated by commas (*no spaces*).
+
+Normal step properties are:
+
+ * description = a short description
+ * url = a URL to include in a client side map
+ * note = tooltip text for the client side map
+ * gates = one or more gates, separated by commas (no spaces)
+ * group = one or more groups, separated by commas (no spaces)
+ * owner = nic that owns the step
+ * notifyAtStart = one or more email addresses separated by commas (no spaces) to send an email to when the step starts
+ * notifyAtFinish = one or more email addresses separated by commas (no spaces) to send an email to when the step finishes
+ * startCommand = shell code to execute when the step starts
+ * endCommand = shell code to execute when the step finishes
+
+
+There are six additional pseudo-properties that make it easier to manipulate step gates and groups:
+
+ * {{{gates}}} or {{{gate}}} - gate is just an alias for normal gate property. If you use this, you will *replace* whatever list of gates the step(s) in question might currently have.
+ * {{{addgate}}} - this property adds whatever gate(s) you've listed (comma separated - just as in the flow definition file) to the list of gates a step(s) already have.
+ * {{{delgate}}} - this property removes whatever gate(s) you've listed (comma separated - just as in the flow definition file) from the list of gates a step(s) already have.
+ * {{{groups}}} or {{{group}}} - groups is just an alias for the normal group property.  If you use this, you will *replace* whatever list of groups the step(s) inquestion might currently have.
+ * {{{addgroup}}} - this property adds whatever groups(s) you've listed (comma separated - just as in the flow definition file) to the list of groups the step(s) already have.
+ * {{{delgroup}}} - this property removes whatever groups(s) you've listed (comma separated - just as in the flow definition file) from the list of groups the step(s) already have.
+
+== Utility ==
+The utility commands deal with esoterica related to workflow engine operation. It's likely you'll only really use the run, stop, status, notifsEnabled, clockEnabled, and dump commands in anything like a regular fashion.
+
+=== debug ===
+{{{botnic debug}}} - this command dumps a textual representation of internal workflow state to the irc channel(s) it's operating in. It's very cryptic and basically useless for anything other than module development.
+
+=== dump ===
+{{{botnic dump}}} - this command dumps a representation of workflow state to the irc channel(s) it's operating in.  It's particularly useful for gathering timing metrics *after* workflow execution has concluded.
+
+=== dryrun ===
+{{{botnic dryrun <failstep>}}} - this command causes the bot to iterate through the workflow in directed-graph order until either the end of the workflow is reached or <failstep> is encountered.  If <failstep> is specified, the flow will then automatically go into reversion mode and revert (in reverse order (see above)) 'til the flow returns to its starting state.  The flow state graph is not updated during this operation.  [ This is coincidentally a really good way to get a sense of why workflow reversion mode is highly problematic ]
+
+=== tictoc ===
+{{{botnic tictoc}}} - this command forces the workflow engine to immediately perform one clock processing pass on the workflow given current state. It's occasionally handy to test the behavior of workflows with clock based owners.
+
+=== idleprompt ===
+{{{botnic idleprompt [<minutes>]}}} - this command allows you to examine and modify the engine's idle prompt timeout. By default the engine will emit its current status after 5 minutes of inactivity, inactivity being defined as "no change in the state of the workflow".  This is to ensure that no one has missed an event prompt, and that people have a chance to notice if e.g. a step is remaining unclaimed.  You can turn idle prompting off by setting this value to 0.  Beware however that you run a higher risk of "the ball being dropped" if you do so.
+
+=== notificationProcessing ===
+{{{botnic notificationProcessing [<on|off>]}}} - this command allows you to examine and modify the way the bot will behave in a workflow when a notification event occurs. To examine the state, issue the command with no parameters. To enable notifications, use 1 as a parameter; to disable, use 0. Notifications are DISABLED by default as the bot is capable in some circumstances (particularly during workflow development) of sending a great deal of unwanted (and potentially confusing) email to actual workflow participants (including sometimes mailing lists).  If you're planning on running a workflow with notifications, you should issue {{{botnic notifsEnabled 1}}} after loading the workflow.
+
+=== clockProcessing ===
+{{{botnic clockProcessing [<on|off>]}}} - this command allows you to examine and modify the bot's clock based flow execution mode.  To examine the state, issue the command with no parameters. To enable clock based flow execution, use 1 as a parameter; to disable, use 0.  Clock based operation is DISABLED by default as the bot will otherwise immediately start evaluating and acting on clock-* owned events (see below).  This can be annoying during workflow development, and *extremely* annoying if notifications happen to be enabled at the same time.  If you wish to run a workflow with clock owned tasks, you should issue {{{botnic clockEnabled 1}}} after loading the workflow. Further - if the workflow contains notifications, you should enable notifications *first* (see above) before enabling clock operation (else notifications will be dropped as execution proceeds).
+
+=== run ===
+{{{botnic run}}} - this command activates both notifs and clocks in one command.
+
+=== stop ===
+{{{botnic stop}}} - this command deactivates both notifs and clocks in one command.
+
+=== status ===
+{{{botnic status}}} - this command reports flow status in terms of whether one or the other or both of notifs and clocks are enabled.

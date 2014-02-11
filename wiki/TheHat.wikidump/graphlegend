@@ -1,0 +1,12 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+= Understanding the graph =
+
+When a workflow is running, the engine periodically displays a hyperlink in the session that leads to a page containing a list of renderings available (which renderings are available is configured in the engine config file).  One of those renderings - the !WorkflowDigraph type - is a page containing a graphic representation of the current state of the workflow.  The graphic representation looks generally like this:
+
+[[Image(Graphlegend.gif)]]
+
+The workflow diagram uses a simple color scheme to help you quickly understand the overall state of things.  Each box in the diagram can have up to two colors associated with it: an edge color and a fill color.
+
+The edge color indicates whether or not the step has an owner. Green == yes, Red == no.
+
+The fill color indicates the state of the step.  Green = successfully completed, Yellow = Currently in progress, Red = needing immediate attention/should be started right now, and Gray = future task currently requiring no attention.

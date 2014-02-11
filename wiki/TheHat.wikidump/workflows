@@ -1,0 +1,168 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+= Workflow definition =
+
+== Format ==
+!TheHat workflows are defined in YAML style files. These take the general form:
+
+{{{
+---
+- step: stepOneName
+  description: Description of step one
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
+  - hardware
+  gates:
+- step: stepTwoName
+  description: Description of step two
+  owner: 
+  startCommand: 
+  notifyAtStart: []
+  finishCommand: 
+  notifyAtFinish: []
+  url: 
+  note: 
+  group:
+  - food
+  gates:
+  - stepOneName
+}}}
+
+Each section in the file represents a workflow step, and the section names are the names of those steps.  Step names are the tags users use to refer to steps they are working on.  Step names are not optional, and must be unique within the workflow definition: you can't have more than one workflow step with the same name.  Step names should not contain any spaces or special characters other than underlines or dashes ( _ or - )
+
+The various parameters (all of which are optional) are described below.
+
+NOTE: I've converted the file format to YAML - this documentation is out of date format-wise.
+
+== Parameters ==
+=== Common ===
+==== description ====
+A workflow's description is just a very brief summary of what the step is about.  You'll want to keep this brief - just enough to convey the essence of the task.  If you need to provide more detail, use the url parameter (below)
+
+==== url ====
+By defining the URL parameter, you make it possible for users to click on the rectangle representing the task in the workflow status chart and have their browser take them to the url you've specified. You can use this to provide in-depth documentation of the step.  You need to be viewing the !WorkflowDigraph renderer's auto-refresh page to be able to use these.
+
+==== note ====
+If you add a note parameter to a step, it'll appear as a tooltip when you hover your mouse over a step in the !WorkflowDigraph's auto-refresh graph.
+
+==== gates ====
+The gates parameter is the means by which you describe those tasks which the current task requires to have been completed before the current task can begin.  The gates parameter takes this form:
+
+{{{gates=<stepname1>[,<stepname2>[,<stepnameN]]}}}
+
+See the "making toast" workflow at the top of this page for an example of how to the gates parameter is used.
+
+==== group ====
+The group parameter allows you to assign assign tags to steps such that they form a logical group. With logical groupings you can use the {{{gimmegroup}}} and {{{givegroupto}}} commands to do mass task assignments.  These are extremely convenient.
+
+{{{group=<group1>[,<group2>[,<groupN>]]}}}
+
+==== owner ====
+The owner parameter allows you to pre-assign ownership of a task at workflow load time.  If you do not specify an owner for a step, the engine will prompt for one in IRC when the appropriate time comes.  If you do wish to pre-assign, you can choose to assign the step to one of two types of entities:
+
+ * Human (one of your co-workers) - in this case the value you should put in the field should be whatever that person's usual IRC nickname is.
+
+ * Bot-clock - Bot clock owners are special entities that let you do several time-dependent type operations in the workflow.  These options are most useful when combined with the email notification and command execution parameters listed below. With bot clock owners you can implement complex schedules and calendars that take an active role in ensuring business processes get attention when they need it.
+
+===== clock driven owners =====
+
+Bot clock owners have a special form:
+
+{{{clock-<type>:<monthnum>/<datenum>/<yearnum>@<hours24>:<minutes>:<seconds>}}}
+
+for example: {{{owner=clock-alarm:10/01/2007@10:00:00}}}
+
+There are four types of clock owners. each has it's own special behavior:
+
+ * alarm - when an alarm clock's date and time are reached, the owner will immediately start and finish the step.  An alarm clock is useful with email notification (for announcements etc) and with command execution (for automated tasks - much like what cron does).
+
+ * handoff - when a handoff clock's date and time are reached, the owner will start the task and then immediately disassociate itself from the task. A handoff clock is particularly useful with email notifications.
+
+ * wait - when a wait clock's date and time are reached, the owner will start the task and then wait 'til the earliest date/time of any clock based step that is blocked by the current step is reached. Wait clocks are particularly useful with email notification for e.g. announcing the beginning and ending of calendar periods.
+
+ * stopwatch - A stopwatch clock does not wait for a date/time to be reached; it assumes it is to start executing the moment it is ungated. It will however not *finish* the task until the number of hours, minutes, and seconds specified to the right of the @ sign in the time specification have passed.  Note that stopwatch clocks are *not* included in a wait clock's decision as to when it should finish.
+
+Note that you can use the {{{giveto}}} command to give ownership to a clock type owner while a flow is running.  Likewise you can {{{gimme}}} ownership away from clock owners. (You can also use the {{{propset}}} command to accomplish this, but it's more "wordy").
+
+=== Email Notification ===
+!TheHat's email notification capabilities let you endow workflows with the ability to remind people and groups of workflow activities.  They're very useful for announcing planned events and "mode changes" in team operation.  Both parameters will accept a comma-delimited list of email addresses, so you can construct "mailing lists" for any particular workflow event.  Both parameters take the form:
+
+{{{notifyAtX=<email1>[,<email2>[,<emailN>]]}}}
+
+The emails that !TheHat generates make an effort to describe the situation surrounding the sending of the message.  If the event that's sending the message is owned by a clock event, the message will contain some explanation of the nature of the event and its likely implication for the recipient(s).  The email will at minimum state whether the step has started or finished, and will provide the contents of the description field and url parameters (if they're defined).
+
+==== notifyAtStart ====
+This parameter sends a message to the listed recipients when the step in question starts.
+==== notifyAtFinish ====
+This parameter sends a message to the listed recipients when the step in question finishes.
+
+=== Command Execution ===
+You can associate unix commands with workflow steps. The commands will execute in a shell (bash) context (you can use shell commands), and will execute as the bot user.  There's obviously precious little you cannot do with this mechanism, but!:
+
+Be aware that the workflow engine does not attempt to fork a child and poll for its conclusion; commands will *block* bot execution 'til they finish. That means that if you instruct the bot to execute a command that hangs up on you, you'll cause the entire workflow to grind to a screeching halt.  Caveat emptor!
+
+The command execution parameters take the form:
+
+{{{xxxCommand=<unix command>}}}
+
+Note that you can attach commands to steps that are owned by bots or humans - it doesn't matter. The commands will fire off when step state changes regardless of what mechanism caused the change.
+
+==== startCommand ====
+This command will be executed when the step starts.
+==== finishCommand ====
+This command will be executed when the step finishes.
+
+== Examples ==
+=== Simple ===
+(see the toast-making example on the home page)
+=== Calendar ===
+{{{
+[event_one]
+description=I am in progress 'til event three starts
+owner=clock-wait:10/1/2007@00:00:00
+notifyAtStart=thewholeteam@redhat.com
+
+[event_two]
+description=I am in progress 'til event three starts
+owner=clock-wait:10/15/2007@00:00:00
+notifyAtStart=asmallerteam@redhat.com
+
+[event_three]
+description=I am in progress 'til event four starts
+owner=clock-wait:10/30/2007@13:00:00
+gates=event_one,event_two
+notifyAtStart=anothercompletelydifferentteam@redhat.com
+
+[event_four]
+description=Everyone is waiting for me
+owner=clock-alarm:11/15/2007@0:0:0
+notifyAtStart=thewholeteam@redhat.com,anothercompletelydifferentteam@redhat.com
+gates=event_three
+}}}
+
+This workflow describes a schedule-like calendar.  On 10/1/2007 the first event begins. On 10/15/2007 the second event begins and runs concurrently with event one. On 10/30/2007 at 1:00pm both events end and an third one starts. The third event runs 'til 11/15/2007 at midnight, at which time the final event begins and ends.  All four events notify various parties as to what's going on.
+
+=== Handoff ===
+{{{
+[stuffhappens]
+description=Stuff happens here
+owner=clock-wait:10/1/2007@0:0:0
+
+[requiredmanualstep]
+description=Someone needs to do something manual here
+owner=clock-handoff:10/29/2007@0:0:0
+notifyAtStart=personOne@redhat.com,personTwo@redhat.com
+notifyAtFinish=interestedParties@redhat.com
+
+[bigevent]
+description=What everthing's driving for
+gates=stuffhappens,requiredmanualstep
+owner=clock-alarm:10/30/2007@10:30:00
+}}}
+
+This workflow describes a situation where two things lead up to one probably big-ish thing. The 'stuffhappens' step is presumably a whole buch of work required for big event. 'requiredmanualstep' is some crucial prep work that must happen one day before 'bigevent' can start.  'stuffhappens' continues right up to 'bigevent'. 'requiredmanualstep' makes an announcement to a couple of people who presumably know what to do, and leaves the step started and UNASSIGNED.  If nobody (presumably personOne or personTwo) completes 'requiredmanualstep', then 'bigevent' cannot begin.

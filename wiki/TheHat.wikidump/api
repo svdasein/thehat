@@ -1,0 +1,41 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+= Engine API =
+
+The underlying workflow library has a very simple Ruby based API. If you're inclined to develop software, you'll find that it's almost trivially easy to make new frontends for this system.  The following is a sketch of what it takes to write a frontend with an asynchronous clock for clock-owner processing:
+
+{{{
+workflow = Workflow.new('/path/to/config.yaml')
+mutex = Mutex.new
+connection = WhateverYou'reConnectingTo.new
+Thread.new { # Clock thread
+	while true
+		mutex.synchronize do
+				workflow.ticToc() 
+				connection.puts(workflow.messages)
+				workflow.clearMessages
+		end
+		sleep(1)
+	end
+}
+while not done 
+	mutex.synchronize do
+		workflow.processCommand(connection.readline)
+		connection.puts(workflow.messages)
+		workflow.clearMessages
+	end
+end
+}}}
+
+So - here's the API:
+
+ * processCommand(aString): parses a line of text, acts on it - output accrues in messages
+
+ * ticToc(forceNoise?): does a pass through the workflow for clock-owner events and processes them as appropriate.  If you pass true to it, it'll output a message each time it's called regardless of whether or not something interesting actually happened.
+
+ * messages: returns the aggregate of messages from program logic since the last time clearMessages was called 
+
+ * clearMessages: clears all the accrued messages
+
+If you're going to do a clock thread, use a mutex.
+
+I've had one notion rattling around that might make implementing a multi-protocol bot a bit easier - some kind of engine driven callback mechanism for the clock and main threads.  Still thinking about it.  If you have some ideas, feel free to share.

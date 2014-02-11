@@ -1,0 +1,24 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+= Quick start guide =
+To run the workflow system in a as an IRC bot, do the following:
+ * Install the system per the [wiki:configuration configuration instructions]
+ * In the !TheHat directory, run ./thehat-irc yourconfig.yaml
+
+The bot will join the channel you set in the configuration file.  You should join that channel as well with your favorite IRC client.
+
+In the IRC channel, you interact with the bot by saying "botnic command [<options>]"
+
+ * Get a list of all the workflows available: "botnic ls"
+ * Load one of the listed workflows: "botnic load <workflowname>"
+ * Visit the link that the bot now mentions - your graph should be there.
+ * Claim some steps: "botnic gimme <stepname>[,<stepname>[,...]]"
+ * Get someone else to join the channel and ask them to claim some steps as well
+ * Go through the workflow like this:
+ * When a step that you own comes up, it'll say so in IRC. To indicate that you've started the step, say 'botnic start <stepname>'
+ * When you want to say you've finished the step, say 'botnic finish <stepname>'
+
+Check out this [wiki:sampleSession sample session] for a detailed walkthrough of a simple workflow.
+
+Following this procedure, your workflow will proceed 'til the last of its steps are performed - at the end of the workflow, the bot will announce workflow completion.
+
+Congrats - you just ran your first workflow!

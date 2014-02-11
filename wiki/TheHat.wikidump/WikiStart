@@ -1,0 +1,87 @@
+[[TOC(history,configuration,quickstart,graphlegend,commands,workflows,api)]]
+
+'''Welcome to the home of !TheHat!
+
+ * ''Download it '''[https://fedorahosted.org/TheHat/browser/releases here.]'''''
+ * ''Subversion access: '''svn co http://svn.fedorahosted.org/svn/TheHat/'''''
+ * ''Join the '''[http://groups.google.com/group/thehat-users/topics mailing list]''' ([http://groups.google.com/group/thehat-users/subscribe subscribe])''
+
+
+Ever felt that getting a bunch of people to coordinate their efforts was uncomfortably similar to herding cats?  You need !TheHat!  !TheHat is an open source interactive workflow guidance system - it helps you coordinate your team's efforts. Take a look at a '''[wiki:sampleSession sample session]''' to get a sense of what it does.
+
+TheHat consists of a very easy to use workflow engine library plus a few "front ends" that allow you to use the engine in group communication contexts such as IRC channels and XMPP (Jabber) multi-user chat rooms.  In operation, TheHat drives a conversation between workflow particpants and itself, prompting workflow activities.
+
+TheHat workflows are conceptually simple. They consist of a collection of workflow steps, most of which are "gated" by one or more other steps.  Gates are steps that must be successfully concluded before they can be said to have been cleared.  Visually, a workflow represented as a directed graph, and looks like this:
+
+[[Image(toast-digraph.png)]]
+
+The above example shows a series of workflow steps that lead to the making of a piece of toast.  In order for the final outcome (the toast) to come about, a number of steps must occur in a certain order.  The steps are workflow steps, and any step that requires that one or more things have occurred before it before it can itself proceed are gated by those previous steps.  In the example above you can see that the slice of toast is being inserted into the toaster now, but that the amount of toasting must first be adjusted before the toasting itself can begin.  
+
+TheHat is easily configured to allow you to watch your workflow progress, via a graph such as the one above, from a web page that !TheHat automatically generates.  And the generated graphs can have associated tool-tips and hyperlinks to e.g. documentation via a automatically generated client side image map.
+
+TheHat workflows are defined in a YAML style file such as:
+
+{{{
+-
+ step: adjusttoasting
+ description: 'Adjust toaster to desired toasting level'
+ group:
+  - hardware
+ gates:
+  - gettoaster
+-
+ step: insertslice
+ description: 'Place bread in toaster'
+ group: 
+  - food
+ gates:
+  - gettoaster
+  - selectslice
+-
+ step: selectslice
+ description: 'Remove slice of bread from bag'
+ group: 
+  - food
+ gates:
+  - openbread
+-
+ step: removetoast
+ description: 'Remove toast from toaster'
+ group: 
+  - food
+ gates:
+  - toastbread
+-
+ step: preptoaster
+ description: 'Plug toaster into wall socket'
+ group:
+  - hardware
+ gates:
+  - gettoaster
+-
+ step: openbread
+ description: 'Open bread bag'
+ group: 
+  - food
+-
+ step: gettoaster
+ description: 'Get toaster out of storage'
+ group:
+  - hardware
+-
+ step: toastbread
+ description: 'Activate toaster'
+ group: 
+  - food
+  - hardware
+ gates:
+  - insertslice
+  - adjusttoasting
+  - preptoaster
+}}}
+
+!TheHat can coordinate complex cross-site multi-party workflows. Steps can be defined that execute automatically, semi-automatically, or manually, and can utilize a number of clock-based time gate mechanisms as well (!TheHat can do "active calendars").
+
+TheHat has modular source control interface modules that enable you to store your workflows in your source control system.
+
+Likewise, TheHat has a number of workflow rendering modules that give various views of the progress of a given workflow.  The output from these renderers is available from a web page that the engine generates automatically.
