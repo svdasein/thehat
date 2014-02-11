@@ -1,4 +1,19 @@
 #!/usr/bin/ruby
+##########################################################################
+# This is in a very early stage of development
+#
+# This script reads a Gnome Planner ( https://github.com/GNOME/planner )
+# file and converts it to a TheHat flow file. 
+#
+# The notes field is overloaded to fill in the blanks that 
+# planner doesn't support, syntax is (will be) yaml-ish
+#
+# usage:
+# 
+# planner-to-flow <thehatconfig> <plannerfile> <newflowfile>
+#
+##########################################################################
+
 require 'rubygems'
 require 'xmlsimple'
 require 'pp'
@@ -6,8 +21,8 @@ require 'pp'
 # TheHat modules
 require_relative 'wfengine'
 
-workflow = Workflow.new(ARGV[0])
-plan = XmlSimple.xml_in(ARGV[1])
+workflow = Workflow.new(ARGV[0]) # workflow config file e.g. example.yaml
+plan = XmlSimple.xml_in(ARGV[1]) # full path to planner file
 tasks = Hash.new
 plan['tasks'][0]['task'].each {
 	|task|
@@ -55,5 +70,5 @@ tasks.each {
 	# NOTE: api needs to change to simplify this
 	workflow.steps[stepValues['name']]=Step.new(workflow,stepValues['name'],stepValues)
 }
-workflow.saveToFile(ARGV[2])
+workflow.saveToFile(ARGV[2]) # full path to new flow file
 
