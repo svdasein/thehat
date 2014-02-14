@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 ##########################################################################
 # This is in a very early stage of development
 #
@@ -14,15 +14,34 @@
 #
 ##########################################################################
 
-require 'rubygems'
 require 'xmlsimple'
 require 'pp'
 
 # TheHat modules
-require_relative 'wfengine'
+require 'thehat/wfengine'
 
-workflow = Workflow.new(ARGV[0]) # workflow config file e.g. example.yaml
-plan = XmlSimple.xml_in(ARGV[1]) # full path to planner file
+if ARGV.size != 2
+	print "Usage: #{$0} <config.yaml> <plannerfile.xml>\n"
+	exit
+end
+
+hadError = false
+
+begin
+	workflow = Workflow.new(ARGV[0]) # workflow config file e.g. example.yaml
+rescue
+	print "Error attempting to open config file #{ARGV[0]}\n"
+	hadError = true
+end
+begin
+	plan = XmlSimple.xml_in(ARGV[1]) # full path to planner file
+rescue
+	print "Error attempting to open planner file #{ARGV[1]}\n"
+	hadError = true
+end
+
+exit if hadError
+
 tasks = Hash.new
 plan['tasks'][0]['task'].each {
 	|task|

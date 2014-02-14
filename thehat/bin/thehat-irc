@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 ###########################################################################
 # This file is part of TheHat - an interactive appFrame system
 # Copyright (C) 2007-2014 by David Parker. All rights reserved
@@ -18,9 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ###########################################################################
 
-require_relative 'wfappframe'
+require 'thehat/wfappframe'
 require 'thread'
-require 'rubygems'
 require 'cinch'
 
 class IRCFrontend < HatApp
