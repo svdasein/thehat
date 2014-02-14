@@ -18,9 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ###########################################################################
 
-require_relative 'wfappframe'
+require 'thehat/wfappframe'
 require 'thread'
-require 'rubygems'
 require 'cinch'
 
 class IRCFrontend < HatApp

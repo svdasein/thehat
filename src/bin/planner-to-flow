@@ -14,12 +14,11 @@
 #
 ##########################################################################
 
-require 'rubygems'
 require 'xmlsimple'
 require 'pp'
 
 # TheHat modules
-require_relative 'wfengine'
+require 'thehat/wfengine'
 
 if ARGV.size != 2
 	print "Usage: #{$0} <config.yaml> <plannerfile.xml>\n"

@@ -23,8 +23,7 @@
 # "Drivers" for various representations of the workflow...
 ###################################################################
 ###################################################################
-require_relative 'simple-graphviz'
-require 'rubygems'
+require 'thehat/simple-graphviz'
 require 'icalendar'
 
 class WorkflowRenderer

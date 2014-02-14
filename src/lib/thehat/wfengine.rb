@@ -24,12 +24,11 @@ require 'timeout'
 require 'yaml'
 
 # Gem modules
-require 'rubygems'
 require 'pp'
 
 # TheHat modules
-require_relative 'wfrenderers'
-require_relative 'wfsourcecontrol'
+require 'thehat/wfrenderers'
+require 'thehat/wfsourcecontrol'
 
 $Version = '0.3'
 $CopyrightYears = '2007-2014'
