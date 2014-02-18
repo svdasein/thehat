@@ -1,0 +1,6 @@
+####################################################################################
+#  Source this file into your shell to enable in-situ (not installed via gem etc)
+#  editing and testing
+####################################################################################
+export PATH=`pwd`/bin:$PATH
+export RUBYLIB=`pwd`/lib
