@@ -1,6 +1,12 @@
 ####################################################################################
 #  Source this file into your shell to enable in-situ (not installed via gem etc)
-#  editing and testing
+#  editing and testing.  You need to be in the same directory that this file
+#  resides in when you source it, so e.g.
+#
+#	source DEVENV
+#
+#
 ####################################################################################
-export PATH=`pwd`/bin:$PATH
-export RUBYLIB=`pwd`/lib
+export THEHAT_HOME=`pwd`
+export PATH=$THEHAT_HOME/bin:$PATH
+export RUBYLIB=$THEHAT_HOME/lib
