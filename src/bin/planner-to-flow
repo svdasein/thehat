@@ -20,8 +20,15 @@ require 'pp'
 # TheHat modules
 require 'thehat/wfengine'
 
-if ARGV.size != 2
-	print "Usage: #{$0} <config.yaml> <plannerfile.xml>\n"
+
+class String
+	def cleansed
+		return self.gsub(/[^0-9a-z]/i, '_')
+	end
+end 
+
+if ARGV.size != 3
+	print "Usage: #{$0} <config.yaml> <plannerfile.xml> <outputfile.flow>\n"
 	exit
 end
 
@@ -42,6 +49,7 @@ end
 
 exit if hadError
 
+
 tasks = Hash.new
 plan['tasks'][0]['task'].each {
 	|task|
@@ -49,21 +57,30 @@ plan['tasks'][0]['task'].each {
 }
 
 resources = Hash.new
-plan['resources'][0]['resource'].each {
-	|resource|
-	resources[resource['id']] = resource
-}
+if plan['resources'][0]['resource']
+	plan['resources'][0]['resource'].each {
+		|resource|
+		resources[resource['id']] = resource
+	}
+end
 
 
 allocations = Hash.new
-plan['allocations'][0]['allocation'].each {
-	|allocation|
-	allocations[allocation['task-id']] = allocation['resource-id']
-}
+if plan['allocations'][0]['allocation']
+	plan['allocations'][0]['allocation'].each {
+		|allocation|
+		allocations[allocation['task-id']] = allocation['resource-id']
+	}
+end
 
 tasks.each {
 	|id,task|
 	stepValues = Hash.new
+	if task['name'] > ''
+		stepValues['name'] = task['name'].cleansed
+	else
+		stepValues['name'] = "task#{id.to_s}"
+	end
 	if task['note']
 		task['note'].gsub('\n',"\n").split("\n").each {
 			|note|
@@ -74,7 +91,6 @@ tasks.each {
 	if stepValues['group']
 		stepValues['group'] = stepValues['group'].split(',')
 	end
-	stepValues['name'] = "task#{id.to_s}"
 	if allocations[id.to_s]
 		stepValues['owner'] = resources[allocations[id.to_s]]['name']
 	end
@@ -82,12 +98,17 @@ tasks.each {
 		gates = Array.new
 		task['predecessors'][0]['predecessor'].each {
 			|predecessor|
-			gates.push("task#{predecessor['predecessor-id']}")
+			if tasks[predecessor['predecessor-id']]['name'] > ''
+				gates.push(tasks[predecessor['predecessor-id']]['name'].cleansed)
+			else
+				gates.push("task#{predecessor['predecessor-id']}")
+			end
 		}
 		stepValues['gates'] = gates
 	end
 	# NOTE: api needs to change to simplify this
 	workflow.steps[stepValues['name']]=Step.new(workflow,stepValues['name'],stepValues)
 }
+print "Writing to #{ARGV[2]}\n"
 workflow.saveToFile(ARGV[2]) # full path to new flow file
 

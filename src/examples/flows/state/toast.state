@@ -1,0 +1,347 @@
+--- &11902220 !ruby/object:Workflow
+messageText: !binary |-
+  QWxsIHN0ZXBzLCBzdGF0ZXMsIGFuZCBtb2RlcyBjbGVhcmVkLgo=
+config: &11898480
+  wfengine:
+    datadir: examples/flows
+    webdir: www
+    baseurl: http://localhost/~someuser
+    svnroot: file:///home/someuser/svn
+    debuglevel: 1
+    renderers:
+    - WorkflowDigraph
+    allowExec: false
+    vcs:
+      class: Subversion
+      root: file:///home/someuser/svn
+  thehat-irc:
+    nic: mybot
+    name: MyBot
+    channel: mychannel
+    server: irc.freenode.net
+    port: 6667
+  thehat-xmpp:
+    host: myserver.com
+    account: flow
+    password: password
+    resource: TheHat
+    room: test@conference.myserver.com
+datadir: examples/flows
+webdir: www
+baseurl: http://localhost/~someuser
+svnroot: file:///home/someuser/svn
+allowExec: false
+debugLevel: 1
+renderers:
+- !ruby/object:WorkflowDigraph
+  workflow: *11902220
+  options:
+    :type: png
+  webFiles:
+    Directed graph rendered as a dot file: toast-digraph.dot
+    Directed graph rendered as a png file (auto-refresh): http://localhost/~someuser/flow.cgi?url=toast-digraph.png&cmap=toast-digraph.cmap
+    Directed graph rendered as a png file: toast-digraph.png
+  attentionColor: IndianRed
+  allgoodColor: PaleGreen2
+  actionColor: gold
+  dormantColor: LightGrey
+  statesColors:
+    -2: PaleGreen2
+    -1: gold
+    -3: IndianRed
+    0: PaleGreen2
+    1: gold
+    2: LightGrey
+  graph: !ruby/object:SimpleGraphViz
+    name: toast
+    dotfilePath: www/toast-digraph.dot
+    nodes:
+      adjusttoasting:
+        :fontsize: '9'
+        :label: ! 'Name: adjusttoasting\nDescription: Adjust toaster to desired toasting
+          level\nGroup(s): hardware\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
+      insertslice:
+        :fontsize: '9'
+        :label: ! 'Name: insertslice\nDescription: Place bread in toaster\nGroup(s):
+          food\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
+      selectslice:
+        :fontsize: '9'
+        :label: ! 'Name: selectslice\nDescription: Remove slice of bread from bag\nGroup(s):
+          food\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
+      removetoast:
+        :fontsize: '9'
+        :label: ! 'Name: removetoast\nDescription: Remove toast from toaster\nGroup(s):
+          food\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
+      preptoaster:
+        :fontsize: '9'
+        :label: ! 'Name: preptoaster\nDescription: Plug toaster into wall socket\nGroup(s):
+          hardware\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
+      openbread:
+        :fontsize: '9'
+        :label: ! 'Name: openbread\nDescription: Open bread bag\nGroup(s): food\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: IndianRed
+      gettoaster:
+        :fontsize: '9'
+        :label: ! 'Name: gettoaster\nDescription: Get toaster out of storage\nGroup(s):
+          hardware\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: IndianRed
+      toastbread:
+        :fontsize: '9'
+        :label: ! 'Name: toastbread\nDescription: Activate toaster\nGroup(s): food,
+          hardware\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
+    connections:
+    - - gettoaster
+      - adjusttoasting
+    - - gettoaster
+      - insertslice
+    - - selectslice
+      - insertslice
+    - - openbread
+      - selectslice
+    - - toastbread
+      - removetoast
+    - - gettoaster
+      - preptoaster
+    - - insertslice
+      - toastbread
+    - - adjusttoasting
+      - toastbread
+    - - preptoaster
+      - toastbread
+vcsInterface: !ruby/object:Subversion
+  workflow: *11902220
+  config: *11898480
+idlePromptMinutes: 5
+name: toast
+basename: toast
+steps:
+  adjusttoasting: &11958460 !ruby/object:Step
+    workflow: *11902220
+    name: adjusttoasting
+    step: adjusttoasting
+    description: Adjust toaster to desired toasting level
+    group:
+    - hardware
+    gates:
+    - gettoaster
+    owner: !ruby/object:Owner
+      step: *11958460
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  insertslice: &11956840 !ruby/object:Step
+    workflow: *11902220
+    name: insertslice
+    step: insertslice
+    description: Place bread in toaster
+    group:
+    - food
+    gates:
+    - gettoaster
+    - selectslice
+    owner: !ruby/object:Owner
+      step: *11956840
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  selectslice: &12036980 !ruby/object:Step
+    workflow: *11902220
+    name: selectslice
+    step: selectslice
+    description: Remove slice of bread from bag
+    group:
+    - food
+    gates:
+    - openbread
+    owner: !ruby/object:Owner
+      step: *12036980
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  removetoast: &12134640 !ruby/object:Step
+    workflow: *11902220
+    name: removetoast
+    step: removetoast
+    description: Remove toast from toaster
+    group:
+    - food
+    gates:
+    - toastbread
+    owner: !ruby/object:Owner
+      step: *12134640
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  preptoaster: &12133040 !ruby/object:Step
+    workflow: *11902220
+    name: preptoaster
+    step: preptoaster
+    description: Plug toaster into wall socket
+    group:
+    - hardware
+    gates:
+    - gettoaster
+    owner: !ruby/object:Owner
+      step: *12133040
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  openbread: &12132240 !ruby/object:Step
+    workflow: *11902220
+    name: openbread
+    step: openbread
+    description: Open bread bag
+    group:
+    - food
+    gates: []
+    owner: !ruby/object:Owner
+      step: *12132240
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  gettoaster: &12131300 !ruby/object:Step
+    workflow: *11902220
+    name: gettoaster
+    step: gettoaster
+    description: Get toaster out of storage
+    group:
+    - hardware
+    gates: []
+    owner: !ruby/object:Owner
+      step: *12131300
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+  toastbread: &12130040 !ruby/object:Step
+    workflow: *11902220
+    name: toastbread
+    step: toastbread
+    description: Activate toaster
+    group:
+    - food
+    - hardware
+    gates:
+    - insertslice
+    - adjusttoasting
+    - preptoaster
+    owner: !ruby/object:Owner
+      step: *12130040
+      name: 
+      params: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    reverseGates: []
+    state: 2
+reverting: false
+midRevert: false
+batching: false
+hadCheckpoint: false
+lastActivity: 2014-02-19 14:50:20.132191333 -06:00
+clockEnabled: false
+notifsEnabled: false
+states:
+  reverted: -2
+  reverting: -1
+  failed: -3
+  pnd rvrt: 0
+  done: 0
+  in prog: 1
+  pending: 2
+statesNames:
+  -2: reverted
+  -1: reverting
+  -3: failed
+  0: finished
+  1: in prog
+  2: pending
