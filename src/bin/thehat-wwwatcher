@@ -1,6 +1,47 @@
 #!/usr/bin/env ruby
+################################################################################
+# This file is part of TheHat - an interactive workflow system
+# Copyrigt (C) 2007,2014  by Dave Parker. All rights reserved
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#################################################################################
 
 require 'sinatra'
+require 'haml'
+require 'thehat/wfengine'
+
+#################################################################################
+# Initialize workflow logic - overkill for what we need from it but I'm lazy
+# ... and maybe somwhere down the line we'll do something more interesting
+#################################################################################
+if ARGV.size != 1
+        print "Usage: #{$0} <config.yaml>\n"
+        exit
+end
+hadError = false
+begin
+        workflow = Workflow.new(ARGV[0]) # workflow config file e.g. example.yaml
+rescue
+        print "Error attempting to open config file #{ARGV[0]}\n"
+        hadError = true
+end
+exit if hadError
+
+##############################
+# WWW stuff from here on 
+##############################
 
 set :public_folder, 'www'
 
@@ -9,82 +50,74 @@ get '/' do
 end
 
 get '/flow' do
-	headers 'Refresh' => '10'
-	erb :flowform
+	@title = 'TheHat WWWatcher'
+	@myurl = '/flow'
+	@imgurl = request.params['img']
+	@cmap = request.params['cmap']
+	@timenow = Time.now
+	@lastmod = File.mtime("www/#{request.params['img']}")
+	@fontsize = '-1'
+	if request.params['refresh']
+		@refresh = request.params['refresh']
+	else
+		@refresh = '10'
+	end
+	headers 'Refresh' => @refresh
+	haml :flowform
 end
 
 
 __END__
+
 @@flowform
+%html
+	%head
+		%title #{@title}
+	%body
+		%form{ :name=>"MyForm", :method=>"GET", :action=>"#{@myurl}" }
+			%table{:bgcolor=>"#F2F2F2",:width=>"80%"}
+				%tr
+					%td
+						%font{:size=>"#{@fontsize}"}
+							%b Fetched:
+					%td
+						%font{:size=>"#{@fontsize}"}
+							#{@timenow}
+					%td{:width=>"10%"}
+						&nbsp;
+					%td
+						%font{:size=>"#{@fontsize}"}
+							%b Image:
+					%td{:colspan=>"1"}
+						%font{:size=>"#{@fontsize}"}
+							#{@imgurl}
+							%input{:name=>"img",:type=>"hidden",:value=>"#{@imgurl}",:size=>"50"}
+							%input{:name=>"cmap",:type=>"hidden",:value=>"#{@cmap}",:size=>"50"}
+				%tr
+					%td
+						%font{:size=>"#{@fontsize}"}
+							%b Last update:
+					%td
+						%font{:size=>"#{@fontsize}"}
+							#{@lastmod}
+					%td
+						&nbsp;
+					%td
+						%font{:size=>"#{@fontsize}"}
+							%b Refresh:
+					%td
+						%font{:size=>"#{@fontsize}"}
+							%input{:name=>"refresh",:type=>"text",:value=>"#{@refresh}",:size=>"5"}
+					%td
+						%input{:type=>"submit",:value=>"Update"}
+		- if @cmap
+			<map name="#{@cmap}">"
+			#{File.new("www/#{@cmap}",'r').read}
+			</map>
+			<IMG SRC="/#{@imgurl}" BORDER="0" ISMAP USEMAP="##{@cmap}">
+		- else
+			<IMG SRC="/#{@imgurl}" BORDER="0">
 
-<HTML>
-
-  <HEAD>
-    <TITLE>$title</TITLE>
-  </HEAD>
-
-  <BODY>
-    <FORM NAME="MyForm" METHOD="GET" ACTION="$MYURL">
-    <TABLE BGCOLOR="#F2F2F2" WIDTH=80%>
-      <TR>
-        <TD><FONT SIZE="$fnsize"><B>Fetched:</B></FONT></TD>
-        <TD><FONT SIZE="$fnsize">$now</FONT></TD>
-
-        <TD WIDTH=10%>&nbsp;</TD>
-
-        <TD><FONT SIZE="$fnsize"><B>URL:</B></FONT></TD>
-        <TD COLSPAN=2>
-          <FONT SIZE="$fnsize">
-            <INPUT NAME="url" TYPE="text" VALUE="$url" SIZE=50>
-          </FONT>
-        </TD>
-
-      </TR>
-      <TR>
-
-        <TD><FONT SIZE="$fnsize"><B>Last update:</B></FONT></TD>
-        <TD><FONT SIZE="$fnsize">$lastmod</FONT></TD>
-
-        <TD>&nbsp;</TD>
-
-        <TD><FONT SIZE="$fnsize"><B>Refresh:</B></FONT></TD>
-        <TD>
-            <FONT SIZE="$fnsize">
-              <INPUT NAME="refresh" TYPE="text" VALUE="$refresh" SIZE=5>
-        </TD>
-        <TD>
-              <INPUT TYPE="reset"> 
-              &nbsp; &nbsp;
-              <INPUT TYPE="submit" VALUE="Submit">
-              &nbsp; &nbsp;
-              <INPUT TYPE="button" VALUE="Clear" onClick="
-                window.document.MyForm.url.value='';
-                window.document.MyForm.refresh.value='';
-              ">
-              &nbsp; &nbsp;
-              <INPUT TYPE="button" VALUE="Reload" onClick="
-               window.location='$MYURL'
-              ">
-            </FONT>
-        </TD>
-      </TR>
-      <TR>
-      </TR>
-    </TABLE>
-    </FORM>
-if ($cmap) {
-        open(FILE,$cmap);
-        print qq{<map name="$cmap">};
-        print <FILE>;
-        print qq{</map>};
-        close(FILE);
-        print qq{<IMG SRC="$url" BORDER="0" ISMAP USEMAP="#$cmap">}
-} else {
-    print qq{<IMG SRC="$url" BORDER="0">}
-}
-
-print qq{
-  </BODY>
-
-</HTML>
+-#	%pre
+-#		#{request.inspect.tr(',',"\n")}
 

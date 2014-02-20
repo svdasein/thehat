@@ -1,4 +1,4 @@
---- &8497860 !ruby/object:Workflow
+--- &13376260 !ruby/object:Workflow
 messageText: !binary |-
   VXNpbmcgdGhlICdTdWJ2ZXJzaW9uJyB2ZXJzaW9uIGNvbnRyb2wgaW50ZXJm
   YWNlClN1YnZlcnNpb24gaW50ZXJmYWNlIGNvbmZpZ3VyZWQgd2l0aCBzdm4g
@@ -6,11 +6,11 @@ messageText: !binary |-
   aW5ncyBmcm9tIFRoZUhhdC4gIE9CRVkhIDopCk5PVEU6IEF1dG8tbG9hZGlu
   ZyB3b3JrZmxvdyBiZW5keW5hbWVzCkFsbCBzdGVwcywgc3RhdGVzLCBhbmQg
   bW9kZXMgY2xlYXJlZC4K
-config: &8512140
+config: &13408820
   wfengine:
     datadir: examples/flows
     webdir: www
-    baseurl: http://localhost/~someuser
+    baseurl: http://localhost:4567/
     svnroot: file:///home/someuser/svn
     debuglevel: 1
     renderers:
@@ -33,18 +33,18 @@ config: &8512140
     room: test@conference.myserver.com
 datadir: examples/flows
 webdir: www
-baseurl: http://localhost/~someuser
+baseurl: http://localhost:4567/
 svnroot: file:///home/someuser/svn
 allowExec: false
 debugLevel: 1
 renderers:
 - !ruby/object:WorkflowDigraph
-  workflow: *8497860
+  workflow: *13376260
   options:
     :type: png
   webFiles:
     Directed graph rendered as a dot file: bendynames-digraph.dot
-    Directed graph rendered as a png file (auto-refresh): http://localhost/~someuser/flow.cgi?url=bendynames-digraph.png&cmap=bendynames-digraph.cmap
+    Directed graph rendered as a png file (auto-refresh): http://localhost:4567//flow?img=bendynames-digraph.png&cmap=bendynames-digraph.cmap
     Directed graph rendered as a png file: bendynames-digraph.png
   attentionColor: IndianRed
   allgoodColor: PaleGreen2
@@ -65,6 +65,8 @@ renderers:
         :fontsize: '9'
         :label: ! 'Name: Start_procedure\n'
         :style: filled
+        :URL: http://google.com
+        :tooltip: Click for details
         :color: IndianRed
         :fillcolor: IndianRed
       Fork1:
@@ -175,18 +177,19 @@ renderers:
     - - Fork2_1
       - task13
 vcsInterface: !ruby/object:Subversion
-  workflow: *8497860
-  config: *8512140
+  workflow: *13376260
+  config: *13408820
 idlePromptMinutes: 5
 name: bendynames
 basename: bendynames
 steps:
-  Start_procedure: &8792720 !ruby/object:Step
-    workflow: *8497860
+  Start_procedure: &15303140 !ruby/object:Step
+    workflow: *13376260
     name: Start_procedure
     step: Start_procedure
+    url: http://google.com
     owner: !ruby/object:Owner
-      step: *8792720
+      step: *15303140
       name: 
       params: 
     description: 
@@ -194,7 +197,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -202,12 +204,13 @@ steps:
     gates: []
     reverseGates: []
     state: 2
-  Fork1: &8791780 !ruby/object:Step
-    workflow: *8497860
+  Fork1: &15508360 !ruby/object:Step
+    workflow: *13376260
     name: Fork1
     step: Fork1
+    url: 
     owner: !ruby/object:Owner
-      step: *8791780
+      step: *15508360
       name: 
       params: 
     description: 
@@ -215,7 +218,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -224,12 +226,13 @@ steps:
     - Start_procedure
     reverseGates: []
     state: 2
-  Fork2: &8790900 !ruby/object:Step
-    workflow: *8497860
+  Fork2: &14829600 !ruby/object:Step
+    workflow: *13376260
     name: Fork2
     step: Fork2
+    url: 
     owner: !ruby/object:Owner
-      step: *8790900
+      step: *14829600
       name: 
       params: 
     description: 
@@ -237,7 +240,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -246,12 +248,13 @@ steps:
     - Start_procedure
     reverseGates: []
     state: 2
-  Fork1_1: &8789980 !ruby/object:Step
-    workflow: *8497860
+  Fork1_1: &14840200 !ruby/object:Step
+    workflow: *13376260
     name: Fork1_1
     step: Fork1_1
+    url: 
     owner: !ruby/object:Owner
-      step: *8789980
+      step: *14840200
       name: 
       params: 
     description: 
@@ -259,7 +262,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -268,12 +270,13 @@ steps:
     - Fork1
     reverseGates: []
     state: 2
-  Fork1_2: &8788960 !ruby/object:Step
-    workflow: *8497860
+  Fork1_2: &14837700 !ruby/object:Step
+    workflow: *13376260
     name: Fork1_2
     step: Fork1_2
+    url: 
     owner: !ruby/object:Owner
-      step: *8788960
+      step: *14837700
       name: 
       params: 
     description: 
@@ -281,7 +284,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -290,12 +292,13 @@ steps:
     - Fork1
     reverseGates: []
     state: 2
-  Fork1_2_1: &8787980 !ruby/object:Step
-    workflow: *8497860
+  Fork1_2_1: &14835060 !ruby/object:Step
+    workflow: *13376260
     name: Fork1_2_1
     step: Fork1_2_1
+    url: 
     owner: !ruby/object:Owner
-      step: *8787980
+      step: *14835060
       name: 
       params: 
     description: 
@@ -303,7 +306,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -312,12 +314,13 @@ steps:
     - Fork1_2
     reverseGates: []
     state: 2
-  Fork1_2_2: &8786920 !ruby/object:Step
-    workflow: *8497860
+  Fork1_2_2: &14832940 !ruby/object:Step
+    workflow: *13376260
     name: Fork1_2_2
     step: Fork1_2_2
+    url: 
     owner: !ruby/object:Owner
-      step: *8786920
+      step: *14832940
       name: 
       params: 
     description: 
@@ -325,7 +328,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -334,12 +336,13 @@ steps:
     - Fork1_2
     reverseGates: []
     state: 2
-  Fork1_2_3: &8786020 !ruby/object:Step
-    workflow: *8497860
+  Fork1_2_3: &14743880 !ruby/object:Step
+    workflow: *13376260
     name: Fork1_2_3
     step: Fork1_2_3
+    url: 
     owner: !ruby/object:Owner
-      step: *8786020
+      step: *14743880
       name: 
       params: 
     description: 
@@ -347,7 +350,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -356,12 +358,13 @@ steps:
     - Fork1_2
     reverseGates: []
     state: 2
-  Fork2_1: &8785120 !ruby/object:Step
-    workflow: *8497860
+  Fork2_1: &14740360 !ruby/object:Step
+    workflow: *13376260
     name: Fork2_1
     step: Fork2_1
+    url: 
     owner: !ruby/object:Owner
-      step: *8785120
+      step: *14740360
       name: 
       params: 
     description: 
@@ -369,7 +372,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -378,12 +380,13 @@ steps:
     - Fork2
     reverseGates: []
     state: 2
-  Fork2_1_1: &8803660 !ruby/object:Step
-    workflow: *8497860
+  Fork2_1_1: &14757500 !ruby/object:Step
+    workflow: *13376260
     name: Fork2_1_1
     step: Fork2_1_1
+    url: 
     owner: !ruby/object:Owner
-      step: *8803660
+      step: *14757500
       name: 
       params: 
     description: 
@@ -391,7 +394,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -401,12 +403,13 @@ steps:
     - Fork2_1
     reverseGates: []
     state: 2
-  Fork2_1_1_1: &8802660 !ruby/object:Step
-    workflow: *8497860
+  Fork2_1_1_1: &14756360 !ruby/object:Step
+    workflow: *13376260
     name: Fork2_1_1_1
     step: Fork2_1_1_1
+    url: 
     owner: !ruby/object:Owner
-      step: *8802660
+      step: *14756360
       name: 
       params: 
     description: 
@@ -414,7 +417,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -423,12 +425,13 @@ steps:
     - Fork2_1_1
     reverseGates: []
     state: 2
-  EndProcedure: &8800880 !ruby/object:Step
-    workflow: *8497860
+  EndProcedure: &14755420 !ruby/object:Step
+    workflow: *13376260
     name: EndProcedure
     step: EndProcedure
+    url: 
     owner: !ruby/object:Owner
-      step: *8800880
+      step: *14755420
       name: 
       params: 
     description: 
@@ -436,7 +439,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -449,12 +451,13 @@ steps:
     - Fork2_1_1_1
     reverseGates: []
     state: 2
-  task13: &8799900 !ruby/object:Step
-    workflow: *8497860
+  task13: &14754020 !ruby/object:Step
+    workflow: *13376260
     name: task13
     step: task13
+    url: 
     owner: !ruby/object:Owner
-      step: *8799900
+      step: *14754020
       name: 
       params: 
     description: 
@@ -462,7 +465,6 @@ steps:
     startCommand: 
     finishTime: 
     finishCommand: 
-    url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
@@ -475,7 +477,7 @@ reverting: false
 midRevert: false
 batching: false
 hadCheckpoint: false
-lastActivity: 2014-02-19 21:37:48.108713603 -06:00
+lastActivity: 2014-02-20 12:49:10.038827646 -06:00
 clockEnabled: false
 notifsEnabled: false
 states:

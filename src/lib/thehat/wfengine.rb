@@ -606,7 +606,6 @@ class Workflow
 				renderer.webFiles.each {
 					|description,filename|
 					depictions += "<tr><td>#{renderer.class.to_s}</td><td><a HREF=\"#{filename}\">#{description}</a></td>"
-					#depictions += "<td><a href=\"#{@baseurl}/flow.cgi?url=#{filename}\">(auto-refresh)</a></td>"
 					depictions += "</tr>"
 				}
 			end

@@ -133,11 +133,11 @@ class WorkflowDigraph < WorkflowRenderer
 		}
 		@webFiles["Directed graph rendered as a dot file"] = "#{@workflow.basename}-digraph.dot"
 		if @options[:type] =~ /gif|png|jpg/
-			reloaderUrl = "#{@workflow.baseurl}/flow.cgi"
+			reloaderUrl = "#{@workflow.baseurl}/flow"
 			imageBasename = "#{@workflow.basename}-digraph.#{@options[:type]}"
 			cmapBasename = "#{@workflow.basename}-digraph.cmap"
 			@graph.output("-T#{@options[:type]} -o #{@workflow.webdir}/#{imageBasename} -Tcmap -o #{@workflow.webdir}/#{cmapBasename}")
-			@webFiles["Directed graph rendered as a #{@options[:type]} file (auto-refresh)"] = "#{reloaderUrl}?url=#{imageBasename}&cmap=#{cmapBasename}"
+			@webFiles["Directed graph rendered as a #{@options[:type]} file (auto-refresh)"] = "#{reloaderUrl}?img=#{imageBasename}&cmap=#{cmapBasename}"
 			@webFiles["Directed graph rendered as a #{@options[:type]} file"] = "#{imageBasename}"
 		else
 			@webFiles["Directed graph rendered as a #{@options[:type]} file"] = "#{@workflow.basename}-digraph.#{@options[:type]}"

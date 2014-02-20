@@ -6,7 +6,7 @@
   notifyAtStart: []
   finishCommand: 
   notifyAtFinish: []
-  url: 
+  url: http://google.com
   note: 
   group: []
   gates: []

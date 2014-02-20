@@ -1,7 +1,7 @@
 wfengine: {
  datadir: 'examples/flows',
  webdir: www,
- baseurl: "http://localhost/~someuser",
+ baseurl: "http://localhost:4567/",
  svnroot: "file:///home/someuser/svn",
  debuglevel: 1,
  renderers: [
