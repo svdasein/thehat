@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+
+require 'sinatra'
+
+set :public_folder, 'www'
+
+get '/' do
+	redirect "/index.html"
+end
+
+get '/flow' do
+	headers 'Refresh' => '10'
+	erb :flowform
+end
+
+
+__END__
+@@flowform
+
+<HTML>
+
+  <HEAD>
+    <TITLE>$title</TITLE>
+  </HEAD>
+
+  <BODY>
+    <FORM NAME="MyForm" METHOD="GET" ACTION="$MYURL">
+    <TABLE BGCOLOR="#F2F2F2" WIDTH=80%>
+      <TR>
+        <TD><FONT SIZE="$fnsize"><B>Fetched:</B></FONT></TD>
+        <TD><FONT SIZE="$fnsize">$now</FONT></TD>
+
+        <TD WIDTH=10%>&nbsp;</TD>
+
+        <TD><FONT SIZE="$fnsize"><B>URL:</B></FONT></TD>
+        <TD COLSPAN=2>
+          <FONT SIZE="$fnsize">
+            <INPUT NAME="url" TYPE="text" VALUE="$url" SIZE=50>
+          </FONT>
+        </TD>
+
+      </TR>
+      <TR>
+
+        <TD><FONT SIZE="$fnsize"><B>Last update:</B></FONT></TD>
+        <TD><FONT SIZE="$fnsize">$lastmod</FONT></TD>
+
+        <TD>&nbsp;</TD>
+
+        <TD><FONT SIZE="$fnsize"><B>Refresh:</B></FONT></TD>
+        <TD>
+            <FONT SIZE="$fnsize">
+              <INPUT NAME="refresh" TYPE="text" VALUE="$refresh" SIZE=5>
+        </TD>
+        <TD>
+              <INPUT TYPE="reset"> 
+              &nbsp; &nbsp;
+              <INPUT TYPE="submit" VALUE="Submit">
+              &nbsp; &nbsp;
+              <INPUT TYPE="button" VALUE="Clear" onClick="
+                window.document.MyForm.url.value='';
+                window.document.MyForm.refresh.value='';
+              ">
+              &nbsp; &nbsp;
+              <INPUT TYPE="button" VALUE="Reload" onClick="
+               window.location='$MYURL'
+              ">
+            </FONT>
+        </TD>
+      </TR>
+      <TR>
+      </TR>
+    </TABLE>
+    </FORM>
+if ($cmap) {
+        open(FILE,$cmap);
+        print qq{<map name="$cmap">};
+        print <FILE>;
+        print qq{</map>};
+        close(FILE);
+        print qq{<IMG SRC="$url" BORDER="0" ISMAP USEMAP="#$cmap">}
+} else {
+    print qq{<IMG SRC="$url" BORDER="0">}
+}
+
+print qq{
+  </BODY>
+
+</HTML>
+

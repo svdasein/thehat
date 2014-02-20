@@ -1,4 +1,4 @@
---- &10059440 !ruby/object:Workflow
+--- &8497860 !ruby/object:Workflow
 messageText: !binary |-
   VXNpbmcgdGhlICdTdWJ2ZXJzaW9uJyB2ZXJzaW9uIGNvbnRyb2wgaW50ZXJm
   YWNlClN1YnZlcnNpb24gaW50ZXJmYWNlIGNvbmZpZ3VyZWQgd2l0aCBzdm4g
@@ -6,7 +6,7 @@ messageText: !binary |-
   aW5ncyBmcm9tIFRoZUhhdC4gIE9CRVkhIDopCk5PVEU6IEF1dG8tbG9hZGlu
   ZyB3b3JrZmxvdyBiZW5keW5hbWVzCkFsbCBzdGVwcywgc3RhdGVzLCBhbmQg
   bW9kZXMgY2xlYXJlZC4K
-config: &10055600
+config: &8512140
   wfengine:
     datadir: examples/flows
     webdir: www
@@ -39,7 +39,7 @@ allowExec: false
 debugLevel: 1
 renderers:
 - !ruby/object:WorkflowDigraph
-  workflow: *10059440
+  workflow: *8497860
   options:
     :type: png
   webFiles:
@@ -133,6 +133,12 @@ renderers:
         :style: filled
         :color: IndianRed
         :fillcolor: LightGrey
+      task13:
+        :fontsize: '9'
+        :label: ! 'Name: task13\n'
+        :style: filled
+        :color: IndianRed
+        :fillcolor: LightGrey
     connections:
     - - Start_procedure
       - Fork1
@@ -150,10 +156,14 @@ renderers:
       - Fork1_2_3
     - - Fork2
       - Fork2_1
+    - - Fork1_1
+      - Fork2_1_1
     - - Fork2_1
       - Fork2_1_1
     - - Fork2_1_1
       - Fork2_1_1_1
+    - - task13
+      - EndProcedure
     - - Fork1_2_3
       - EndProcedure
     - - Fork1_2_2
@@ -162,19 +172,21 @@ renderers:
       - EndProcedure
     - - Fork2_1_1_1
       - EndProcedure
+    - - Fork2_1
+      - task13
 vcsInterface: !ruby/object:Subversion
-  workflow: *10059440
-  config: *10055600
+  workflow: *8497860
+  config: *8512140
 idlePromptMinutes: 5
 name: bendynames
 basename: bendynames
 steps:
-  Start_procedure: &10284900 !ruby/object:Step
-    workflow: *10059440
+  Start_procedure: &8792720 !ruby/object:Step
+    workflow: *8497860
     name: Start_procedure
     step: Start_procedure
     owner: !ruby/object:Owner
-      step: *10284900
+      step: *8792720
       name: 
       params: 
     description: 
@@ -190,12 +202,12 @@ steps:
     gates: []
     reverseGates: []
     state: 2
-  Fork1: &10283780 !ruby/object:Step
-    workflow: *10059440
+  Fork1: &8791780 !ruby/object:Step
+    workflow: *8497860
     name: Fork1
     step: Fork1
     owner: !ruby/object:Owner
-      step: *10283780
+      step: *8791780
       name: 
       params: 
     description: 
@@ -212,12 +224,12 @@ steps:
     - Start_procedure
     reverseGates: []
     state: 2
-  Fork2: &10282740 !ruby/object:Step
-    workflow: *10059440
+  Fork2: &8790900 !ruby/object:Step
+    workflow: *8497860
     name: Fork2
     step: Fork2
     owner: !ruby/object:Owner
-      step: *10282740
+      step: *8790900
       name: 
       params: 
     description: 
@@ -234,12 +246,12 @@ steps:
     - Start_procedure
     reverseGates: []
     state: 2
-  Fork1_1: &10281640 !ruby/object:Step
-    workflow: *10059440
+  Fork1_1: &8789980 !ruby/object:Step
+    workflow: *8497860
     name: Fork1_1
     step: Fork1_1
     owner: !ruby/object:Owner
-      step: *10281640
+      step: *8789980
       name: 
       params: 
     description: 
@@ -256,12 +268,12 @@ steps:
     - Fork1
     reverseGates: []
     state: 2
-  Fork1_2: &10353000 !ruby/object:Step
-    workflow: *10059440
+  Fork1_2: &8788960 !ruby/object:Step
+    workflow: *8497860
     name: Fork1_2
     step: Fork1_2
     owner: !ruby/object:Owner
-      step: *10353000
+      step: *8788960
       name: 
       params: 
     description: 
@@ -278,12 +290,12 @@ steps:
     - Fork1
     reverseGates: []
     state: 2
-  Fork1_2_1: &10351960 !ruby/object:Step
-    workflow: *10059440
+  Fork1_2_1: &8787980 !ruby/object:Step
+    workflow: *8497860
     name: Fork1_2_1
     step: Fork1_2_1
     owner: !ruby/object:Owner
-      step: *10351960
+      step: *8787980
       name: 
       params: 
     description: 
@@ -300,12 +312,12 @@ steps:
     - Fork1_2
     reverseGates: []
     state: 2
-  Fork1_2_2: &10350980 !ruby/object:Step
-    workflow: *10059440
+  Fork1_2_2: &8786920 !ruby/object:Step
+    workflow: *8497860
     name: Fork1_2_2
     step: Fork1_2_2
     owner: !ruby/object:Owner
-      step: *10350980
+      step: *8786920
       name: 
       params: 
     description: 
@@ -322,12 +334,12 @@ steps:
     - Fork1_2
     reverseGates: []
     state: 2
-  Fork1_2_3: &10349960 !ruby/object:Step
-    workflow: *10059440
+  Fork1_2_3: &8786020 !ruby/object:Step
+    workflow: *8497860
     name: Fork1_2_3
     step: Fork1_2_3
     owner: !ruby/object:Owner
-      step: *10349960
+      step: *8786020
       name: 
       params: 
     description: 
@@ -344,12 +356,12 @@ steps:
     - Fork1_2
     reverseGates: []
     state: 2
-  Fork2_1: &10348960 !ruby/object:Step
-    workflow: *10059440
+  Fork2_1: &8785120 !ruby/object:Step
+    workflow: *8497860
     name: Fork2_1
     step: Fork2_1
     owner: !ruby/object:Owner
-      step: *10348960
+      step: *8785120
       name: 
       params: 
     description: 
@@ -366,12 +378,12 @@ steps:
     - Fork2
     reverseGates: []
     state: 2
-  Fork2_1_1: &10348140 !ruby/object:Step
-    workflow: *10059440
+  Fork2_1_1: &8803660 !ruby/object:Step
+    workflow: *8497860
     name: Fork2_1_1
     step: Fork2_1_1
     owner: !ruby/object:Owner
-      step: *10348140
+      step: *8803660
       name: 
       params: 
     description: 
@@ -385,15 +397,16 @@ steps:
     notifyAtFinish: []
     group: []
     gates:
+    - Fork1_1
     - Fork2_1
     reverseGates: []
     state: 2
-  Fork2_1_1_1: &10347160 !ruby/object:Step
-    workflow: *10059440
+  Fork2_1_1_1: &8802660 !ruby/object:Step
+    workflow: *8497860
     name: Fork2_1_1_1
     step: Fork2_1_1_1
     owner: !ruby/object:Owner
-      step: *10347160
+      step: *8802660
       name: 
       params: 
     description: 
@@ -410,12 +423,12 @@ steps:
     - Fork2_1_1
     reverseGates: []
     state: 2
-  EndProcedure: &10346120 !ruby/object:Step
-    workflow: *10059440
+  EndProcedure: &8800880 !ruby/object:Step
+    workflow: *8497860
     name: EndProcedure
     step: EndProcedure
     owner: !ruby/object:Owner
-      step: *10346120
+      step: *8800880
       name: 
       params: 
     description: 
@@ -429,17 +442,40 @@ steps:
     notifyAtFinish: []
     group: []
     gates:
+    - task13
     - Fork1_2_3
     - Fork1_2_2
     - Fork1_2_1
     - Fork2_1_1_1
     reverseGates: []
     state: 2
+  task13: &8799900 !ruby/object:Step
+    workflow: *8497860
+    name: task13
+    step: task13
+    owner: !ruby/object:Owner
+      step: *8799900
+      name: 
+      params: 
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork2_1
+    reverseGates: []
+    state: 2
 reverting: false
 midRevert: false
 batching: false
 hadCheckpoint: false
-lastActivity: 2014-02-19 15:32:33.603517145 -06:00
+lastActivity: 2014-02-19 21:37:48.108713603 -06:00
 clockEnabled: false
 notifsEnabled: false
 states:

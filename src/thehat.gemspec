@@ -23,5 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "cinch"
   spec.add_runtime_dependency "icalendar"
   spec.add_runtime_dependency "xml-simple"
+  spec.add_runtime_dependency "sinatra"
+  spec.add_runtime_dependency "thin"
 end
 
