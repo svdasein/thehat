@@ -32,8 +32,8 @@ require 'thehat/wfsourcecontrol'
 
 $Version = '0.3'
 $CopyrightYears = '2007-2014'
-$DumpHeaderForm="%-14s %-9s %-8s %-20s %-30s\n"
-$DumpForm=      "%-14s %-9s %-8d %-20s %-30s\n"
+$DumpHeaderForm="%-30s %-9s %-8s %-20s %-30s\n"
+$DumpForm=      "%-30s %-9s %-8d %-20s %-30s\n"
 $DumpHeader = ['OWNER','STATE','DUR(MIN)','NAME','DESCRIPTION']
 
 class String
@@ -339,7 +339,7 @@ class Workflow
 		ungated = Array.new;
 		@steps.each {
 			|name,instance|
-			if (not instance.isGated)  and instance.needsProgress
+			if (not instance.isGated) and instance.needsProgress
 				ungated.push(instance)
 			end
 		}
@@ -1038,6 +1038,8 @@ class Step
 		result += "Gates: #{(@gates or []).join(', ')}\n" if @gates.size > 0
 		result += "State: #{@workflow.statesNames[@state]}\n"
 		@workflow.addMessage(result)
+		# DAP DANGER 
+		return result
 	end
 
 	def duration
@@ -1400,6 +1402,7 @@ class Owner
 		@step = step
 		@name = name
 		@params = params
+		self
 	end
 
 	def to_s
@@ -1451,7 +1454,7 @@ class Clock < Owner
 		if @params =~ /(.*)@(.*)/
 			dateTime = "#{$1} #{$2}"
 			begin
-				@time = Time.local(*Date.parsedate(dateTime)[0..4])
+				@time = Time.local(*Date.parse(dateTime)[0..4])
 			rescue ArgumentError
 				# Assume "immediately" was meant
 				# Which is to say - assume the user
@@ -1474,6 +1477,7 @@ class Clock < Owner
 		else
 			@time = nil
 		end
+		self
 	end
 
 	def nearestDate(aSense)
@@ -1482,16 +1486,18 @@ class Clock < Owner
 			when :before
 				[@step.gates,@step.reverseGates].each {
 					|gateList|
-					gateList.each {
-						|stepName|
-						if step = @step.workflow.stepNamed(stepName)
-							if step.owner.kind_of? Clock and (not step.owner.kind_of? Stopwatch)
-								if time = step.owner.clockTime  # RECURSIVE
-									times.push(time)
+					if gateList
+						gateList.each {
+							|stepName|
+							if step = @step.workflow.stepNamed(stepName)
+								if step.owner.kind_of? Clock and (not step.owner.kind_of? Stopwatch)
+									if time = step.owner.clockTime  # RECURSIVE
+										times.push(time)
+									end
 								end
 							end
-						end
-					}
+						}
+					end
 				}
 				timeObject = times.sort.pop
 			when :after
@@ -1518,7 +1524,7 @@ class Clock < Owner
 		if @params =~ /(.*)@(.*)/
 			dateTime = "#{$1} #{$2}"
 			begin
-				timeObject = Time.local(*Date.parsedate(dateTime)[0..4])
+				timeObject = Time.local(*Date.parse(dateTime)[0..4])
 			rescue ArgumentError
 				# Assume "immediately" was meant
 				# Which is to say - assume the user
@@ -1588,8 +1594,8 @@ class Handoff < Clock
 	def ticToc(reiterate)
 		thingsChanged = super(reiterate)
 		if @step.state == @step.workflow.states['in prog']
-			@step.owner = nil
-			self.addMessage("Handoff step '#{@step.name}' owner cleared\n")
+			@step.owner = Owner.create(nil,@step)
+			@step.workflow.addMessage("Handoff step '#{@step.name}' owner cleared\n")
 			thingsChanged = true
 		end
 		return thingsChanged,reiterate
@@ -1623,7 +1629,8 @@ end
 class Stopwatch < Clock
 
 	def clockTime
-		return Time.now.localtime; # Stopwatches always start "now".
+		return Time.now.localtime - 1; # Stopwatches always start "now".
+		# Note: REALLY weird: if I don't subtract something, >= against Time.now.localtime evals to false ???
 	end
 
 	def ticToc(reiterate)
@@ -1634,7 +1641,7 @@ class Stopwatch < Clock
 			# seconds (derived from the @h:m:s part) from step
 			# start 'til the event finishes.
 			if @params =~ /^(.*)@(.*):(.*):(.*)/
-				secondsToRun = ($2 * 3600) + ($3 * 60) + $4
+				secondsToRun = ($2.to_i * 3600) + ($3.to_i * 60) + $4.to_i
 				if (Time.now.localtime - @step.startTime) >= secondsToRun
 					@step.finish(self)
 					thingsChanged = true

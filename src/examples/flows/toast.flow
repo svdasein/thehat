@@ -67,7 +67,7 @@
   - gettoaster
 - step: openbread
   description: Open bread bag
-  owner: 
+  owner:
   startCommand: 
   notifyAtStart: []
   finishCommand: 

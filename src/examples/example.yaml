@@ -3,7 +3,7 @@ wfengine: {
  webdir: 'www',
  bindaddr: '0.0.0.0',
  bindport: '8808',
- baseurl: "http://localhost:4567/",
+ baseurl: "http://localhost",
  svnroot: "file:///home/someuser/svn",
  debuglevel: 1,
  renderers: [
