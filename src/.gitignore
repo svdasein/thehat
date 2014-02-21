@@ -1,5 +1,10 @@
 *.gem
 *.rbc
+*.state
+*.html
+*.png
+*.dot
+*.cmap
 .bundle
 .config
 .yardoc
