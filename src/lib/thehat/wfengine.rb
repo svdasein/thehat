@@ -36,7 +36,6 @@ $DumpHeaderForm="%-14s %-9s %-8s %-20s %-30s\n"
 $DumpForm=      "%-14s %-9s %-8d %-20s %-30s\n"
 $DumpHeader = ['OWNER','STATE','DUR(MIN)','NAME','DESCRIPTION']
 
-
 class String
 	def to_class
 		return Kernel.const_get(self)
@@ -907,8 +906,39 @@ class Workflow
 			when 'debug' then self.addMessage('Construction zone')
 			when 'version' then self.addMessage("TheHat version #{$Version}")
 			when 'help'
-				self.addMessage(File.new("help.txt",'r').read)
-				self.addMessage("Complete documentation is available at https://github.com/svdasein/thehat/wiki")
+				self.addMessage("
+progression:
+	status
+	gimme gimmegroup gimmeall
+	giveto givegroupto 
+	start finish fail
+	reverting reverted
+
+operations:
+	ls load reload unload list
+	run stop
+	reload restore
+	idleprompt tictoc date time
+	clockProcessing notificationProcessing
+
+editing:
+	new 
+	save checkout commit
+	addstep addsequence delstep
+	set
+		name owner description group url note gates
+		gate addgate delgate
+		groups addgroup delgroup
+		startCommand finishCommand
+		notifyAtStart notifyAtFinish
+
+	Clock types:wait alarm handoff event stopwatch
+	Clock-type names \"clock-<type>:m/d/y@h:m:s\"
+
+diagnostic:
+	sysstatus dryrun dump debug exec
+
+")
 			when 'hello','hi','howdee','ping' then self.addMessage("Hello #{user}!  I am a workflow engine. Please ask me for help if you have any questions.\nI accept commands of the form <command> [<param1>[...<paramN>]]")
 			else
 				if command
@@ -1704,3 +1734,5 @@ class AsyncProcess
 		return @output if not @output.nil?
 	end
 end
+
+

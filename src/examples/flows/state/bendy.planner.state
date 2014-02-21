@@ -1,7 +1,86 @@
---- &17881800 !ruby/object:Workflow
+--- &18011740 !ruby/object:Workflow
 messageText: !binary |-
-  QWxsIHN0ZXBzLCBzdGF0ZXMsIGFuZCBtb2RlcyBjbGVhcmVkLgo=
-config: &17877940
+  RFJZIFJVTiBSRVNVTFRTClRoZUhhdCAyMDE0LTAyLTIxIDA5OjAyOjQ4IC0w
+  NjAwOiBEcnkgcnVuIGluaXRpYWwgc3RhdGUKRmxvdyBvdmVydmlld3MgKyBo
+  ZWxwIGF0IGh0dHA6Ly9sb2NhbGhvc3Q6NDU2Ny86ODgwOApPV05FUiAgICAg
+  ICAgICBTVEFURSAgICAgRFVSKE1JTikgTkFNRSAgICAgICAgICAgICAgICAg
+  REVTQ1JJUFRJT04gICAgICAgICAgICAgICAgICAgClVOQVNTSUdORUQgICAg
+  IHBlbmRpbmcgICAwICAgICAgICBTdGFydF9wcm9jZWR1cmUgICAgICAgICAg
+  ICAgICAgICAgICAgICAgICAgICAgICAgICAKT3duZXIgb2Ygc3RlcCBTdGFy
+  dF9wcm9jZWR1cmUgaXMgbm93IGRyeXJ1bgo+Pj4gZHJ5cnVuIGNoYW5nZWQg
+  c3RhdGUgb2Ygc3RlcCBTdGFydF9wcm9jZWR1cmUgdG8gZG9uZQpUaGVIYXQg
+  MjAxNC0wMi0yMSAwOTowMjo0OCAtMDYwMDogRHJ5IHJ1biBpdGVyYXRpb24g
+  MQpGbG93IG92ZXJ2aWV3cyArIGhlbHAgYXQgaHR0cDovL2xvY2FsaG9zdDo0
+  NTY3Lzo4ODA4Ck9XTkVSICAgICAgICAgIFNUQVRFICAgICBEVVIoTUlOKSBO
+  QU1FICAgICAgICAgICAgICAgICBERVNDUklQVElPTiAgICAgICAgICAgICAg
+  ICAgICAKVU5BU1NJR05FRCAgICAgcGVuZGluZyAgIDAgICAgICAgIEZvcmsx
+  ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+  IApVTkFTU0lHTkVEICAgICBwZW5kaW5nICAgMCAgICAgICAgRm9yazIgICAg
+  ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCk93
+  bmVyIG9mIHN0ZXAgRm9yazEgaXMgbm93IGRyeXJ1bgo+Pj4gZHJ5cnVuIGNo
+  YW5nZWQgc3RhdGUgb2Ygc3RlcCBGb3JrMSB0byBkb25lCk93bmVyIG9mIHN0
+  ZXAgRm9yazIgaXMgbm93IGRyeXJ1bgo+Pj4gZHJ5cnVuIGNoYW5nZWQgc3Rh
+  dGUgb2Ygc3RlcCBGb3JrMiB0byBkb25lClRoZUhhdCAyMDE0LTAyLTIxIDA5
+  OjAyOjQ4IC0wNjAwOiBEcnkgcnVuIGl0ZXJhdGlvbiAyCkZsb3cgb3ZlcnZp
+  ZXdzICsgaGVscCBhdCBodHRwOi8vbG9jYWxob3N0OjQ1NjcvOjg4MDgKT1dO
+  RVIgICAgICAgICAgU1RBVEUgICAgIERVUihNSU4pIE5BTUUgICAgICAgICAg
+  ICAgICAgIERFU0NSSVBUSU9OICAgICAgICAgICAgICAgICAgIApVTkFTU0lH
+  TkVEICAgICBwZW5kaW5nICAgMCAgICAgICAgRm9yazFfMSAgICAgICAgICAg
+  ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgClVOQVNTSUdORUQg
+  ICAgIHBlbmRpbmcgICAwICAgICAgICBGb3JrMV8yICAgICAgICAgICAgICAg
+  ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKVU5BU1NJR05FRCAgICAg
+  cGVuZGluZyAgIDAgICAgICAgIEZvcmsyXzEgICAgICAgICAgICAgICAgICAg
+  ICAgICAgICAgICAgICAgICAgICAgICAgIApPd25lciBvZiBzdGVwIEZvcmsx
+  XzEgaXMgbm93IGRyeXJ1bgo+Pj4gZHJ5cnVuIGNoYW5nZWQgc3RhdGUgb2Yg
+  c3RlcCBGb3JrMV8xIHRvIGRvbmUKT3duZXIgb2Ygc3RlcCBGb3JrMV8yIGlz
+  IG5vdyBkcnlydW4KPj4+IGRyeXJ1biBjaGFuZ2VkIHN0YXRlIG9mIHN0ZXAg
+  Rm9yazFfMiB0byBkb25lCk93bmVyIG9mIHN0ZXAgRm9yazJfMSBpcyBub3cg
+  ZHJ5cnVuCj4+PiBkcnlydW4gY2hhbmdlZCBzdGF0ZSBvZiBzdGVwIEZvcmsy
+  XzEgdG8gZG9uZQpUaGVIYXQgMjAxNC0wMi0yMSAwOTowMjo0OCAtMDYwMDog
+  RHJ5IHJ1biBpdGVyYXRpb24gMwpGbG93IG92ZXJ2aWV3cyArIGhlbHAgYXQg
+  aHR0cDovL2xvY2FsaG9zdDo0NTY3Lzo4ODA4Ck9XTkVSICAgICAgICAgIFNU
+  QVRFICAgICBEVVIoTUlOKSBOQU1FICAgICAgICAgICAgICAgICBERVNDUklQ
+  VElPTiAgICAgICAgICAgICAgICAgICAKVU5BU1NJR05FRCAgICAgcGVuZGlu
+  ZyAgIDAgICAgICAgIEZvcmsxXzJfMSAgICAgICAgICAgICAgICAgICAgICAg
+  ICAgICAgICAgICAgICAgICAgIApVTkFTU0lHTkVEICAgICBwZW5kaW5nICAg
+  MCAgICAgICAgRm9yazFfMl8yICAgICAgICAgICAgICAgICAgICAgICAgICAg
+  ICAgICAgICAgICAgICAgClVOQVNTSUdORUQgICAgIHBlbmRpbmcgICAwICAg
+  ICAgICBGb3JrMV8yXzMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+  ICAgICAgICAgICAKVU5BU1NJR05FRCAgICAgcGVuZGluZyAgIDAgICAgICAg
+  IEZvcmsyXzFfMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+  ICAgICAgIApVTkFTU0lHTkVEICAgICBwZW5kaW5nICAgMCAgICAgICAgdGFz
+  azEzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+  ICAgCk93bmVyIG9mIHN0ZXAgRm9yazFfMl8xIGlzIG5vdyBkcnlydW4KPj4+
+  IGRyeXJ1biBjaGFuZ2VkIHN0YXRlIG9mIHN0ZXAgRm9yazFfMl8xIHRvIGRv
+  bmUKT3duZXIgb2Ygc3RlcCBGb3JrMV8yXzIgaXMgbm93IGRyeXJ1bgo+Pj4g
+  ZHJ5cnVuIGNoYW5nZWQgc3RhdGUgb2Ygc3RlcCBGb3JrMV8yXzIgdG8gZG9u
+  ZQpPd25lciBvZiBzdGVwIEZvcmsxXzJfMyBpcyBub3cgZHJ5cnVuCj4+PiBk
+  cnlydW4gY2hhbmdlZCBzdGF0ZSBvZiBzdGVwIEZvcmsxXzJfMyB0byBkb25l
+  Ck93bmVyIG9mIHN0ZXAgRm9yazJfMV8xIGlzIG5vdyBkcnlydW4KPj4+IGRy
+  eXJ1biBjaGFuZ2VkIHN0YXRlIG9mIHN0ZXAgRm9yazJfMV8xIHRvIGRvbmUK
+  T3duZXIgb2Ygc3RlcCB0YXNrMTMgaXMgbm93IGRyeXJ1bgo+Pj4gZHJ5cnVu
+  IGNoYW5nZWQgc3RhdGUgb2Ygc3RlcCB0YXNrMTMgdG8gZG9uZQpUaGVIYXQg
+  MjAxNC0wMi0yMSAwOTowMjo0OCAtMDYwMDogRHJ5IHJ1biBpdGVyYXRpb24g
+  NApGbG93IG92ZXJ2aWV3cyArIGhlbHAgYXQgaHR0cDovL2xvY2FsaG9zdDo0
+  NTY3Lzo4ODA4Ck9XTkVSICAgICAgICAgIFNUQVRFICAgICBEVVIoTUlOKSBO
+  QU1FICAgICAgICAgICAgICAgICBERVNDUklQVElPTiAgICAgICAgICAgICAg
+  ICAgICAKVU5BU1NJR05FRCAgICAgcGVuZGluZyAgIDAgICAgICAgIEZvcmsy
+  XzFfMV8xICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+  IApPd25lciBvZiBzdGVwIEZvcmsyXzFfMV8xIGlzIG5vdyBkcnlydW4KPj4+
+  IGRyeXJ1biBjaGFuZ2VkIHN0YXRlIG9mIHN0ZXAgRm9yazJfMV8xXzEgdG8g
+  ZG9uZQpUaGVIYXQgMjAxNC0wMi0yMSAwOTowMjo0OCAtMDYwMDogRHJ5IHJ1
+  biBpdGVyYXRpb24gNQpGbG93IG92ZXJ2aWV3cyArIGhlbHAgYXQgaHR0cDov
+  L2xvY2FsaG9zdDo0NTY3Lzo4ODA4Ck9XTkVSICAgICAgICAgIFNUQVRFICAg
+  ICBEVVIoTUlOKSBOQU1FICAgICAgICAgICAgICAgICBERVNDUklQVElPTiAg
+  ICAgICAgICAgICAgICAgICAKVU5BU1NJR05FRCAgICAgcGVuZGluZyAgIDAg
+  ICAgICAgIEVuZFByb2NlZHVyZSAgICAgICAgICAgICAgICAgICAgICAgICAg
+  ICAgICAgICAgICAgIApPd25lciBvZiBzdGVwIEVuZFByb2NlZHVyZSBpcyBu
+  b3cgZHJ5cnVuCj4+PiBkcnlydW4gY2hhbmdlZCBzdGF0ZSBvZiBzdGVwIEVu
+  ZFByb2NlZHVyZSB0byBkb25lCioqIEZsb3cgZW5kZWQgKioKVGhlSGF0IDIw
+  MTQtMDItMjEgMDk6MDI6NDggLTA2MDA6IERyeSBydW4gaXRlcmF0aW9uIDYK
+  RmxvdyBvdmVydmlld3MgKyBoZWxwIGF0IGh0dHA6Ly9sb2NhbGhvc3Q6NDU2
+  Ny86ODgwOApBbGwgc3RlcHMgY29tcGxldGVkIQo=
+config: &18162680
   wfengine:
     datadir: examples/flows
     webdir: www
@@ -37,7 +116,7 @@ allowExec: false
 debugLevel: 1
 renderers:
 - !ruby/object:WorkflowDigraph
-  workflow: *17881800
+  workflow: *18011740
   options:
     :type: png
   webFiles:
@@ -61,86 +140,99 @@ renderers:
     nodes:
       Start_procedure:
         :fontsize: '9'
-        :label: ! 'Name: Start_procedure\n'
+        :label: ! 'Name: Start_procedure\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: IndianRed
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork1:
         :fontsize: '9'
-        :label: ! 'Name: Fork1\n'
+        :label: ! 'Name: Fork1\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48 -0600\nFinished
+          at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork2:
         :fontsize: '9'
-        :label: ! 'Name: Fork2\n'
+        :label: ! 'Name: Fork2\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48 -0600\nFinished
+          at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork1_1:
         :fontsize: '9'
-        :label: ! 'Name: Fork1_1\n'
+        :label: ! 'Name: Fork1_1\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48 -0600\nFinished
+          at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
         :URL: http://google.com
         :tooltip: Click for details
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork1_2:
         :fontsize: '9'
-        :label: ! 'Name: Fork1_2\n'
+        :label: ! 'Name: Fork1_2\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48 -0600\nFinished
+          at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork1_2_1:
         :fontsize: '9'
-        :label: ! 'Name: Fork1_2_1\n'
+        :label: ! 'Name: Fork1_2_1\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork1_2_2:
         :fontsize: '9'
-        :label: ! 'Name: Fork1_2_2\n'
+        :label: ! 'Name: Fork1_2_2\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork1_2_3:
         :fontsize: '9'
-        :label: ! 'Name: Fork1_2_3\n'
+        :label: ! 'Name: Fork1_2_3\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork2_1:
         :fontsize: '9'
-        :label: ! 'Name: Fork2_1\n'
+        :label: ! 'Name: Fork2_1\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48 -0600\nFinished
+          at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
         :URL: http://yahoo.com
         :tooltip: Click for details
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork2_1_1:
         :fontsize: '9'
-        :label: ! 'Name: Fork2_1_1\n'
+        :label: ! 'Name: Fork2_1_1\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       Fork2_1_1_1:
         :fontsize: '9'
-        :label: ! 'Name: Fork2_1_1_1\n'
+        :label: ! 'Name: Fork2_1_1_1\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       EndProcedure:
         :fontsize: '9'
-        :label: ! 'Name: EndProcedure\n'
+        :label: ! 'Name: EndProcedure\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48
+          -0600\nFinished at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
       task13:
         :fontsize: '9'
-        :label: ! 'Name: task13\n'
+        :label: ! 'Name: task13\nOwner: dryrun\nStarted at: 2014-02-21 09:02:48 -0600\nFinished
+          at: 2014-02-21 09:02:48 -0600\n'
         :style: filled
-        :color: IndianRed
-        :fillcolor: LightGrey
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
     connections:
     - - Start_procedure
       - Fork1
@@ -150,53 +242,301 @@ renderers:
       - Fork1_1
     - - Fork1
       - Fork1_2
-    - - Fork1_2
-      - Fork1_2_1
-    - - Fork2_1
-      - Fork1_2_2
-    - - Fork1_2
-      - Fork1_2_2
-    - - Fork1_2
-      - Fork1_2_3
     - - Fork2
       - Fork2_1
     - - Fork1_1
       - Fork2_1_1
-    - - Fork2_1
-      - Fork2_1_1
-    - - Fork2_1_1
-      - Fork2_1_1_1
-    - - task13
-      - EndProcedure
-    - - Fork1_2_3
+    - - Fork1_2
+      - Fork1_2_1
+    - - Fork1_2
+      - Fork1_2_2
+    - - Fork1_2
+      - Fork1_2_3
+    - - Fork1_2_1
       - EndProcedure
     - - Fork1_2_2
       - EndProcedure
-    - - Fork1_2_1
-      - EndProcedure
-    - - Fork2_1_1_1
+    - - Fork1_2_3
       - EndProcedure
     - - Fork2_1
+      - Fork1_2_2
+    - - Fork2_1
+      - Fork2_1_1
+    - - Fork2_1
       - task13
+    - - Fork2_1_1
+      - Fork2_1_1_1
+    - - Fork2_1_1_1
+      - EndProcedure
+    - - task13
+      - EndProcedure
 vcsInterface: !ruby/object:Subversion
-  workflow: *17881800
-  config: *17877940
+  workflow: *18011740
+  config: *18162680
 idlePromptMinutes: 5
 name: bendy.planner
 basename: bendy.planner
 steps:
-  Start_procedure: &18149840 !ruby/object:Step
-    workflow: *17881800
+  Start_procedure: &17575000 !ruby/object:Step
+    workflow: *18011740
     name: Start_procedure
     step: Start_procedure
     owner: !ruby/object:Owner
-      step: *18149840
-      name: 
-      params: 
+      step: *17575000
+      name: dryrun
+      params: dryrun
     description: 
-    startTime: 
+    startTime: 2014-02-21 09:02:48.296194086 -06:00
     startCommand: 
-    finishTime: 
+    finishTime: 2014-02-21 09:02:48.296194086 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork1
+    - Fork2
+    state: 0
+  Fork1: &17573980 !ruby/object:Step
+    workflow: *18011740
+    name: Fork1
+    step: Fork1
+    owner: !ruby/object:Owner
+      step: *17573980
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296376658 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296376658 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork1_1
+    - Fork1_2
+    state: 0
+  Fork2: &17572980 !ruby/object:Step
+    workflow: *18011740
+    name: Fork2
+    step: Fork2
+    owner: !ruby/object:Owner
+      step: *17572980
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296429657 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296429657 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork2_1
+    state: 0
+  Fork1_1: &17572120 !ruby/object:Step
+    workflow: *18011740
+    name: Fork1_1
+    step: Fork1_1
+    owner: !ruby/object:Owner
+      step: *17572120
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296557078 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296557078 -06:00
+    finishCommand: 
+    url: http://google.com
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork2_1_1
+    state: 0
+  Fork1_2: &17570620 !ruby/object:Step
+    workflow: *18011740
+    name: Fork1_2
+    step: Fork1_2
+    owner: !ruby/object:Owner
+      step: *17570620
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296606190 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296606190 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork1_2_1
+    - Fork1_2_2
+    - Fork1_2_3
+    state: 0
+  Fork1_2_1: &17568480 !ruby/object:Step
+    workflow: *18011740
+    name: Fork1_2_1
+    step: Fork1_2_1
+    owner: !ruby/object:Owner
+      step: *17568480
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296851548 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296851548 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - EndProcedure
+    state: 0
+  Fork1_2_2: &17564560 !ruby/object:Step
+    workflow: *18011740
+    name: Fork1_2_2
+    step: Fork1_2_2
+    owner: !ruby/object:Owner
+      step: *17564560
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296937209 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296937209 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - EndProcedure
+    state: 0
+  Fork1_2_3: &17563480 !ruby/object:Step
+    workflow: *18011740
+    name: Fork1_2_3
+    step: Fork1_2_3
+    owner: !ruby/object:Owner
+      step: *17563480
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296992876 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296992876 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - EndProcedure
+    state: 0
+  Fork2_1: &17562220 !ruby/object:Step
+    workflow: *18011740
+    name: Fork2_1
+    step: Fork2_1
+    owner: !ruby/object:Owner
+      step: *17562220
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.296696030 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.296696030 -06:00
+    finishCommand: 
+    url: http://yahoo.com
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork1_2_2
+    - Fork2_1_1
+    - task13
+    state: 0
+  Fork2_1_1: &17560840 !ruby/object:Step
+    workflow: *18011740
+    name: Fork2_1_1
+    step: Fork2_1_1
+    owner: !ruby/object:Owner
+      step: *17560840
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.297038322 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.297038322 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork2_1_1_1
+    state: 0
+  Fork2_1_1_1: &17559640 !ruby/object:Step
+    workflow: *18011740
+    name: Fork2_1_1_1
+    step: Fork2_1_1_1
+    owner: !ruby/object:Owner
+      step: *17559640
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.300662837 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.300662837 -06:00
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - EndProcedure
+    state: 0
+  EndProcedure: &17558080 !ruby/object:Step
+    workflow: *18011740
+    name: EndProcedure
+    step: EndProcedure
+    owner: !ruby/object:Owner
+      step: *17558080
+      name: dryrun
+      params: dryrun
+    description: 
+    startTime: 2014-02-21 09:02:48.300800033 -06:00
+    startCommand: 
+    finishTime: 2014-02-21 09:02:48.300800033 -06:00
     finishCommand: 
     url: 
     note: 
@@ -205,282 +545,34 @@ steps:
     group: []
     gates: []
     reverseGates: []
-    state: 2
-  Fork1: &18168760 !ruby/object:Step
-    workflow: *17881800
-    name: Fork1
-    step: Fork1
-    owner: !ruby/object:Owner
-      step: *18168760
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Start_procedure
-    reverseGates: []
-    state: 2
-  Fork2: &18167940 !ruby/object:Step
-    workflow: *17881800
-    name: Fork2
-    step: Fork2
-    owner: !ruby/object:Owner
-      step: *18167940
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Start_procedure
-    reverseGates: []
-    state: 2
-  Fork1_1: &18166240 !ruby/object:Step
-    workflow: *17881800
-    name: Fork1_1
-    step: Fork1_1
-    owner: !ruby/object:Owner
-      step: *18166240
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: http://google.com
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork1
-    reverseGates: []
-    state: 2
-  Fork1_2: &18164740 !ruby/object:Step
-    workflow: *17881800
-    name: Fork1_2
-    step: Fork1_2
-    owner: !ruby/object:Owner
-      step: *18164740
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork1
-    reverseGates: []
-    state: 2
-  Fork1_2_1: &18163900 !ruby/object:Step
-    workflow: *17881800
-    name: Fork1_2_1
-    step: Fork1_2_1
-    owner: !ruby/object:Owner
-      step: *18163900
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork1_2
-    reverseGates: []
-    state: 2
-  Fork1_2_2: &18163100 !ruby/object:Step
-    workflow: *17881800
-    name: Fork1_2_2
-    step: Fork1_2_2
-    owner: !ruby/object:Owner
-      step: *18163100
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork2_1
-    - Fork1_2
-    reverseGates: []
-    state: 2
-  Fork1_2_3: &18162080 !ruby/object:Step
-    workflow: *17881800
-    name: Fork1_2_3
-    step: Fork1_2_3
-    owner: !ruby/object:Owner
-      step: *18162080
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork1_2
-    reverseGates: []
-    state: 2
-  Fork2_1: &18250800 !ruby/object:Step
-    workflow: *17881800
-    name: Fork2_1
-    step: Fork2_1
-    owner: !ruby/object:Owner
-      step: *18250800
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: http://yahoo.com
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork2
-    reverseGates: []
-    state: 2
-  Fork2_1_1: &18249760 !ruby/object:Step
-    workflow: *17881800
-    name: Fork2_1_1
-    step: Fork2_1_1
-    owner: !ruby/object:Owner
-      step: *18249760
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork1_1
-    - Fork2_1
-    reverseGates: []
-    state: 2
-  Fork2_1_1_1: &18248900 !ruby/object:Step
-    workflow: *17881800
-    name: Fork2_1_1_1
-    step: Fork2_1_1_1
-    owner: !ruby/object:Owner
-      step: *18248900
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - Fork2_1_1
-    reverseGates: []
-    state: 2
-  EndProcedure: &18248060 !ruby/object:Step
-    workflow: *17881800
-    name: EndProcedure
-    step: EndProcedure
-    owner: !ruby/object:Owner
-      step: *18248060
-      name: 
-      params: 
-    description: 
-    startTime: 
-    startCommand: 
-    finishTime: 
-    finishCommand: 
-    url: 
-    note: 
-    notifyAtStart: []
-    notifyAtFinish: []
-    group: []
-    gates:
-    - task13
-    - Fork1_2_3
-    - Fork1_2_2
-    - Fork1_2_1
-    - Fork2_1_1_1
-    reverseGates: []
-    state: 2
-  task13: &18247060 !ruby/object:Step
-    workflow: *17881800
+    state: 0
+  task13: &17555400 !ruby/object:Step
+    workflow: *18011740
     name: task13
     step: task13
     owner: !ruby/object:Owner
-      step: *18247060
-      name: 
-      params: 
+      step: *17555400
+      name: dryrun
+      params: dryrun
     description: 
-    startTime: 
+    startTime: 2014-02-21 09:02:48.297083150 -06:00
     startCommand: 
-    finishTime: 
+    finishTime: 2014-02-21 09:02:48.297083150 -06:00
     finishCommand: 
     url: 
     note: 
     notifyAtStart: []
     notifyAtFinish: []
     group: []
-    gates:
-    - Fork2_1
-    reverseGates: []
-    state: 2
+    gates: []
+    reverseGates:
+    - EndProcedure
+    state: 0
 reverting: false
 midRevert: false
 batching: false
 hadCheckpoint: false
-lastActivity: 2014-02-20 22:07:39.039738492 -06:00
+lastActivity: 2014-02-21 09:02:48.300834973 -06:00
 clockEnabled: false
 notifsEnabled: false
 states:
