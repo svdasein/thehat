@@ -27,23 +27,26 @@ class String
 	end
 end 
 
-if ARGV.size != 3
+if ARGV.size != 2
 	print "Usage: #{$0} <config.yaml> <plannerfile.xml> <outputfile.flow>\n"
 	exit
 end
 
+engineConfig = ARGV[0]
+plannerFile = ARGV[1]
+flowFile = File.basename(plannerFile)
 hadError = false
 
 begin
-	workflow = Workflow.new(ARGV[0]) # workflow config file e.g. example.yaml
+	workflow = Workflow.new(engineConfig) # workflow config file e.g. example.yaml
 rescue
-	print "Error attempting to open config file #{ARGV[0]}\n"
+	print "Error attempting to open config file #{engineConfig}\n"
 	hadError = true
 end
 begin
-	plan = XmlSimple.xml_in(ARGV[1]) # full path to planner file
+	plan = XmlSimple.xml_in(plannerFile) # full path to planner file
 rescue
-	print "Error attempting to open planner file #{ARGV[1]}\n"
+	print "Error attempting to open planner file #{plannerFile}\n"
 	hadError = true
 end
 
@@ -81,11 +84,13 @@ tasks.each {
 	else
 		stepValues['name'] = "task#{id.to_s}"
 	end
+	print "Processing step #{stepValues['name']}\n"
 	if task['note']
 		task['note'].gsub('\n',"\n").split("\n").each {
 			|note|
-			key,value = note.split(':')
-			stepValues[key] = value
+			key,value = note.split(':',2)
+			print "Parsed k:#{key} v:#{value} from note\n"
+			stepValues[key.strip] = value.strip
 		}
 	end
 	if stepValues['group']
@@ -109,6 +114,6 @@ tasks.each {
 	# NOTE: api needs to change to simplify this
 	workflow.steps[stepValues['name']]=Step.new(workflow,stepValues['name'],stepValues)
 }
-print "Writing to #{ARGV[2]}\n"
-workflow.saveToFile(ARGV[2]) # full path to new flow file
+print "Writing to #{flowFile}\n"
+workflow.saveToFile(flowFile) # full path to new flow file
 

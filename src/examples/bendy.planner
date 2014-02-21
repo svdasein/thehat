@@ -31,7 +31,7 @@
         <predecessor id="1" predecessor-id="1" type="FS"/>
       </predecessors>
     </task>
-    <task id="4" name="Fork1.1" note="url=http://google.com" work="28800" start="20140220T170000Z" end="20140221T170000Z" work-start="20140221T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="4" name="Fork1.1" note="url: http://google.com" work="28800" start="20140220T170000Z" end="20140221T170000Z" work-start="20140221T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <predecessors>
         <predecessor id="1" predecessor-id="2" type="FS"/>
       </predecessors>
