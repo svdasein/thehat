@@ -39,11 +39,17 @@ rescue
 end
 exit if hadError
 
+config = workflow.config['wfengine']
+
+pp config
+
 ##############################
 # WWW stuff from here on 
 ##############################
 
-set :public_folder, 'www'
+set :public_folder, config['webdir']
+set :bind, config['bindaddr']
+set :port, config['bindport']
 
 get '/' do
 	redirect "/index.html"

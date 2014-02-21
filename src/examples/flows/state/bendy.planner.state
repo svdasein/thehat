@@ -1,0 +1,690 @@
+--- &1 !ruby/object:Workflow
+messageText: ''
+config:
+  wfengine:
+    datadir: examples/flows
+    webdir: www
+    bindaddr: 0.0.0.0
+    bindport: '8808'
+    baseurl: http://hippie.svdasein.org:8808
+    debuglevel: 1
+    renderers:
+    - WorkflowDigraph
+    allowExec: false
+  thehat-irc:
+    nic: flow__
+    name: TheHat
+    channel: "#thehat"
+    server: irc.freenode.net
+    port: 6667
+  thehat-xmpp:
+    account: '91110_662747'
+    host: chat.hipchat.com
+    resource: Dave Parker
+    password: insecure
+    room: 91110_thehat@conf.hipchat.com
+    respondTo: flow
+datadir: examples/flows
+webdir: www
+baseurl: http://hippie.svdasein.org:8808
+bindport: '8808'
+svnroot: 
+allowExec: false
+debugLevel: 1
+renderers:
+- !ruby/object:WorkflowDigraph
+  workflow: *1
+  options:
+    :type: png
+  webFiles:
+    Directed graph rendered as a dot file: bendy.planner-digraph.dot
+    Directed graph rendered as a png file (auto-refresh): http://hippie.svdasein.org:8808/flow?img=bendy.planner-digraph.png&cmap=bendy.planner-digraph.cmap
+    Directed graph rendered as a png file: bendy.planner-digraph.png
+  attentionColor: IndianRed
+  allgoodColor: PaleGreen2
+  actionColor: gold
+  dormantColor: LightGrey
+  statesColors:
+    -2: PaleGreen2
+    -1: gold
+    -3: IndianRed
+    0: PaleGreen2
+    1: gold
+    2: LightGrey
+  graph: !ruby/object:SimpleGraphViz
+    name: bendy_planner
+    dotfilePath: www/bendy.planner-digraph.dot
+    nodes:
+      Start_procedure:
+        :fontsize: '9'
+        :label: 'Name: Start_procedure\nOwner: dparker\nStarted at: 2014-02-21 03:23:25
+          +0000\nFinished at: 2014-02-21 03:23:25 +0000\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
+      Fork1:
+        :fontsize: '9'
+        :label: 'Name: Fork1\nOwner: dparker\nStarted at: 2014-02-21 03:23:30 +0000\nFinished
+          at: 2014-02-21 03:23:30 +0000\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: PaleGreen2
+      Fork2:
+        :fontsize: '9'
+        :label: 'Name: Fork2\nOwner: dparker\nStarted at: 2014-02-21 03:23:33 +0000\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: gold
+      Fork1_1:
+        :fontsize: '9'
+        :label: 'Name: Fork1_1\nOwner: dparker\n'
+        :style: filled
+        :URL: http://google.com
+        :tooltip: Click for details
+        :color: PaleGreen2
+        :fillcolor: IndianRed
+      Fork1_2:
+        :fontsize: '9'
+        :label: 'Name: Fork1_2\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: IndianRed
+      Fork1_2_1:
+        :fontsize: '9'
+        :label: 'Name: Fork1_2_1\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      Fork1_2_2:
+        :fontsize: '9'
+        :label: 'Name: Fork1_2_2\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      Fork1_2_3:
+        :fontsize: '9'
+        :label: 'Name: Fork1_2_3\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      Fork2_1:
+        :fontsize: '9'
+        :label: 'Name: Fork2_1\nOwner: dparker\n'
+        :style: filled
+        :URL: http://yahoo.com
+        :tooltip: Click for details
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      Fork2_1_1:
+        :fontsize: '9'
+        :label: 'Name: Fork2_1_1\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      Fork2_1_1_1:
+        :fontsize: '9'
+        :label: 'Name: Fork2_1_1_1\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      EndProcedure:
+        :fontsize: '9'
+        :label: 'Name: EndProcedure\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+      task13:
+        :fontsize: '9'
+        :label: 'Name: task13\nOwner: dparker\n'
+        :style: filled
+        :color: PaleGreen2
+        :fillcolor: LightGrey
+    connections:
+    - - Start_procedure
+      - Fork1
+    - - Start_procedure
+      - Fork2
+    - - Fork1
+      - Fork1_1
+    - - Fork1
+      - Fork1_2
+    - - Fork1_2
+      - Fork1_2_1
+    - - Fork2_1
+      - Fork1_2_2
+    - - Fork1_2
+      - Fork1_2_2
+    - - Fork1_2
+      - Fork1_2_3
+    - - Fork2
+      - Fork2_1
+    - - Fork1_1
+      - Fork2_1_1
+    - - Fork2_1
+      - Fork2_1_1
+    - - Fork2_1_1
+      - Fork2_1_1_1
+    - - task13
+      - EndProcedure
+    - - Fork1_2_3
+      - EndProcedure
+    - - Fork1_2_2
+      - EndProcedure
+    - - Fork1_2_1
+      - EndProcedure
+    - - Fork2_1_1_1
+      - EndProcedure
+    - - Fork2_1
+      - task13
+vcsInterface: 
+idlePromptMinutes: 5
+name: bendy.planner
+basename: bendy.planner
+steps: &3
+  Start_procedure: &4 !ruby/object:Step
+    workflow: &2 !ruby/object:Workflow
+      messageText: |
+        >>> dparker changed state of step Fork2 to in prog
+      config:
+        wfengine:
+          datadir: examples/flows
+          webdir: www
+          bindaddr: 0.0.0.0
+          bindport: '8808'
+          baseurl: http://hippie.svdasein.org:8808
+          debuglevel: 1
+          renderers:
+          - WorkflowDigraph
+          allowExec: false
+        thehat-irc:
+          nic: flow__
+          name: TheHat
+          channel: thehat
+          server: irc.freenode.net
+          port: 6667
+        thehat-xmpp:
+          account: '91110_662747'
+          host: chat.hipchat.com
+          resource: Dave Parker
+          password: insecure
+          room: 91110_thehat@conf.hipchat.com
+          respondTo: flow
+      datadir: examples/flows
+      webdir: www
+      baseurl: http://hippie.svdasein.org:8808
+      bindport: '8808'
+      svnroot: 
+      allowExec: false
+      debugLevel: 1
+      renderers:
+      - !ruby/object:WorkflowDigraph
+        workflow: *2
+        options:
+          :type: png
+        webFiles:
+          Directed graph rendered as a dot file: bendy.planner-digraph.dot
+          Directed graph rendered as a png file (auto-refresh): http://hippie.svdasein.org:8808/flow?img=bendy.planner-digraph.png&cmap=bendy.planner-digraph.cmap
+          Directed graph rendered as a png file: bendy.planner-digraph.png
+        attentionColor: IndianRed
+        allgoodColor: PaleGreen2
+        actionColor: gold
+        dormantColor: LightGrey
+        statesColors:
+          -2: PaleGreen2
+          -1: gold
+          -3: IndianRed
+          0: PaleGreen2
+          1: gold
+          2: LightGrey
+        graph: !ruby/object:SimpleGraphViz
+          name: bendy_planner
+          dotfilePath: www/bendy.planner-digraph.dot
+          nodes:
+            Start_procedure:
+              :fontsize: '9'
+              :label: 'Name: Start_procedure\nOwner: dparker\nStarted at: 2014-02-21
+                03:23:25 +0000\nFinished at: 2014-02-21 03:23:25 +0000\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: PaleGreen2
+            Fork1:
+              :fontsize: '9'
+              :label: 'Name: Fork1\nOwner: dparker\nStarted at: 2014-02-21 03:23:30
+                +0000\nFinished at: 2014-02-21 03:23:30 +0000\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: PaleGreen2
+            Fork2:
+              :fontsize: '9'
+              :label: 'Name: Fork2\nOwner: dparker\nStarted at: 2014-02-21 03:23:33
+                +0000\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: gold
+            Fork1_1:
+              :fontsize: '9'
+              :label: 'Name: Fork1_1\nOwner: dparker\n'
+              :style: filled
+              :URL: http://google.com
+              :tooltip: Click for details
+              :color: PaleGreen2
+              :fillcolor: IndianRed
+            Fork1_2:
+              :fontsize: '9'
+              :label: 'Name: Fork1_2\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: IndianRed
+            Fork1_2_1:
+              :fontsize: '9'
+              :label: 'Name: Fork1_2_1\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            Fork1_2_2:
+              :fontsize: '9'
+              :label: 'Name: Fork1_2_2\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            Fork1_2_3:
+              :fontsize: '9'
+              :label: 'Name: Fork1_2_3\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            Fork2_1:
+              :fontsize: '9'
+              :label: 'Name: Fork2_1\nOwner: dparker\n'
+              :style: filled
+              :URL: http://yahoo.com
+              :tooltip: Click for details
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            Fork2_1_1:
+              :fontsize: '9'
+              :label: 'Name: Fork2_1_1\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            Fork2_1_1_1:
+              :fontsize: '9'
+              :label: 'Name: Fork2_1_1_1\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            EndProcedure:
+              :fontsize: '9'
+              :label: 'Name: EndProcedure\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+            task13:
+              :fontsize: '9'
+              :label: 'Name: task13\nOwner: dparker\n'
+              :style: filled
+              :color: PaleGreen2
+              :fillcolor: LightGrey
+          connections:
+          - - Start_procedure
+            - Fork1
+          - - Start_procedure
+            - Fork2
+          - - Fork1
+            - Fork1_1
+          - - Fork1
+            - Fork1_2
+          - - Fork1_2
+            - Fork1_2_1
+          - - Fork2_1
+            - Fork1_2_2
+          - - Fork1_2
+            - Fork1_2_2
+          - - Fork1_2
+            - Fork1_2_3
+          - - Fork2
+            - Fork2_1
+          - - Fork1_1
+            - Fork2_1_1
+          - - Fork2_1
+            - Fork2_1_1
+          - - Fork2_1_1
+            - Fork2_1_1_1
+          - - task13
+            - EndProcedure
+          - - Fork1_2_3
+            - EndProcedure
+          - - Fork1_2_2
+            - EndProcedure
+          - - Fork1_2_1
+            - EndProcedure
+          - - Fork2_1_1_1
+            - EndProcedure
+          - - Fork2_1
+            - task13
+      vcsInterface: 
+      idlePromptMinutes: 5
+      name: bendy.planner
+      basename: bendy.planner
+      steps: *3
+      reverting: false
+      midRevert: false
+      batching: false
+      hadCheckpoint: true
+      lastActivity: &19 2014-02-21 03:23:30.448518488 +00:00
+      clockEnabled: false
+      notifsEnabled: false
+      states: &20
+        reverted: -2
+        reverting: -1
+        failed: -3
+        pnd rvrt: 0
+        done: 0
+        in prog: 1
+        pending: 2
+      statesNames: &21
+        -2: reverted
+        -1: reverting
+        -3: failed
+        0: finished
+        1: in prog
+        2: pending
+    name: Start_procedure
+    step: Start_procedure
+    owner: !ruby/object:Owner
+      step: *4
+      name: dparker
+      params: dparker
+    description: 
+    startTime: &5 2014-02-21 03:23:25.315892607 +00:00
+    startCommand: 
+    finishTime: *5
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork1
+    - Fork2
+    state: 0
+  Fork1: &6 !ruby/object:Step
+    workflow: *2
+    name: Fork1
+    step: Fork1
+    owner: !ruby/object:Owner
+      step: *6
+      name: dparker
+      params: dparker
+    description: 
+    startTime: &7 2014-02-21 03:23:30.246588203 +00:00
+    startCommand: 
+    finishTime: *7
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates:
+    - Fork1_1
+    - Fork1_2
+    state: 0
+  Fork2: &8 !ruby/object:Step
+    workflow: *2
+    name: Fork2
+    step: Fork2
+    owner: !ruby/object:Owner
+      step: *8
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 2014-02-21 03:23:33.117130481 +00:00
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates: []
+    state: 1
+  Fork1_1: &9 !ruby/object:Step
+    workflow: *2
+    name: Fork1_1
+    step: Fork1_1
+    owner: !ruby/object:Owner
+      step: *9
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: http://google.com
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates: []
+    state: 2
+  Fork1_2: &10 !ruby/object:Step
+    workflow: *2
+    name: Fork1_2
+    step: Fork1_2
+    owner: !ruby/object:Owner
+      step: *10
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates: []
+    reverseGates: []
+    state: 2
+  Fork1_2_1: &11 !ruby/object:Step
+    workflow: *2
+    name: Fork1_2_1
+    step: Fork1_2_1
+    owner: !ruby/object:Owner
+      step: *11
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork1_2
+    reverseGates: []
+    state: 2
+  Fork1_2_2: &12 !ruby/object:Step
+    workflow: *2
+    name: Fork1_2_2
+    step: Fork1_2_2
+    owner: !ruby/object:Owner
+      step: *12
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork2_1
+    - Fork1_2
+    reverseGates: []
+    state: 2
+  Fork1_2_3: &13 !ruby/object:Step
+    workflow: *2
+    name: Fork1_2_3
+    step: Fork1_2_3
+    owner: !ruby/object:Owner
+      step: *13
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork1_2
+    reverseGates: []
+    state: 2
+  Fork2_1: &14 !ruby/object:Step
+    workflow: *2
+    name: Fork2_1
+    step: Fork2_1
+    owner: !ruby/object:Owner
+      step: *14
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: http://yahoo.com
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork2
+    reverseGates: []
+    state: 2
+  Fork2_1_1: &15 !ruby/object:Step
+    workflow: *2
+    name: Fork2_1_1
+    step: Fork2_1_1
+    owner: !ruby/object:Owner
+      step: *15
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork1_1
+    - Fork2_1
+    reverseGates: []
+    state: 2
+  Fork2_1_1_1: &16 !ruby/object:Step
+    workflow: *2
+    name: Fork2_1_1_1
+    step: Fork2_1_1_1
+    owner: !ruby/object:Owner
+      step: *16
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork2_1_1
+    reverseGates: []
+    state: 2
+  EndProcedure: &17 !ruby/object:Step
+    workflow: *2
+    name: EndProcedure
+    step: EndProcedure
+    owner: !ruby/object:Owner
+      step: *17
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - task13
+    - Fork1_2_3
+    - Fork1_2_2
+    - Fork1_2_1
+    - Fork2_1_1_1
+    reverseGates: []
+    state: 2
+  task13: &18 !ruby/object:Step
+    workflow: *2
+    name: task13
+    step: task13
+    owner: !ruby/object:Owner
+      step: *18
+      name: dparker
+      params: dparker
+    description: 
+    startTime: 
+    startCommand: 
+    finishTime: 
+    finishCommand: 
+    url: 
+    note: 
+    notifyAtStart: []
+    notifyAtFinish: []
+    group: []
+    gates:
+    - Fork2_1
+    reverseGates: []
+    state: 2
+reverting: false
+midRevert: false
+batching: false
+hadCheckpoint: false
+lastActivity: *19
+clockEnabled: false
+notifsEnabled: false
+states: *20
+statesNames: *21
+clocksEnabled: false

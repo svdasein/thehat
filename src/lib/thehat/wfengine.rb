@@ -66,6 +66,10 @@ class Workflow
 			@datadir = config['wfengine']['datadir']
 			@webdir = config['wfengine']['webdir']
 			@baseurl = config['wfengine']['baseurl']
+			@bindport = config['wfengine']['bindport']
+			if @bindport
+				@baseurl << ":#{@bindport}"
+			end
 			@svnroot = config['wfengine']['svnroot']
 			if (config['wfengine']['allowExec'] == 'true')
 				@allowExec = true
