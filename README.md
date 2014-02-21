@@ -1,10 +1,10 @@
 TheHat
 ======
 
-TheHat is a Ruby based task coordination toolkit.  You can use it
+TheHat is a Ruby based task coordination application.  You can use it
 to coordinate things like release cycles,
 deployment procedures, and pretty much anything where you have
-to make a bunch of things happen in a particular order.
+to make a bunch of things happen in a particular order. 
 
 
 Documentation is in the wiki:
