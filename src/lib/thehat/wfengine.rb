@@ -986,7 +986,7 @@ class Step
 				self.instance_variable_set(variable,nil)
 			end
 		}
-		@owner = Owner.create(@owner,self)
+		@owner = Owner.create(@owner,self) # NOTE @owner before the call is a name string, after it's an owner object w/ that name. ugly. sorry.
 		@notifyAtStart = @notifyAtStart.split(',') if @notifyAtStart
 		@notifyAtFinish = @notifyAtFinish.split(',') if @notifyAtFinish
 		# YAML eliminates the need to do the next two:
