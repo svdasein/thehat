@@ -32,9 +32,9 @@ require 'thehat/wfsourcecontrol'
 
 $Version = '0.3'
 $CopyrightYears = '2007-2014'
-$DumpHeaderForm="%-30s %-9s %-8s %-20s %-30s\n"
-$DumpForm=      "%-30s %-9s %-8d %-20s %-30s\n"
-$DumpHeader = ['OWNER','STATE','DUR(MIN)','NAME','DESCRIPTION']
+$DumpHeaderForm="%-33s %-9s %-3s %-20s %-30s\n"
+$DumpForm=      "%-33s %-9s %-3d %-20s %-30s\n"
+$DumpHeader = ['OWNER','STATE','DUR','NAME','DESCRIPTION']
 
 class String
 	def to_class
@@ -652,16 +652,17 @@ class Workflow
 				end
 			end
 		end
+		#DAP 
 		@batching = false
-		if thingsChanged
+		#if thingsChanged
 			self.checkpoint # with batching off, rerenders will happen
 			# Point being with rendering off while a ton of clock processing happens, 
 			# the clock processing can happen fairly quickly -  few secs at most - 
 			# then the renders get done once.  So - for a few secs the renderings
 			# are out of date, but overall execution of tictoc goes *way* down.
-		elsif self.seemsQuiet
-			self.whatsGoingOn("IDLE")
-		end
+		#elsif self.seemsQuiet
+			#self.whatsGoingOn("IDLE")
+		#end
 	end
 
 	def processCommand(user,aString='')
