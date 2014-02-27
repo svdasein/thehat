@@ -625,7 +625,6 @@ class Workflow
 
 
 	def ticToc(forced=false)
-		thingsChanged = false
 		iterate = false
 		iterate = true if @clockEnabled or forced
 		if forced
@@ -642,9 +641,11 @@ class Workflow
 				end
 			}
 			if ungated.size > 0
+				thingsChanged = false
 				ungated.each {
 					|step|
-					thingsChanged,iterate = step.owner.ticToc(iterate)
+					ticSummary = step.owner.ticToc(iterate)
+					thingsChanged = true if ticSummary.thingsChanged
 				}
 				if thingsChanged
 					self.checkpoint
@@ -654,15 +655,15 @@ class Workflow
 		end
 		#DAP 
 		@batching = false
-		#if thingsChanged
+		if thingsChanged
 			self.checkpoint # with batching off, rerenders will happen
 			# Point being with rendering off while a ton of clock processing happens, 
 			# the clock processing can happen fairly quickly -  few secs at most - 
 			# then the renders get done once.  So - for a few secs the renderings
 			# are out of date, but overall execution of tictoc goes *way* down.
-		#elsif self.seemsQuiet
-			#self.whatsGoingOn("IDLE")
-		#end
+		elsif self.seemsQuiet
+			self.whatsGoingOn("IDLE")
+		end
 	end
 
 	def processCommand(user,aString='')
@@ -1440,11 +1441,21 @@ class Owner
 		# of the state change. In this case we just pass back what we're given - in some cases
 		# we might alter it.
 
-		return false,reiterate
+		return TicSummary.new(false,reiterate)
 	end
 
 
 end
+
+
+class TicSummary
+	attr_accessor :thingsChanged,:continueIterating
+	def initialize(thingsChanged=false,continueIterating=false)
+		@thingsChanged = thingsChanged
+		@continueIterating = continueIterating
+	end
+end
+
 
 class Clock < Owner
 	##########################################
@@ -1452,32 +1463,7 @@ class Clock < Owner
 	##########################################
 	def initialize(name,step,params)
 		super(name,step,params)
-		if @params =~ /(.*)@(.*)/
-			dateTime = "#{$1} #{$2}"
-			begin
-				@time = Time.local(*Date.parse(dateTime)[0..4])
-			rescue ArgumentError
-				# Assume "immediately" was meant
-				# Which is to say - assume the user
-				# specified the start time as all zeros
-				# and assume it means "as soon as
-				# it's no longer gated". So:
-				# to give this something like a
-				# real date/time, one must crawl
-				# back through the digraph 'til one
-				# finds the first step or steps that
-				# have an actual date/time and take
-				# the latest of those to be the date
-				# meant. This ignores e.g. handoff steps
-				# etc that would delay the flow for an
-				# indeterminate amount of time. Tricky.
-				# But if icals are to render properly,
-				# it must be done.
-				@time = self.nearestDate(:before) # RECURSIVE TO THIS METHOD
-			end
-		else
-			@time = nil
-		end
+		@time = clockTime
 		self
 	end
 
@@ -1523,9 +1509,8 @@ class Clock < Owner
 
 	def clockTime
 		if @params =~ /(.*)@(.*)/
-			dateTime = "#{$1} #{$2}"
 			begin
-				timeObject = Time.local(*Date.parse(dateTime)[0..4])
+				timeObject= Time.strptime(@params,'%m/%d/%Y@%T')
 			rescue ArgumentError
 				# Assume "immediately" was meant
 				# Which is to say - assume the user
@@ -1534,7 +1519,7 @@ class Clock < Owner
 				# it's no longer gated". So:
 				# to give this something like a
 				# real date/time, one must crawl
-				# back through the digraph 'til one
+				# back through the (logical) digraph 'til one
 				# finds the first step or steps that
 				# have an actual date/time and take
 				# the latest of those to be the date
@@ -1559,19 +1544,19 @@ class Clock < Owner
 				thingsChanged = true
 			end
 		end
-		return thingsChanged,reiterate
+		return TicSummary.new(thingsChanged,reiterate)
 	end
 
 end
 
 class Alarm < Clock
 	def ticToc(reiterate)
-		thingsChanged = super(reiterate)
+		thingsChanged = super(reiterate).thingsChanged
 		if @step.state == @step.workflow.states['in prog']
 			@step.finish(self)
 			thingsChanged = true
 		end
-		return thingsChanged,reiterate
+		return TicSummary.new(thingsChanged,reiterate)
 	end
 end
 
@@ -1580,32 +1565,32 @@ class Event < Clock
 		return @durationMinutes
 	end
 	def ticToc(reiterate)
-		thingsChanged = super(reiterate)
+		thingsChanged = super(reiterate).thingsChanged
 		if @step.state == @step.workflow.states['in prog']
 			if Time.now.localtime >= (clockTime + (@durationMinutes * 60))
 				@step.finish(self)
 				thingsChanged = true
 			end
 		end
-		return thingsChanged,reiterate
+		return TicSummary.new(thingsChanged,reiterate)
 	end
 end
 
 class Handoff < Clock
 	def ticToc(reiterate)
-		thingsChanged = super(reiterate)
+		thingsChanged = super(reiterate).thingsChanged
 		if @step.state == @step.workflow.states['in prog']
 			@step.owner = Owner.create(nil,@step)
 			@step.workflow.addMessage("Handoff step '#{@step.name}' owner cleared\n")
 			thingsChanged = true
 		end
-		return thingsChanged,reiterate
+		return TicSummary.new(thingsChanged,reiterate)
 	end
 end
 
 class Wait < Clock
 	def ticToc(reiterate)
-		thingsChanged = super(reiterate)
+		thingsChanged = super(reiterate).thingsChanged
 		# If any of those whom I gate are clock steps, only
 		# finish when the earliest of those clocks expires
 		if @step.state == @step.workflow.states['in prog']
@@ -1623,7 +1608,7 @@ class Wait < Clock
 				end
 			}
 		end
-		return thingsChanged,reiterate
+		return TicSummary.new(thingsChanged,reiterate)
 	end
 end
 
@@ -1635,7 +1620,7 @@ class Stopwatch < Clock
 	end
 
 	def ticToc(reiterate)
-		thingsChanged = super(reiterate)
+		thingsChanged = super(reiterate).thingsChanged
 		if @step.state == @step.workflow.states['in prog']
 			# Stop watch time is treated differently - the 
 			# time specified is translated to mean "number of 
@@ -1650,7 +1635,7 @@ class Stopwatch < Clock
 				end
 			end
 		end
-		return thingsChanged,reiterate
+		return TicSummary.new(thingsChanged,reiterate)
 	end
 
 end
