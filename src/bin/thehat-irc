@@ -78,7 +78,7 @@ class IRCFrontend < HatApp
 					appFrame.mutex.synchronize do
 						if cmd = query
 							if cmd =~ /^quit$|^shutdown$/
-								#IRCConnection.quit
+								ircSession.quit
 							else
 								appFrame.workflow.processCommand(event.user.nick,cmd)
 							end
