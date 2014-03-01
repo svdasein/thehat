@@ -34,6 +34,7 @@ class IRCFrontend < HatApp
 		appFrame = self
 		channelName = appFrame.configValue(:channel)
 		botNick = appFrame.configValue(:nic)
+		botAlias = appFrame.configValue(:respondTo)
 		ircSession = Cinch::Bot.new do
 			loggers.level = :info
 			configure do |c|
@@ -52,7 +53,7 @@ class IRCFrontend < HatApp
 				}
 
 				appFrame.logmessage(:app,"listening for commands")
-				Channel(channelName).send("I answer to the name '#{botNick}'")
+				Channel(channelName).send("I answer to the name '#{botAlias}'")
 				Thread.new {
 					appFrame.logmessage(:clock,"starting clock thread")
 					while true
@@ -72,7 +73,7 @@ class IRCFrontend < HatApp
 				}
 			end
 		
-			on :privmsg,  /#{botNick}[: ,]+(.*)/ do |event, query|
+			on :privmsg,  /#{botAlias}[: ,]+(.*)/ do |event, query|
 				appFrame.logmessage(:user,"#{event.channel.name} #{event.user.nick}: '#{query}'")
 				begin
 					appFrame.mutex.synchronize do
