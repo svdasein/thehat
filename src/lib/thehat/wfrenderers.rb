@@ -100,7 +100,7 @@ class WorkflowDigraph < WorkflowRenderer
 					nodeProperties[:URL] = step.url
 				end
 				if step.note
-					nodeProperties[:tooltip] = step.note
+					nodeProperties[:tooltip] = step.note.gsub('\n','&#10;')
 					if not step.url
 						nodeProperties[:URL] = "about:blank"
 					end
