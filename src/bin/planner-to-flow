@@ -16,6 +16,7 @@
 
 require 'xmlsimple'
 require 'pp'
+require 'yaml'
 
 # TheHat modules
 require 'thehat/wfengine'
@@ -80,18 +81,15 @@ tasks.each {
 	|id,task|
 	stepValues = Hash.new
 	if task['name'] > ''
-		stepValues['name'] = task['name'].cleansed
-	else
-		stepValues['name'] = "task#{id.to_s}"
+		stepValues['description'] = task['name']
 	end
-	print "Processing step #{stepValues['name']}\n"
-	if task['note']
-		task['note'].gsub('\n',"\n").split("\n").each {
-			|note|
-			key,value = note.split(':',2)
-			print "Parsed k:#{key} v:#{value} from note\n"
-			stepValues[key.strip] = value.strip
-		}
+	stepValues['name'] = "task#{id.to_s}"
+	print "Processing step #{stepValues['description']}\n"
+	if task['note'] and task['note'].size > 0
+		noteData = YAML.load("---\n#{task['note']}")
+		print "Notes parsed from step:\n"
+		pp noteData
+		stepValues = stepValues.merge(noteData)
 	end
 	if stepValues['group']
 		stepValues['group'] = stepValues['group'].split(',')
@@ -103,11 +101,7 @@ tasks.each {
 		gates = Array.new
 		task['predecessors'][0]['predecessor'].each {
 			|predecessor|
-			if tasks[predecessor['predecessor-id']]['name'] > ''
-				gates.push(tasks[predecessor['predecessor-id']]['name'].cleansed)
-			else
-				gates.push("task#{predecessor['predecessor-id']}")
-			end
+			gates.push("task#{predecessor['predecessor-id']}")
 		}
 		stepValues['gates'] = gates
 	end
