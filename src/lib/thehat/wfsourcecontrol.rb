@@ -23,7 +23,9 @@ class VersionControlSystem
 	
 	def VersionControlSystem.interface(workflow,config)
 		begin
-			vcsclass = config['wfengine']['vcs']['class']
+			if config['wfengine']['vcs']
+				vcsclass = config['wfengine']['vcs']['class']
+			end
 			if vcsclass
 				workflow.addMessage("Using the '#{vcsclass}' version control interface\n")
 				vcsInstance = Kernel.const_get(vcsclass).new(workflow,config)
