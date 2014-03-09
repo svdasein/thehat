@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+##########################################################################
+# This is in a very early stage of development
+#
+# This script reads a Gnome Planner ( https://github.com/GNOME/znode )
+# file and converts it to a TheHat flow file. 
+#
+# The notes field is overloaded to fill in the blanks that 
+# znode doesn't support, syntax is (will be) yaml-ish
+#
+# usage:
+# 
+# znode-to-flow <thehatconfig> <znodefile> <newflowfile>
+#
+##########################################################################
+
+require 'xmlsimple'
+require 'pp'
+require 'yaml'
+
+# TheHat modules
+require 'thehat/wfengine'
+
+
+class String
+	def cleansed
+		return self.gsub(/[^0-9a-z]/i, '_')
+	end
+end 
+
+if ARGV.size != 2
+	print "Usage: #{$0} <config.yaml> <znodefile.json>\n"
+	exit
+end
+
+engineConfig = ARGV[0]
+znodeFile = ARGV[1]
+flowFile = File.basename(znodeFile)
+hadError = false
+
+begin
+	workflow = Workflow.new(engineConfig) # workflow config file e.g. example.yaml
+rescue
+	print "Error attempting to open config file #{engineConfig}\n"
+	hadError = true
+end
+begin
+	graph = YAML.load_file(znodeFile) # full path to znode file
+rescue
+	print "Error attempting to open znode file #{znodeFile}\n"
+	hadError = true
+end
+
+exit if hadError
+
+
+tasks = graph['nodes']
+connections = graph['connections']
+pp tasks
+
+gates = Hash.new
+connections.each {
+	|connection|
+	id = connection['nodeB'].to_s
+	if not gates[id]
+		gates[id] = Array.new
+	end
+	gates[id].push("task#{connection['nodeA'].to_s}")
+}
+
+tasks.each {
+	|task|
+	stepValues = YAML.load("---\n#{task['txt'].gsub('\n',"\n")}")
+	stepId = task['id'].to_s
+	stepName = "task#{stepId}"
+	print "id: #{stepId} name: #{stepName}\n"
+	stepValues['name'] = stepName
+	stepValues['gates'] = gates[stepId]
+	pp stepValues
+	# NOTE: api needs to change to simplify this
+	workflow.steps[stepValues['name']]=Step.new(workflow,stepValues['name'],stepValues)
+}
+print "Writing to #{flowFile}\n"
+workflow.saveToFile(flowFile) # full path to new flow file
+
