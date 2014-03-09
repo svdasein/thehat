@@ -35,6 +35,9 @@ class IRCFrontend < HatApp
 		channelName = appFrame.configValue(:channel)
 		botNick = appFrame.configValue(:nic)
 		botAlias = appFrame.configValue(:respondTo)
+		if not botAlias or botAlias.size == 0
+			botAlias = botNick
+		end
 		ircSession = Cinch::Bot.new do
 			loggers.level = :info
 			configure do |c|
