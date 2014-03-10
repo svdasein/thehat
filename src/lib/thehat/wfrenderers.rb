@@ -155,7 +155,7 @@ class WorkflowDigraph < WorkflowRenderer
 		result += "Notif(fin): #{(step.notifyAtFinish or []).join(', ')}\n" if step.notifyAtFinish.size > 0
 		result += "Started at: #{step.startTime}\n" if step.startTime
 		result += "Finished at: #{step.finishTime}\n" if step.finishTime
-		result += "Group(s): #{(step.group or []).join(', ')}\n" if step.group.size > 0
+		result += "Group(s): #{(step.group or []).collect{|group|group.to_s}.join(', ')}\n" if step.group.size > 0
 		return result.gsub(/\n/,'\n')
 	end
 

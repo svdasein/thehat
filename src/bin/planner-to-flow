@@ -91,9 +91,6 @@ tasks.each {
 		pp noteData
 		stepValues = stepValues.merge(noteData)
 	end
-	if stepValues['group']
-		stepValues['group'] = stepValues['group'].split(',')
-	end
 	if allocations[id.to_s]
 		stepValues['owner'] = resources[allocations[id.to_s]]['name']
 	end
