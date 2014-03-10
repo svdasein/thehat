@@ -56,8 +56,6 @@ exit if hadError
 
 tasks = graph['nodes']
 connections = graph['connections']
-pp tasks
-
 gates = Hash.new
 connections.each {
 	|connection|
@@ -75,7 +73,9 @@ tasks.each {
 	stepName = "task#{stepId}"
 	print "id: #{stepId} name: #{stepName}\n"
 	stepValues['name'] = stepName
-	stepValues['gates'] = gates[stepId]
+	if gates[stepId]
+		stepValues['gates'] = gates[stepId]
+	end
 	pp stepValues
 	# NOTE: api needs to change to simplify this
 	workflow.steps[stepValues['name']]=Step.new(workflow,stepValues['name'],stepValues)

@@ -117,12 +117,12 @@ __END__
 					%td
 						%input{:type=>"submit",:value=>"Update"}
 		- if @cmap
-			<map name="#{@cmap}">"
+			<map name="#{@cmap}">
 			#{File.new("www/#{@cmap}",'r').read}
 			</map>
-			<IMG SRC="/#{@imgurl}" BORDER="0" ISMAP USEMAP="##{@cmap}">
+			<CENTER><IMG SRC="/#{@imgurl}" BORDER="0" ISMAP USEMAP="##{@cmap}"></CENTER>
 		- else
-			<IMG SRC="/#{@imgurl}" BORDER="0">
+			<CENTER><IMG SRC="/#{@imgurl}" BORDER="0"></CENTER>
 
 -#	%pre
 -#		#{request.inspect.tr(',',"\n")}
