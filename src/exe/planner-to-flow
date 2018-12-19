@@ -29,7 +29,7 @@ class String
 end 
 
 if ARGV.size != 2
-	print "Usage: #{$0} <config.yaml> <plannerfile.xml> <outputfile.flow>\n"
+	print "Usage: #{$0} <config.yaml> <plannerfile.xml>\n"
 	exit
 end
 
