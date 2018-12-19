@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "http://github.com/svdasein/thehat"
   spec.license       = "GPL-2"
   spec.files         = `git ls-files -z`.split("\x0")
-  spec.executables   = ['thehat-irc','thehat-xmpp','thehat-tty','planner-to-flow']
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
@@ -26,5 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "sinatra"
   spec.add_runtime_dependency "thin"
   spec.add_runtime_dependency "haml"
+  spec.add_runtime_dependency "pry"
+  spec.add_runtime_dependency "pry-byebug"
 end
 
